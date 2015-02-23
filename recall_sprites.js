@@ -11,10 +11,9 @@ function CreateSprite(x, y, width, height, image) {
 	sprite.y = y;
 	sprite.width = width;
 	sprite.height = height;
-	sprite.xoffset = -width/2;
-	sprite.yoffset = -height/2;
+	sprite.offsetX = -width/2;
+	sprite.offsetY = -height/2;
 	sprite.image = Textures.load(image);
-	States.current().world.addChild(sprite);
 	return sprite;
 }
 
@@ -23,9 +22,12 @@ function CreateSprite(x, y, width, height, image) {
 //
 function CreatePlayer(x, y, width, height, image) {
 	var player = CreateSprite(x, y, width, height, image);
+	States.current().world.addChild(player);
 	player.onGround = true;
 	ApplyRectBBox(player, b2Body.b2_dynamicBody, 10.0, 1, 0);
 	player.body.SetFixedRotation(true);
+	
+	player.state = PLAYER_STATE_NORMAL;
 	player.update = function(d) {
 		// Move the sprite according to the physics body
 		var pos = player.body.GetPosition();
@@ -35,20 +37,30 @@ function CreatePlayer(x, y, width, height, image) {
 		
 		// Movement code
 		var velocity = player.body.GetLinearVelocity();
-		if(gInput.right && player.onGround) {
-			var deltaVelocity = 2 - velocity.x;
+		//States.current().level.x -= velocity.x;
+		if(player.state == PLAYER_STATE_NORMAL) {
+			if(gInput.right && player.onGround) {
+				var deltaVelocity = 2 - velocity.x;
+				var impulse = new b2Vec2(player.body.GetMass() * deltaVelocity, 0);
+				player.body.ApplyImpulse(impulse, player.body.GetWorldCenter());
+			}
+			if(gInput.left && player.onGround) {
+				var deltaVelocity = -2 - velocity.x;
+				var impulse = new b2Vec2(player.body.GetMass() * deltaVelocity, 0);
+				player.body.ApplyImpulse(impulse, player.body.GetWorldCenter());
+			}
+			if(gInput.up && player.onGround) {
+				player.onGround = false;
+				var deltaVelocity = velocity.y - 3.75;
+				var impulse = new b2Vec2(0, player.body.GetMass() * deltaVelocity);
+				player.body.ApplyImpulse(impulse, player.body.GetWorldCenter());
+			}
+			if(gInput.space) {
+				player.state = PLAYER_STATE_RUNNER;
+			}
+		} else if(player.state == PLAYER_STATE_RUNNER) {
+			var deltaVelocity = 4 - velocity.x;
 			var impulse = new b2Vec2(player.body.GetMass() * deltaVelocity, 0);
-			player.body.ApplyImpulse(impulse, player.body.GetWorldCenter());
-		}
-		if(gInput.left && player.onGround) {
-			var deltaVelocity = 2 + velocity.x;
-			var impulse = new b2Vec2(player.body.GetMass() * -deltaVelocity, 0);
-			player.body.ApplyImpulse(impulse, player.body.GetWorldCenter());
-		}
-		if(gInput.up && player.onGround) {
-			player.onGround = false;
-			var deltaVelocity = velocity.y - 3;
-			var impulse = new b2Vec2(0, player.body.GetMass() * deltaVelocity);
 			player.body.ApplyImpulse(impulse, player.body.GetWorldCenter());
 		}
 	};

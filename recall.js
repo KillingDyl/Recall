@@ -10,6 +10,8 @@ var KEY_UP = 38;
 var KEY_RIGHT = 39;
 var KEY_DOWN = 40;
 var KEY_SPACE = 32;
+var PLAYER_STATE_NORMAL = 0;
+var PLAYER_STATE_RUNNER = 1;
 
 // Global Variables
 var physics;
@@ -49,6 +51,8 @@ var	b2Vec2 = Box2D.Common.Math.b2Vec2,
 	var game = new State();
 	game.alwaysDraw = false;
 	game.alwaysUpdate = false;
+	game.level = new Sprite();
+	game.world.addChild(game.level);
 	physics = new b2World(new b2Vec2(0, 10), true);
 	
 	game.init = function() {
@@ -96,25 +100,32 @@ var	b2Vec2 = Box2D.Common.Math.b2Vec2,
 	// Function definitions
 	//
 	function constructWorld() {
-		player = CreatePlayer(100, 100, 25, 50, "http://www.jar42.com/brine/box2d_test/images/trash.png");
+		player = CreatePlayer(100, 100, 25, 50, "sprites/trash.png");
 				
-		var ground = CreateSprite(400, 550, 800, 100, "images/trash.png");
+		var ground = CreateSprite(400, 550, 800, 100, "sprites/trash.png");
 		ApplyRectBBox(ground, b2Body.b2_staticBody, 1.0, 1, 0);
+		game.level.addChild(ground);
 		
-		var ground2 = CreateSprite(400, 550, 800, 100, "images/trash.png");
+		var ground2 = CreateSprite(600, 500, 800, 100, "sprites/trash.png");
 		ApplyRectBBox(ground2, b2Body.b2_staticBody, 1.0, 1, 0);
-		ground2.rotation = -1 * Math.PI / 8;
-		ground2.body.SetAngle(-1 * Math.PI / 8);
+		game.level.addChild(ground2);
 	}
 	
 	function contactListen(contact) {
 		var objectA = contact.GetFixtureA().GetBody().GetUserData();
 		var objectB = contact.GetFixtureB().GetBody().GetUserData();
 		if(objectA == player || objectB == player) {
-         player.onGround = true;
-         println(objectB.body.GetAngle());
-         player.body.SetAngle(player.body.GetAngle() + Math.PI / 4);
-      }
+			var floor;
+			if(objectA == player) floor = objectB;
+			if(objectB == player) floor = objectA;
+         	if(Math.abs(player.x - floor.x) < floor.width/2) {
+         		player.onGround = true;
+         	}/* else if(player.y - (floor.y + floor.height/2) < 1 && player.y < floor.y) {
+         		var impulse = new b2Vec2(player.body.GetMass() * -1, player.body.GetMass() * -2);
+				player.body.ApplyImpulse(impulse, player.body.GetWorldCenter());
+         		println("CLIMB");
+         	}*/
+      	}
 	}
 }());
 
