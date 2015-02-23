@@ -14,6 +14,7 @@ function CreateSprite(x, y, width, height, image) {
 	sprite.offsetX = -width/2;
 	sprite.offsetY = -height/2;
 	sprite.image = Textures.load(image);
+	States.current().world.addChild(sprite);
 	return sprite;
 }
 
@@ -22,7 +23,6 @@ function CreateSprite(x, y, width, height, image) {
 //
 function CreatePlayer(x, y, width, height, image) {
 	var player = CreateSprite(x, y, width, height, image);
-	States.current().world.addChild(player);
 	player.onGround = true;
 	ApplyRectBBox(player, b2Body.b2_dynamicBody, 10.0, 1, 0);
 	player.body.SetFixedRotation(true);
@@ -37,7 +37,7 @@ function CreatePlayer(x, y, width, height, image) {
 		
 		// Movement code
 		var velocity = player.body.GetLinearVelocity();
-		//States.current().level.x -= velocity.x;
+		States.current().world.x = VIEWPORT_WIDTH / 2 - player.x;
 		if(player.state == PLAYER_STATE_NORMAL) {
 			if(gInput.right && player.onGround) {
 				var deltaVelocity = 2 - velocity.x;

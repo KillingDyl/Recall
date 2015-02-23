@@ -12,6 +12,8 @@ var KEY_DOWN = 40;
 var KEY_SPACE = 32;
 var PLAYER_STATE_NORMAL = 0;
 var PLAYER_STATE_RUNNER = 1;
+var VIEWPORT_WIDTH = 800;
+var VIEWPORT_HEIGHT = 600;
 
 // Global Variables
 var physics;
@@ -51,8 +53,6 @@ var	b2Vec2 = Box2D.Common.Math.b2Vec2,
 	var game = new State();
 	game.alwaysDraw = false;
 	game.alwaysUpdate = false;
-	game.level = new Sprite();
-	game.world.addChild(game.level);
 	physics = new b2World(new b2Vec2(0, 10), true);
 	
 	game.init = function() {
@@ -104,11 +104,9 @@ var	b2Vec2 = Box2D.Common.Math.b2Vec2,
 				
 		var ground = CreateSprite(400, 550, 800, 100, "sprites/trash.png");
 		ApplyRectBBox(ground, b2Body.b2_staticBody, 1.0, 1, 0);
-		game.level.addChild(ground);
 		
 		var ground2 = CreateSprite(600, 500, 800, 100, "sprites/trash.png");
 		ApplyRectBBox(ground2, b2Body.b2_staticBody, 1.0, 1, 0);
-		game.level.addChild(ground2);
 	}
 	
 	function contactListen(contact) {
