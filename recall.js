@@ -15,9 +15,14 @@ var PLAYER_STATE_RUNNER = 1;
 var VIEWPORT_WIDTH = document.getElementById("recall").width;
 var VIEWPORT_HEIGHT = document.getElementById("recall").height;
 
+//OBJ
+var KEY_E = 69;
+
 // Global Variables
 var physics;
 var player;
+
+var door;
 
 // Box2d Declarations for ease of use
 var	b2Vec2 = Box2D.Common.Math.b2Vec2, 
@@ -48,6 +53,9 @@ var	b2Vec2 = Box2D.Common.Math.b2Vec2,
 	gInput.addBool(KEY_DOWN, "down");
 	gInput.addBool(KEY_SPACE, "space");
 	
+	//OBJ
+	gInput.addBool(KEY_E, "E");
+	
 	initGame("recall");
 	
 	var game = new State();
@@ -59,6 +67,9 @@ var	b2Vec2 = Box2D.Common.Math.b2Vec2,
 		
 		var listener = new b2ContactListener();
 		listener.BeginContact = beginContactListen;
+		//OBJ
+		listener.EndContact = endContactListen;
+		//
 		physics.SetContactListener(listener);
 		
 		if(DEBUGMODE) {
@@ -95,6 +106,7 @@ var	b2Vec2 = Box2D.Common.Math.b2Vec2,
 	
 	States.push(game);
 	
+	
 	println("Game Initialized");
 	
 	//
@@ -108,15 +120,25 @@ var	b2Vec2 = Box2D.Common.Math.b2Vec2,
 		level[0] = CreateWorldElement(400, 550, 800, 100, "sprites/trash.png", true, 0);
 		level[1] = CreateWorldElement(1200, 500, 800, 100, "sprites/trash.png", true, 1);
 		level.width = level[0].width/2 + level[level.length-1].x - level[0].x + level[level.length-1].width/2;
+		//OBJ
+        door = CreateWorldElement(400, 475, 60, 60, "sprites/door.png", true, 0);
+        door.fixture.SetSensor(true);
+                //
 	}
 	
 	function beginContactListen(contact) {
 		var objectA = contact.GetFixtureA().GetBody().GetUserData();
 		var objectB = contact.GetFixtureB().GetBody().GetUserData();
 		if(objectA == player || objectB == player) {
-			var floor;
+			var floor;//other obj
 			if(objectA == player) floor = objectB;
 			if(objectB == player) floor = objectA;
+			//OBJ
+	        if(floor == door){ //check if it is specifically near the door
+	        	player.near = true;
+	        	println("near");
+	        }else //checks to see if it is on top of the ground
+	        /////
          	if(Math.abs(player.x - floor.x) < floor.width/2 + player.width/4) {
          		player.onGround = true;
          	} else {
@@ -133,6 +155,22 @@ var	b2Vec2 = Box2D.Common.Math.b2Vec2,
          		println("CLIMB");
          	}*/
       	}
+	}
+	
+	//OBJ
+	//Check to see when it is no longer in contact
+	function endContactListen(contact) {
+		var objectA = contact.GetFixtureA().GetBody().GetUserData();
+		var objectB = contact.GetFixtureB().GetBody().GetUserData();
+		if(objectA == player || objectB == player) {
+			var obj;//other obj
+			if(objectA == player) obj = objectB;
+			if(objectB == player) obj = objectA;
+			if(obj == door){ //check if it is specifically near the door
+	        	player.near = false;
+	        	println("away");
+	       }
+		}	
 	}
 	
 	//
@@ -158,6 +196,7 @@ var	b2Vec2 = Box2D.Common.Math.b2Vec2,
 	function CreatePlayer(x, y, width, height, image) {
 		var player = CreateSprite(x, y, width, height, image, -9999);
 		player.onGround = true;
+		player.near = false;//check for whether or not the player is near an interactable obj
 		ApplyRectBBox(player, b2Body.b2_dynamicBody, 10.0, 1, 0);
 		player.body.SetFixedRotation(true);
 		
@@ -168,7 +207,9 @@ var	b2Vec2 = Box2D.Common.Math.b2Vec2,
 			player.x = pos.x * PHYSICS_SCALE;
 			player.y = pos.y * PHYSICS_SCALE;
 			player.rotation = player.body.GetAngle();
-			
+			//OBJ
+			if(player.near){println("E");} 
+			//
 			// Movement code
 			var velocity = player.body.GetLinearVelocity();
 			if(player.state == PLAYER_STATE_NORMAL) {
