@@ -22,7 +22,9 @@ var VIEWPORT_HEIGHT = document.getElementById("recall").height;
 var physics;
 var player;
 
+//OBJ
 var door;
+var objects = new Array();
 
 // Box2d Declarations for ease of use
 var	b2Vec2 = Box2D.Common.Math.b2Vec2, 
@@ -52,7 +54,7 @@ var	b2Vec2 = Box2D.Common.Math.b2Vec2,
 	gInput.addBool(KEY_RIGHT, "right");
 	gInput.addBool(KEY_DOWN, "down");
 	gInput.addBool(KEY_SPACE, "space");
-	gInput.addBool(KEY_E, "e");
+	gInput.addBool(KEY_E, "E");
 	
 	initGame("recall");
 	
@@ -118,6 +120,11 @@ var	b2Vec2 = Box2D.Common.Math.b2Vec2,
 		level.width = level[0].width/2 + level[level.length-1].x - level[0].x + level[level.length-1].width/2;
 		//OBJ
         door = CreateWorldElement(400, 475, 60, 60, "sprites/door.png", true, true, 0);
+        door.action = printWords;//give it a function if the player interacts
+        door1 = CreateWorldElement(500, 475, 60, 60, "sprites/door.png", true, true, 0);
+        door1.action = Words;
+        objects.push(door);
+        objects.push(door1);
 	}
 	
 	//
@@ -131,10 +138,14 @@ var	b2Vec2 = Box2D.Common.Math.b2Vec2,
 			if(objectA == player) other = objectB;
 			if(objectB == player) other = objectA;
 			//OBJ
-	        if(other == door){ //check if it is specifically near the door
-	        	player.near = true;
-	        	println("near");
-	        }else //checks to see if it is on top of the ground
+			for (var i = 0; i < objects.length; i++ ) {//TODO fix logix if need
+	        	if(other == objects[i]){ //check if it is specifically near the door
+	        		player.near = true;
+	        		player.ob = objects[i];//give it the object that it is near
+	        		println("near");
+	        		return;
+	        	}	
+	        }//checks to see if it is on top of the ground
 	        /////
          	if(Math.abs(player.x - other.x) < other.width/2 + player.width/4) {
          		player.onGround = true;
@@ -164,12 +175,24 @@ var	b2Vec2 = Box2D.Common.Math.b2Vec2,
 			var other;
 			if(objectA == player) other = objectB;
 			if(objectB == player) other = objectA;
-			if(other == door){ //check if it is specifically near the door
-	        	player.near = false;
-	        	println("away");
-	       }
+			for (var i = 0; i < objects.length; i++ ) {
+	        	if(other == objects[i]){	
+					player.near = false;
+	        		println("away");
+	      	 }
+	      }
 		}	
 	}
+	
+	//OBJ
+	//test funtion that prints when player moves thru an object
+	function printWords(){
+		println("E");
+	}
+	function Words(){
+		println("ADAdka");	
+	}
+	///
 	
 	//
 	// CreateSprite - function to create a basic sprite to be displayed
@@ -215,7 +238,10 @@ var	b2Vec2 = Box2D.Common.Math.b2Vec2,
 			player.y = pos.y * PHYSICS_SCALE;
 			player.rotation = player.body.GetAngle();
 			//OBJ
-			if(player.near){println("E");} 
+			if(player.near && gInput.E){
+				player.ob.action();
+				//println("E");
+			} 
 			//
 			// Movement code
 			var velocity = player.body.GetLinearVelocity();
