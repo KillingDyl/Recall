@@ -5,6 +5,7 @@ var DEBUGMODE = true;
 
 // Constant Declarations
 var PHYSICS_SCALE = 100.0;
+var KEY_E = 69;
 var KEY_LEFT = 37;
 var KEY_UP = 38;
 var KEY_RIGHT = 39;
@@ -12,11 +13,10 @@ var KEY_DOWN = 40;
 var KEY_SPACE = 32;
 var PLAYER_STATE_NORMAL = 0;
 var PLAYER_STATE_RUNNER = 1;
+var PLAYER_WALK_SPEED = 1;
+var PLAYER_RUN_SPEED = 4;
 var VIEWPORT_WIDTH = document.getElementById("recall").width;
 var VIEWPORT_HEIGHT = document.getElementById("recall").height;
-
-//OBJ
-var KEY_E = 69;
 
 // Global Variables
 var physics;
@@ -52,9 +52,7 @@ var	b2Vec2 = Box2D.Common.Math.b2Vec2,
 	gInput.addBool(KEY_RIGHT, "right");
 	gInput.addBool(KEY_DOWN, "down");
 	gInput.addBool(KEY_SPACE, "space");
-	
-	//OBJ
-	gInput.addBool(KEY_E, "E");
+	gInput.addBool(KEY_E, "e");
 	
 	initGame("recall");
 	
@@ -67,9 +65,7 @@ var	b2Vec2 = Box2D.Common.Math.b2Vec2,
 		
 		var listener = new b2ContactListener();
 		listener.BeginContact = beginContactListen;
-		//OBJ
 		listener.EndContact = endContactListen;
-		//
 		physics.SetContactListener(listener);
 		
 		if(DEBUGMODE) {
@@ -117,33 +113,34 @@ var	b2Vec2 = Box2D.Common.Math.b2Vec2,
 		
 		States.current().world.level = [];
 		level = States.current().world.level;
-		level[0] = CreateWorldElement(400, 550, 800, 100, "sprites/trash.png", true, 0);
-		level[1] = CreateWorldElement(1200, 500, 800, 100, "sprites/trash.png", true, 1);
+		level[0] = CreateWorldElement(400, 550, 800, 100, "sprites/trash.png", true, false, 0);
+		level[1] = CreateWorldElement(1200, 500, 800, 100, "sprites/trash.png", true, false, 1);
 		level.width = level[0].width/2 + level[level.length-1].x - level[0].x + level[level.length-1].width/2;
 		//OBJ
-        door = CreateWorldElement(400, 475, 60, 60, "sprites/door.png", true, 0);
-        door.fixture.SetSensor(true);
-                //
+        door = CreateWorldElement(400, 475, 60, 60, "sprites/door.png", true, true, 0);
 	}
 	
+	//
+	// Event that triggers when any contact begins
+	//
 	function beginContactListen(contact) {
 		var objectA = contact.GetFixtureA().GetBody().GetUserData();
 		var objectB = contact.GetFixtureB().GetBody().GetUserData();
 		if(objectA == player || objectB == player) {
-			var floor;//other obj
-			if(objectA == player) floor = objectB;
-			if(objectB == player) floor = objectA;
+			var other;
+			if(objectA == player) other = objectB;
+			if(objectB == player) other = objectA;
 			//OBJ
-	        if(floor == door){ //check if it is specifically near the door
+	        if(other == door){ //check if it is specifically near the door
 	        	player.near = true;
 	        	println("near");
 	        }else //checks to see if it is on top of the ground
 	        /////
-         	if(Math.abs(player.x - floor.x) < floor.width/2 + player.width/4) {
+         	if(Math.abs(player.x - other.x) < other.width/2 + player.width/4) {
          		player.onGround = true;
          	} else {
          		var direction = 1;
-         		if(player.x < floor.x) direction = -1;
+         		if(player.x < other.x) direction = -1;
 				var deltaVelocity = (direction * 3);
 				var impulse = new b2Vec2(player.body.GetMass() * deltaVelocity, player.body.GetMass() * -2);
 				player.body.SetLinearVelocity(new b2Vec2(0, 0));
@@ -157,16 +154,17 @@ var	b2Vec2 = Box2D.Common.Math.b2Vec2,
       	}
 	}
 	
-	//OBJ
-	//Check to see when it is no longer in contact
+	//
+	// Event triggers when any contacts end
+	//
 	function endContactListen(contact) {
 		var objectA = contact.GetFixtureA().GetBody().GetUserData();
 		var objectB = contact.GetFixtureB().GetBody().GetUserData();
 		if(objectA == player || objectB == player) {
-			var obj;//other obj
-			if(objectA == player) obj = objectB;
-			if(objectB == player) obj = objectA;
-			if(obj == door){ //check if it is specifically near the door
+			var other;
+			if(objectA == player) other = objectB;
+			if(objectB == player) other = objectA;
+			if(other == door){ //check if it is specifically near the door
 	        	player.near = false;
 	        	println("away");
 	       }
@@ -197,10 +195,19 @@ var	b2Vec2 = Box2D.Common.Math.b2Vec2,
 		var player = CreateSprite(x, y, width, height, image, -9999);
 		player.onGround = true;
 		player.near = false;//check for whether or not the player is near an interactable obj
-		ApplyRectBBox(player, b2Body.b2_dynamicBody, 10.0, 1, 0);
+		
+		var bodyDef = CreateBodyDef(player, b2Body.b2_dynamicBody);
+		var fixDef = CreateFixtureDef(10.0, 1.0, 0);
+		fixDef.shape = new b2PolygonShape();
+		fixDef.shape.SetAsBox(player.width / 2 / PHYSICS_SCALE, player.height / 2 / PHYSICS_SCALE);
+		
+		player.body = physics.CreateBody(bodyDef);
+		player.fixture = player.body.CreateFixture(fixDef);
+		player.body.SetUserData(player);
 		player.body.SetFixedRotation(true);
 		
 		player.state = PLAYER_STATE_NORMAL;
+		player.maxSpeed = PLAYER_WALK_SPEED;
 		player.update = function(d) {
 			// Move the sprite according to the physics body
 			var pos = player.body.GetPosition();
@@ -214,22 +221,28 @@ var	b2Vec2 = Box2D.Common.Math.b2Vec2,
 			var velocity = player.body.GetLinearVelocity();
 			if(player.state == PLAYER_STATE_NORMAL) {
 				if(gInput.right && player.onGround) {
-					var deltaVelocity = 2 - velocity.x;
+					var deltaVelocity = player.maxSpeed - velocity.x;
 					var impulse = new b2Vec2(player.body.GetMass() * deltaVelocity, 0);
 					player.body.ApplyImpulse(impulse, player.body.GetWorldCenter());
 				}
 				if(gInput.left && player.onGround) {
-					var deltaVelocity = -2 - velocity.x;
+					var deltaVelocity = -player.maxSpeed - velocity.x;
 					var impulse = new b2Vec2(player.body.GetMass() * deltaVelocity, 0);
 					player.body.ApplyImpulse(impulse, player.body.GetWorldCenter());
 				}
 				if(gInput.space) {
 					player.state = PLAYER_STATE_RUNNER;
+					player.maxSpeed = PLAYER_RUN_SPEED;
 				}
 			} else if(player.state == PLAYER_STATE_RUNNER && player.onGround) {
-				var deltaVelocity = 4 - velocity.x;
+				var deltaVelocity = player.maxSpeed - velocity.x;
 				var impulse = new b2Vec2(player.body.GetMass() * deltaVelocity, 0);
 				player.body.ApplyImpulse(impulse, player.body.GetWorldCenter());
+				if(gInput.right && player.onGround) {
+					var deltaVelocity = player.maxSpeed * 2 - velocity.x;
+					var impulse = new b2Vec2(player.body.GetMass() * deltaVelocity, 0);
+					player.body.ApplyImpulse(impulse, player.body.GetWorldCenter());
+				}
 			}
 			if(gInput.up && player.onGround) {
 				player.onGround = false;
@@ -243,17 +256,22 @@ var	b2Vec2 = Box2D.Common.Math.b2Vec2,
 	
 	//
 	// CreateWorldElement - creates a world element that will spawn and despawn based on visibility
+	// 						float x, float y, float width, float height, image, bool solid, bool sensor, int index
+	//						Note: Sensor can't be true and not be solid
 	//
-	function CreateWorldElement(x, y, width, height, image, solid, index) {
+	function CreateWorldElement(x, y, width, height, image, solid, sensor, index) {
 		var element = CreateSprite(x, y, width, height, image, index);
-		ApplyRectBBox(element, b2Body.b2_staticBody, 1.0, 1, 0);
+		if(solid) ApplyRectBBox(element, b2Body.b2_staticBody, 1.0, 1, 0);
+		if(sensor && solid) element.fixture.SetSensor(true);
 		element.update = function(d) {
 			var xpos = this.x + States.current().world.x;
 			if(xpos + this.width/2 < world.x) {
 				this.x += States.current().world.level.width;
-				var pos = this.body.GetPosition();
-				pos.x += States.current().world.level.width / PHYSICS_SCALE;
-				this.body.SetPosition(pos);
+				if(typeof(this.body) !== "undefined") {
+					var pos = this.body.GetPosition();
+					pos.x += States.current().world.level.width / PHYSICS_SCALE;
+					this.body.SetPosition(pos);
+				}
 			}
 		};
 		return element;
@@ -263,9 +281,7 @@ var	b2Vec2 = Box2D.Common.Math.b2Vec2,
 	// applyBBox - takes sprite and fixture definition and applies the bounding box to sprite
 	//
 	function ApplyBBox(sprite, type, fixDef) {
-		var bodyDef = new b2BodyDef();
-		bodyDef.type = type;
-		bodyDef.position.Set(sprite.x / PHYSICS_SCALE, sprite.y / PHYSICS_SCALE);
+		var bodyDef = CreateBodyDef(sprite, type);
 		
 		sprite.body = physics.CreateBody(bodyDef);
 		sprite.fixture = sprite.body.CreateFixture(fixDef);
@@ -285,14 +301,32 @@ var	b2Vec2 = Box2D.Common.Math.b2Vec2,
 	// applyRectBBox - creates and links a rectanglular bounding box to the specified sprite
 	//
 	function ApplyRectBBox(sprite, type, density, friction, restitution) {
-		var fixDef = new b2FixtureDef();
-		fixDef.density = typeof density !== 'undefined' ? density : 1.0;
-		fixDef.friction = typeof friction !== 'undefined' ? friction : 0.5;
-		fixDef.restitution = typeof restitution !== 'undefined' ? restitution : 0.2;
+		var fixDef = CreateFixtureDef(density, friction, restitution);
 		fixDef.shape = new b2PolygonShape();
 		fixDef.shape.SetAsBox(sprite.width / 2 / PHYSICS_SCALE, sprite.height / 2 / PHYSICS_SCALE);
 		
 		ApplyBBox(sprite, type, fixDef);
+	}
+	
+	//
+	// CreateBodyDef - Creates a body definition for the input sprite
+	//
+	function CreateBodyDef(sprite, type) {
+		var bodyDef = new b2BodyDef();
+		bodyDef.type = type;
+		bodyDef.position.Set(sprite.x / PHYSICS_SCALE, sprite.y / PHYSICS_SCALE);
+		return bodyDef;
+	}
+	
+	//
+	// CreateFixtureDef - Creates a basic fixture definition without a shape
+	//
+	function CreateFixtureDef(density, friction, restitution) {
+		var fixDef = new b2FixtureDef();
+		fixDef.density = typeof density !== 'undefined' ? density : 1.0;
+		fixDef.friction = typeof friction !== 'undefined' ? friction : 0.5;
+		fixDef.restitution = typeof restitution !== 'undefined' ? restitution : 0.2;
+		return fixDef;
 	}
 }());
 
