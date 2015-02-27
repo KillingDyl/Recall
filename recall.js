@@ -126,7 +126,7 @@ var	b2Vec2 = Box2D.Common.Math.b2Vec2,
 			level[i] = CreateWorldElement(x, 550, 100, 100, "sprites/Wall1.png", true, false, 0);
 			x += 100;
 		}
-		x = 1100;
+		x = 1150;
 		for(var i=10; i<20; i++)
 		{
 			level[i] = CreateWorldElement(x, 500, 100, 100, "sprites/Wall2.png", true, false, 0);
