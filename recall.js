@@ -25,6 +25,11 @@ var player;
 //OBJ
 var door;
 var objects = new Array();
+var clouds;
+var sky;
+var charSprite;
+var Obstacles = new Array();
+
 
 // Box2d Declarations for ease of use
 var	b2Vec2 = Box2D.Common.Math.b2Vec2, 
@@ -115,18 +120,36 @@ var	b2Vec2 = Box2D.Common.Math.b2Vec2,
 		
 		States.current().world.level = [];
 		level = States.current().world.level;
-		level[0] = CreateWorldElement(400, 550, 800, 100, "sprites/trash.png", true, false, 0);
-		level[1] = CreateWorldElement(1200, 500, 800, 100, "sprites/trash.png", true, false, 1);
+		var x = 100;
+		for(var i=0; i<10; i++)
+		{
+			level[i] = CreateWorldElement(x, 550, 100, 100, "sprites/Wall1.png", true, false, 0);
+			x += 100;
+		}
+		x = 1100;
+		for(var i=10; i<20; i++)
+		{
+			level[i] = CreateWorldElement(x, 500, 100, 100, "sprites/Wall2.png", true, false, 0);
+			x += 100;
+		}
+		//level[1] = CreateWorldElement(1200, 500, 800, 100, "sprites/trash.png", true, false, 1);
 		level.width = level[0].width/2 + level[level.length-1].x - level[0].x + level[level.length-1].width/2;
 		//OBJ
-        door = CreateWorldElement(400, 475, 60, 60, "sprites/door.png", true, true, 0);
+		sky = CreateWorldElement(0, 0, 6000, 1200, "sprites/Sky.png", false, false, 0);
+        door = CreateWorldElement(400, 454, 80, 100, "sprites/door.png", true, true, 0);
         door.action = printWords;//give it a function if the player interacts
-        door1 = CreateWorldElement(500, 475, 60, 60, "sprites/door.png", true, true, 0);
+        door1 = CreateWorldElement(500, 454, 80, 100, "sprites/door.png", true, true, 0);
         door1.action = Words;
         objects.push(door);
         objects.push(door1);
-	}
-	
+        
+        
+        
+        
+        
+        
+        
+}
 	//
 	// Event that triggers when any contact begins
 	//
