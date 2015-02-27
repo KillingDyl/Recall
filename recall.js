@@ -11,6 +11,7 @@ var KEY_UP = 38;
 var KEY_RIGHT = 39;
 var KEY_DOWN = 40;
 var KEY_SPACE = 32;
+var KEY_ESC = 27;
 var PLAYER_STATE_NORMAL = 0;
 var PLAYER_STATE_RUNNER = 1;
 var PLAYER_WALK_SPEED = 1;
@@ -23,10 +24,12 @@ var physics;
 var player;
 
 //OBJ
+var black;
 var door;
 var objects = new Array();
 var clouds;
-var sky;
+var sky1;
+var sky2;
 var charSprite;
 var Obstacles = new Array();
 
@@ -60,9 +63,12 @@ var	b2Vec2 = Box2D.Common.Math.b2Vec2,
 	gInput.addBool(KEY_DOWN, "down");
 	gInput.addBool(KEY_SPACE, "space");
 	gInput.addBool(KEY_E, "E");
+	gInput.addBool(KEY_ESC, "esc");
 	
 	initGame("recall");
-	
+	var pause = new State();
+	pause.alwaysDraw = false;
+	pause.alwaysUpdate = false;
 	var game = new State();
 	game.alwaysDraw = false;
 	game.alwaysUpdate = false;
@@ -109,14 +115,13 @@ var	b2Vec2 = Box2D.Common.Math.b2Vec2,
 	
 	States.push(game);
 	
-	
 	println("Game Initialized");
 	
 	//
 	// Function definitions
 	//
 	function constructWorld() {
-		player = CreatePlayer(100, 100, 25, 50, "sprites/trash.png");
+		player = CreatePlayer(100, 100, 50, 80, "sprites/Char.png");
 		
 		States.current().world.level = [];
 		level = States.current().world.level;
@@ -127,23 +132,44 @@ var	b2Vec2 = Box2D.Common.Math.b2Vec2,
 			x += 100;
 		}
 		x = 1150;
-		for(var i=10; i<20; i++)
+		for(var i=10; i<15; i++)
 		{
 			level[i] = CreateWorldElement(x, 500, 100, 100, "sprites/Wall2.png", true, false, 0);
 			x += 100;
 		}
+		x = 1700;
+		for(var i = 15; i<20; i++)
+		{
+			level[i] = CreateWorldElement(x, 620, 100, 100, "sprites/Wall2.png", true, false, 0);
+			x += 100;
+		}
+		x = 2250;
+		for(var i = 20; i<25; i++)
+		{
+			level[i] = CreateWorldElement(x, 450, 100, 100, "sprites/Wall2.png", true, false, 0);
+			x += 100;
+		}
+		var y = 400
+		x = 2800
+		for(var i = 25; i<30; i++)
+		{
+			level[i] = CreateWorldElement(x, y, 100, 100, "sprites/Wall2.png", true, false, 0);
+			x += 100;
+			y -= 50;
+		}
 		//level[1] = CreateWorldElement(1200, 500, 800, 100, "sprites/trash.png", true, false, 1);
 		level.width = level[0].width/2 + level[level.length-1].x - level[0].x + level[level.length-1].width/2;
 		//OBJ
-		sky = CreateWorldElement(0, 0, 6000, 1200, "sprites/Sky.png", false, false, 0);
+		sky1 = CreateWorldElement(0, 0, 3000, 1200, "sprites/Sky.png", false, false, 0);
+		//sky2 = CreateWorldElement(3000, 0, 3000, 1200, "sprites/Sky.png", false, false, 0);
         door = CreateWorldElement(400, 454, 80, 100, "sprites/door.png", true, true, 0);
         door.action = printWords;//give it a function if the player interacts
-        door1 = CreateWorldElement(500, 454, 80, 100, "sprites/door.png", true, true, 0);
-        door1.action = Words;
         objects.push(door);
-        objects.push(door1);
         
-        
+		Obstacles[0] = CreateWorldElement(250, 480, 80, 80, "sprites/Obstacle1.png", true, false, 0);
+		Obstacles[1] = CreateWorldElement(700, 465, 80, 80, "sprites/Obstacle2.png", true, false, 0);
+		Obstacles[2] = CreateWorldElement(900, 465, 80, 80, "sprites/Obstacle3.png", true, false, 0);
+		Obstacles[3] = CreateWorldElement(1200, 420, 80, 80, "sprites/Obstacle4.png", true, false, 0);
         
         
         
@@ -238,7 +264,7 @@ var	b2Vec2 = Box2D.Common.Math.b2Vec2,
 	// CreatePlayer - creates the player sprite, physics body, and update functions
 	//
 	function CreatePlayer(x, y, width, height, image) {
-		var player = CreateSprite(x, y, width, height, image, -9999);
+		var player = CreateSprite(x, y, width, height, image, -9990);
 		player.onGround = true;
 		player.near = false;//check for whether or not the player is near an interactable obj
 		
@@ -295,7 +321,7 @@ var	b2Vec2 = Box2D.Common.Math.b2Vec2,
 			}
 			if(gInput.up && player.onGround) {
 				player.onGround = false;
-				var deltaVelocity = velocity.y - 3.75;
+				var deltaVelocity = velocity.y - 6;
 				var impulse = new b2Vec2(0, player.body.GetMass() * deltaVelocity);
 				player.body.ApplyImpulse(impulse, player.body.GetWorldCenter());
 			}
