@@ -35,7 +35,7 @@ var Obstacles = new Array();
 
 
 // Box2d Declarations for ease of use
-var	b2Vec2 = Box2D.Common.Math.b2Vec2, 
+/*var	b2Vec2 = Box2D.Common.Math.b2Vec2, 
 	b2AABB = Box2D.Collision.b2AABB,
 	b2BodyDef = Box2D.Dynamics.b2BodyDef,
 	b2Body = Box2D.Dynamics.b2Body,
@@ -47,7 +47,7 @@ var	b2Vec2 = Box2D.Common.Math.b2Vec2,
 	b2PolygonShape = Box2D.Collision.Shapes.b2PolygonShape,
 	b2CircleShape = Box2D.Collision.Shapes.b2CircleShape,
 	b2DebugDraw = Box2D.Dynamics.b2DebugDraw,
-	b2MouseJointDef =  Box2D.Dynamics.Joints.b2MouseJointDef;
+	b2MouseJointDef =  Box2D.Dynamics.Joints.b2MouseJointDef;*/
 
 //
 // Initialization
@@ -72,22 +72,23 @@ var	b2Vec2 = Box2D.Common.Math.b2Vec2,
 	var game = new State();
 	game.alwaysDraw = false;
 	game.alwaysUpdate = false;
-	physics = new b2World(new b2Vec2(0, 10), true);
+	physics = new b2.World(new b2.Vec2(0, 10), true);
 	
 	game.init = function() {
 		
-		var listener = new b2ContactListener();
+		var listener = new b2.ContactListener();
 		listener.BeginContact = beginContactListen;
 		listener.EndContact = endContactListen;
 		physics.SetContactListener(listener);
 		
 		if(DEBUGMODE) {
-			var debugDraw = new b2DebugDraw();
-			debugDraw.SetSprite(ctx);
-			debugDraw.SetDrawScale(PHYSICS_SCALE);
-			debugDraw.SetFillAlpha(0.3);
-			debugDraw.SetLineThickness(10.0);
-			debugDraw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);
+			CanvasDebugDraw._extend(b2.Draw);
+			var debugDraw = new CanvasDebugDraw();
+			debugDraw.context = ctx;
+			debugDraw.scale = PHYSICS_SCALE;
+			debugDraw.width = VIEWPORT_WIDTH;
+			debugDraw.height = VIEWPORT_HEIGHT;
+			debugDraw.SetFlags(b2.Draw.e_shapeBit | b2.Draw.e_jointBit);
 			physics.SetDebugDraw(debugDraw);
 		}
 		
@@ -128,48 +129,48 @@ var	b2Vec2 = Box2D.Common.Math.b2Vec2,
 		var x = 100;
 		for(var i=0; i<10; i++)
 		{
-			level[i] = CreateWorldElement(x, 550, 100, 100, "sprites/Wall1.png", true, false, 0);
+			level[i] = CreateFloorElement(x, 550, 100, 100, "sprites/Wall1.png", 0);
 			x += 100;
 		}
 		x = 1150;
 		for(var i=10; i<15; i++)
 		{
-			level[i] = CreateWorldElement(x, 500, 100, 100, "sprites/Wall2.png", true, false, 0);
+			level[i] = CreateFloorElement(x, 500, 100, 100, "sprites/Wall2.png", 0);
 			x += 100;
 		}
 		x = 1700;
 		for(var i = 15; i<20; i++)
 		{
-			level[i] = CreateWorldElement(x, 620, 100, 100, "sprites/Wall2.png", true, false, 0);
+			level[i] = CreateFloorElement(x, 620, 100, 100, "sprites/Wall2.png", 0);
 			x += 100;
 		}
 		x = 2250;
 		for(var i = 20; i<25; i++)
 		{
-			level[i] = CreateWorldElement(x, 450, 100, 100, "sprites/Wall2.png", true, false, 0);
+			level[i] = CreateFloorElement(x, 450, 100, 100, "sprites/Wall2.png", 0);
 			x += 100;
 		}
-		var y = 400
-		x = 2800
+		var y = 400;
+		x = 2800;
 		for(var i = 25; i<30; i++)
 		{
-			level[i] = CreateWorldElement(x, y, 100, 100, "sprites/Wall2.png", true, false, 0);
+			level[i] = CreateFloorElement(x, y, 100, 100, "sprites/Wall2.png", 0);
 			x += 100;
 			y -= 50;
 		}
 		//level[1] = CreateWorldElement(1200, 500, 800, 100, "sprites/trash.png", true, false, 1);
 		level.width = level[0].width/2 + level[level.length-1].x - level[0].x + level[level.length-1].width/2;
 		//OBJ
-		sky1 = CreateWorldElement(0, 0, 3000, 1200, "sprites/Sky.png", false, false, 0);
+		//sky1 = CreateWorldElement(0, 0, 3000, 1200, "sprites/Sky.png", false, false, 0);
 		//sky2 = CreateWorldElement(3000, 0, 3000, 1200, "sprites/Sky.png", false, false, 0);
         door = CreateWorldElement(400, 454, 80, 100, "sprites/door.png", true, true, 0);
         door.action = printWords;//give it a function if the player interacts
         objects.push(door);
         
-		Obstacles[0] = CreateWorldElement(250, 480, 80, 80, "sprites/Obstacle1.png", true, false, 0);
+		/*Obstacles[0] = CreateWorldElement(250, 480, 80, 80, "sprites/Obstacle1.png", true, false, 0);
 		Obstacles[1] = CreateWorldElement(700, 465, 80, 80, "sprites/Obstacle2.png", true, false, 0);
 		Obstacles[2] = CreateWorldElement(900, 465, 80, 80, "sprites/Obstacle3.png", true, false, 0);
-		Obstacles[3] = CreateWorldElement(1200, 420, 80, 80, "sprites/Obstacle4.png", true, false, 0);
+		Obstacles[3] = CreateWorldElement(1200, 420, 80, 80, "sprites/Obstacle4.png", true, false, 0);*/
         
         
         
@@ -203,13 +204,13 @@ var	b2Vec2 = Box2D.Common.Math.b2Vec2,
          		var direction = 1;
          		if(player.x < other.x) direction = -1;
 				var deltaVelocity = (direction * 3);
-				var impulse = new b2Vec2(player.body.GetMass() * deltaVelocity, player.body.GetMass() * -2);
-				player.body.SetLinearVelocity(new b2Vec2(0, 0));
-				player.body.ApplyImpulse(impulse, player.body.GetWorldCenter());
+				var impulse = new b2.Vec2(player.body.GetMass() * deltaVelocity, player.body.GetMass() * -2);
+				player.body.SetLinearVelocity(new b2.Vec2(0, 0));
+				player.body.ApplyLinearImpulse(impulse, player.body.GetWorldCenter(), true);
 				player.onGround = false;
          	}/* else if(player.y - (floor.y + floor.height/2) < 1 && player.y < floor.y) {
          		var impulse = new b2Vec2(player.body.GetMass() * -1, player.body.GetMass() * -2);
-				player.body.ApplyImpulse(impulse, player.body.GetWorldCenter());
+				player.body.ApplyLinearImpulse(impulse, player.body.GetWorldCenter());
          		println("CLIMB");
          	}*/
       	}
@@ -269,13 +270,18 @@ var	b2Vec2 = Box2D.Common.Math.b2Vec2,
 		player.onGround = true;
 		player.near = false;//check for whether or not the player is near an interactable obj
 		
-		var bodyDef = CreateBodyDef(player, b2Body.b2_dynamicBody);
+		var bodyDef = CreateBodyDef(player, b2.Body.b2_dynamicBody);
 		var fixDef = CreateFixtureDef(10.0, 1.0, 0);
-		fixDef.shape = new b2PolygonShape();
-		fixDef.shape.SetAsBox(player.width / 2 / PHYSICS_SCALE, player.height / 2 / PHYSICS_SCALE);
-		
+		var scaled_width = player.width / PHYSICS_SCALE;
+		var scaled_height = player.height / PHYSICS_SCALE;
+		fixDef.shape = new b2.PolygonShape();
+		fixDef.shape.SetAsBox(scaled_width / 2, scaled_height / 2);
 		player.body = physics.CreateBody(bodyDef);
 		player.fixture = player.body.CreateFixture(fixDef);
+		/*fixDef.shape = new b2.CircleShape();
+		fixDef.shape.m_radius = scaled_width / 2;
+		fixDef.shape.m_p = new b2.Vec2(0, scaled_width / 2);
+		player.body.CreateFixture(fixDef);*/
 		player.body.SetUserData(player);
 		player.body.SetFixedRotation(true);
 		
@@ -298,13 +304,13 @@ var	b2Vec2 = Box2D.Common.Math.b2Vec2,
 			if(this.state == PLAYER_STATE_NORMAL) {
 				if(gInput.right && this.onGround) {
 					var deltaVelocity = this.maxSpeed - velocity.x;
-					var impulse = new b2Vec2(this.body.GetMass() * deltaVelocity, 0);
-					this.body.ApplyImpulse(impulse, this.body.GetWorldCenter());
+					var impulse = new b2.Vec2(this.body.GetMass() * deltaVelocity, 0);
+					this.body.ApplyLinearImpulse(impulse, this.body.GetWorldCenter(), true);
 				}
 				if(gInput.left && this.onGround) {
 					var deltaVelocity = -this.maxSpeed - velocity.x;
-					var impulse = new b2Vec2(this.body.GetMass() * deltaVelocity, 0);
-					this.body.ApplyImpulse(impulse, this.body.GetWorldCenter());
+					var impulse = new b2.Vec2(this.body.GetMass() * deltaVelocity, 0);
+					this.body.ApplyLinearImpulse(impulse, this.body.GetWorldCenter(), true);
 				}
 				if(gInput.space) {
 					this.state = PLAYER_STATE_RUNNER;
@@ -312,19 +318,19 @@ var	b2Vec2 = Box2D.Common.Math.b2Vec2,
 				}
 			} else if(this.state == PLAYER_STATE_RUNNER && this.onGround) {
 				var deltaVelocity = this.maxSpeed - velocity.x;
-				var impulse = new b2Vec2(this.body.GetMass() * deltaVelocity, 0);
-				this.body.ApplyImpulse(impulse, this.body.GetWorldCenter());
+				var impulse = new b2.Vec2(this.body.GetMass() * deltaVelocity, 0);
+				this.body.ApplyLinearImpulse(impulse, this.body.GetWorldCenter(), true);
 				if(gInput.right && this.onGround) {
 					var deltaVelocity = this.maxSpeed * 2 - velocity.x;
-					var impulse = new b2Vec2(this.body.GetMass() * deltaVelocity, 0);
-					this.body.ApplyImpulse(impulse, this.body.GetWorldCenter());
+					var impulse = new b2.Vec2(this.body.GetMass() * deltaVelocity, 0);
+					this.body.ApplyLinearImpulse(impulse, this.body.GetWorldCenter(), true);
 				}
 			}
 			if(gInput.up && this.onGround) {
 				this.onGround = false;
 				var deltaVelocity = velocity.y - 6;
-				var impulse = new b2Vec2(0, this.body.GetMass() * deltaVelocity);
-				this.body.ApplyImpulse(impulse, this.body.GetWorldCenter());
+				var impulse = new b2.Vec2(0, this.body.GetMass() * deltaVelocity);
+				this.body.ApplyLinearImpulse(impulse, this.body.GetWorldCenter(), true);
 			}
 		};
 		return player;
@@ -337,7 +343,7 @@ var	b2Vec2 = Box2D.Common.Math.b2Vec2,
 	//
 	function CreateWorldElement(x, y, width, height, image, solid, sensor, index) {
 		var element = CreateSprite(x, y, width, height, image, index);
-		if(solid) ApplyRectBBox(element, b2Body.b2_staticBody, 1.0, 1, 0);
+		if(solid) ApplyRectBBox(element, b2.Body.b2_staticBody, 1.0, 1, 0);
 		if(sensor && solid) element.fixture.SetSensor(true);
 		element.update = function(d) {
 			var xpos = this.x + States.current().world.x;
@@ -346,7 +352,38 @@ var	b2Vec2 = Box2D.Common.Math.b2Vec2,
 				if(typeof(this.body) !== "undefined") {
 					var pos = this.body.GetPosition();
 					pos.x += States.current().world.level.width / PHYSICS_SCALE;
-					this.body.SetPosition(pos);
+					this.body.SetTransform(pos, 0);
+				}
+			}
+		};
+		return element;
+	}
+	
+	//
+	// CreateWorldElement - creates a world element that will spawn and despawn based on visibility
+	// 						NOTE: Defines a different type of shape for floor tiles
+	//
+	function CreateFloorElement(x, y, width, height, image, index) {
+		var element = CreateSprite(x, y, width, height, image, index);
+		var fixDef = CreateFixtureDef(1.0, 1, 0);
+		var scaled_width = width / PHYSICS_SCALE;
+		var scaled_height = height / PHYSICS_SCALE;
+		fixDef.shape = new b2.ChainShape();
+		var vertices = [];
+		vertices.push(new b2.Vec2(-scaled_width / 2, -scaled_height / 2));
+		vertices.push(new b2.Vec2(scaled_width / 2, -scaled_height / 2));
+		vertices.push(new b2.Vec2(scaled_width / 2, scaled_height / 2));
+		vertices.push(new b2.Vec2(-scaled_width / 2, scaled_height / 2));
+		fixDef.shape.CreateChain(vertices, 4);
+		ApplyBBox(element, b2.Body.b2_staticBody, fixDef);
+		element.update = function(d) {
+			var xpos = this.x + States.current().world.x;
+			if(xpos + this.width/2 < world.x) {
+				this.x += States.current().world.level.width;
+				if(typeof(this.body) !== "undefined") {
+					var pos = this.body.GetPosition();
+					pos.x += States.current().world.level.width / PHYSICS_SCALE;
+					this.body.SetTransform(pos, 0);
 				}
 			}
 		};
@@ -363,7 +400,7 @@ var	b2Vec2 = Box2D.Common.Math.b2Vec2,
 		sprite.fixture = sprite.body.CreateFixture(fixDef);
 		sprite.body.SetUserData(sprite);
 		
-		if(type == b2Body.b2_dynamicBody) {
+		if(type == b2.Body.b2_dynamicBody) {
 			sprite.update = function(d) {
 				var pos = sprite.body.GetPosition();
 				sprite.x = pos.x * PHYSICS_SCALE;
@@ -378,9 +415,8 @@ var	b2Vec2 = Box2D.Common.Math.b2Vec2,
 	//
 	function ApplyRectBBox(sprite, type, density, friction, restitution) {
 		var fixDef = CreateFixtureDef(density, friction, restitution);
-		fixDef.shape = new b2PolygonShape();
+		fixDef.shape = new b2.PolygonShape();
 		fixDef.shape.SetAsBox(sprite.width / 2 / PHYSICS_SCALE, sprite.height / 2 / PHYSICS_SCALE);
-		
 		ApplyBBox(sprite, type, fixDef);
 	}
 	
@@ -388,7 +424,7 @@ var	b2Vec2 = Box2D.Common.Math.b2Vec2,
 	// CreateBodyDef - Creates a body definition for the input sprite
 	//
 	function CreateBodyDef(sprite, type) {
-		var bodyDef = new b2BodyDef();
+		var bodyDef = new b2.BodyDef();
 		bodyDef.type = type;
 		bodyDef.position.Set(sprite.x / PHYSICS_SCALE, sprite.y / PHYSICS_SCALE);
 		return bodyDef;
@@ -398,7 +434,7 @@ var	b2Vec2 = Box2D.Common.Math.b2Vec2,
 	// CreateFixtureDef - Creates a basic fixture definition without a shape
 	//
 	function CreateFixtureDef(density, friction, restitution) {
-		var fixDef = new b2FixtureDef();
+		var fixDef = new b2.FixtureDef();
 		fixDef.density = typeof density !== 'undefined' ? density : 1.0;
 		fixDef.friction = typeof friction !== 'undefined' ? friction : 0.5;
 		fixDef.restitution = typeof restitution !== 'undefined' ? restitution : 0.2;
