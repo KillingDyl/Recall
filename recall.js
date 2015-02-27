@@ -23,12 +23,12 @@ var physics;
 var player;
 
 //OBJ
-var door;
-var objects = new Array();
-var clouds;
-var sky;
-var charSprite;
-var Obstacles = new Array();
+//var door;
+var objects = [];
+//var clouds;
+//var sky;
+//var charSprite;
+//var Obstacles = new Array();
 
 
 // Box2d Declarations for ease of use
@@ -135,13 +135,13 @@ var	b2Vec2 = Box2D.Common.Math.b2Vec2,
 		//level[1] = CreateWorldElement(1200, 500, 800, 100, "sprites/trash.png", true, false, 1);
 		level.width = level[0].width/2 + level[level.length-1].x - level[0].x + level[level.length-1].width/2;
 		//OBJ
-		sky = CreateWorldElement(0, 0, 6000, 1200, "sprites/Sky.png", false, false, 0);
-        door = CreateWorldElement(400, 454, 80, 100, "sprites/door.png", true, true, 0);
+		//sky = CreateWorldElement(0, 0, 6000, 1200, "sprites/Sky.png", false, false, 0);
+        /*door = CreateWorldElement(400, 454, 80, 100, "sprites/door.png", true, true, 0);
         door.action = printWords;//give it a function if the player interacts
         door1 = CreateWorldElement(500, 454, 80, 100, "sprites/door.png", true, true, 0);
         door1.action = Words;
         objects.push(door);
-        objects.push(door1);
+        objects.push(door1);*/
         
         
         
@@ -166,13 +166,14 @@ var	b2Vec2 = Box2D.Common.Math.b2Vec2,
 	        		player.near = true;
 	        		player.ob = objects[i];//give it the object that it is near
 	        		println("near");
-	        		return;
+	        		break;
 	        	}	
 	        }//checks to see if it is on top of the ground
 	        /////
-         	if(Math.abs(player.x - other.x) < other.width/2 + player.width/4) {
+	        if(other.fixture.IsSensor()) return;
+         	if(Math.abs(player.x - other.x) < other.width/2 + player.width/2) {
          		player.onGround = true;
-         	} else {
+         	} else if(player.y + player.height/2 > other.y - other.height/2) {
          		var direction = 1;
          		if(player.x < other.x) direction = -1;
 				var deltaVelocity = (direction * 3);
@@ -202,8 +203,8 @@ var	b2Vec2 = Box2D.Common.Math.b2Vec2,
 	        	if(other == objects[i]){	
 					player.near = false;
 	        		println("away");
-	      	 }
-	      }
+	      	 	}
+	      	}
 		}	
 	}
 	
@@ -256,48 +257,48 @@ var	b2Vec2 = Box2D.Common.Math.b2Vec2,
 		player.maxSpeed = PLAYER_WALK_SPEED;
 		player.update = function(d) {
 			// Move the sprite according to the physics body
-			var pos = player.body.GetPosition();
-			player.x = pos.x * PHYSICS_SCALE;
-			player.y = pos.y * PHYSICS_SCALE;
-			player.rotation = player.body.GetAngle();
+			var pos = this.body.GetPosition();
+			this.x = pos.x * PHYSICS_SCALE;
+			this.y = pos.y * PHYSICS_SCALE;
+			this.rotation = this.body.GetAngle();
 			//OBJ
-			if(player.near && gInput.E){
-				player.ob.action();
+			if(this.near && gInput.E){
+				this.ob.action();
 				//println("E");
 			} 
 			//
 			// Movement code
-			var velocity = player.body.GetLinearVelocity();
-			if(player.state == PLAYER_STATE_NORMAL) {
-				if(gInput.right && player.onGround) {
-					var deltaVelocity = player.maxSpeed - velocity.x;
-					var impulse = new b2Vec2(player.body.GetMass() * deltaVelocity, 0);
-					player.body.ApplyImpulse(impulse, player.body.GetWorldCenter());
+			var velocity = this.body.GetLinearVelocity();
+			if(this.state == PLAYER_STATE_NORMAL) {
+				if(gInput.right && this.onGround) {
+					var deltaVelocity = this.maxSpeed - velocity.x;
+					var impulse = new b2Vec2(this.body.GetMass() * deltaVelocity, 0);
+					this.body.ApplyImpulse(impulse, this.body.GetWorldCenter());
 				}
-				if(gInput.left && player.onGround) {
-					var deltaVelocity = -player.maxSpeed - velocity.x;
-					var impulse = new b2Vec2(player.body.GetMass() * deltaVelocity, 0);
-					player.body.ApplyImpulse(impulse, player.body.GetWorldCenter());
+				if(gInput.left && this.onGround) {
+					var deltaVelocity = -this.maxSpeed - velocity.x;
+					var impulse = new b2Vec2(this.body.GetMass() * deltaVelocity, 0);
+					this.body.ApplyImpulse(impulse, this.body.GetWorldCenter());
 				}
 				if(gInput.space) {
-					player.state = PLAYER_STATE_RUNNER;
-					player.maxSpeed = PLAYER_RUN_SPEED;
+					this.state = PLAYER_STATE_RUNNER;
+					this.maxSpeed = PLAYER_RUN_SPEED;
 				}
-			} else if(player.state == PLAYER_STATE_RUNNER && player.onGround) {
-				var deltaVelocity = player.maxSpeed - velocity.x;
-				var impulse = new b2Vec2(player.body.GetMass() * deltaVelocity, 0);
-				player.body.ApplyImpulse(impulse, player.body.GetWorldCenter());
-				if(gInput.right && player.onGround) {
-					var deltaVelocity = player.maxSpeed * 2 - velocity.x;
-					var impulse = new b2Vec2(player.body.GetMass() * deltaVelocity, 0);
-					player.body.ApplyImpulse(impulse, player.body.GetWorldCenter());
+			} else if(this.state == PLAYER_STATE_RUNNER && this.onGround) {
+				var deltaVelocity = this.maxSpeed - velocity.x;
+				var impulse = new b2Vec2(this.body.GetMass() * deltaVelocity, 0);
+				this.body.ApplyImpulse(impulse, this.body.GetWorldCenter());
+				if(gInput.right && this.onGround) {
+					var deltaVelocity = this.maxSpeed * 2 - velocity.x;
+					var impulse = new b2Vec2(this.body.GetMass() * deltaVelocity, 0);
+					this.body.ApplyImpulse(impulse, this.body.GetWorldCenter());
 				}
 			}
-			if(gInput.up && player.onGround) {
-				player.onGround = false;
+			if(gInput.up && this.onGround) {
+				this.onGround = false;
 				var deltaVelocity = velocity.y - 3.75;
-				var impulse = new b2Vec2(0, player.body.GetMass() * deltaVelocity);
-				player.body.ApplyImpulse(impulse, player.body.GetWorldCenter());
+				var impulse = new b2Vec2(0, this.body.GetMass() * deltaVelocity);
+				this.body.ApplyImpulse(impulse, this.body.GetWorldCenter());
 			}
 		};
 		return player;
