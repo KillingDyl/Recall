@@ -122,55 +122,54 @@ var Obstacles = new Array();
 	// Function definitions
 	//
 	function constructWorld() {
-		player = CreatePlayer(100, 100, 50, 80, "sprites/Char.png");
+		player = CreatePlayer(100, 100, 57, 50, "sprites/Char.png");
 		
 		States.current().world.level = [];
 		level = States.current().world.level;
 		var x = 100;
 		for(var i=0; i<10; i++)
 		{
-			level[i] = CreateFloorElement(x, 550, 100, 100, "sprites/Wall1.png", 0);
+			level[i] = CreateFloorElement(x, 550, 100, 100, "sprites/Wall1.png", 0, true);
 			x += 100;
 		}
 		x = 1150;
 		for(var i=10; i<15; i++)
 		{
-			level[i] = CreateFloorElement(x, 500, 100, 100, "sprites/Wall2.png", 0);
+			level[i] = CreateFloorElement(x, 500, 100, 100, "sprites/Wall2.png", 0, true);
 			x += 100;
 		}
 		x = 1700;
 		for(var i = 15; i<20; i++)
 		{
-			level[i] = CreateFloorElement(x, 620, 100, 100, "sprites/Wall2.png", 0);
+			level[i] = CreateFloorElement(x, 620, 100, 100, "sprites/Wall2.png", 0, true);
 			x += 100;
 		}
 		x = 2250;
 		for(var i = 20; i<25; i++)
 		{
-			level[i] = CreateFloorElement(x, 450, 100, 100, "sprites/Wall2.png", 0);
+			level[i] = CreateFloorElement(x, 450, 100, 100, "sprites/Wall2.png", 0, true);
 			x += 100;
 		}
 		var y = 400;
 		x = 2800;
 		for(var i = 25; i<30; i++)
 		{
-			level[i] = CreateFloorElement(x, y, 100, 100, "sprites/Wall2.png", 0);
+			level[i] = CreateFloorElement(x, y, 100, 100, "sprites/Wall2.png", 0, true);
 			x += 100;
 			y -= 50;
 		}
-		//level[1] = CreateWorldElement(1200, 500, 800, 100, "sprites/trash.png", true, false, 1);
 		level.width = level[0].width/2 + level[level.length-1].x - level[0].x + level[level.length-1].width/2;
 		//OBJ
-		//sky1 = CreateWorldElement(0, 0, 3000, 1200, "sprites/Sky.png", false, false, 0);
-		//sky2 = CreateWorldElement(3000, 0, 3000, 1200, "sprites/Sky.png", false, false, 0);
-        door = CreateWorldElement(400, 454, 80, 100, "sprites/door.png", true, true, 0);
+		//sky1 = CreateRunnerElement(0, 0, 3000, 1200, "sprites/Sky.png", false, false, 0);
+		//sky2 = CreateRunnerElement(3000, 0, 3000, 1200, "sprites/Sky.png", false, false, 0);
+        door = CreateRunnerElement(400, 454, 80, 100, "sprites/door.png", true, true, 0);
         door.action = printWords;//give it a function if the player interacts
         objects.push(door);
         
-		/*Obstacles[0] = CreateWorldElement(250, 480, 80, 80, "sprites/Obstacle1.png", true, false, 0);
-		Obstacles[1] = CreateWorldElement(700, 465, 80, 80, "sprites/Obstacle2.png", true, false, 0);
-		Obstacles[2] = CreateWorldElement(900, 465, 80, 80, "sprites/Obstacle3.png", true, false, 0);
-		Obstacles[3] = CreateWorldElement(1200, 420, 80, 80, "sprites/Obstacle4.png", true, false, 0);*/
+		/*Obstacles[0] = CreateRunnerElement(250, 480, 80, 80, "sprites/Obstacle1.png", true, false, 0);
+		Obstacles[1] = CreateRunnerElement(700, 465, 80, 80, "sprites/Obstacle2.png", true, false, 0);
+		Obstacles[2] = CreateRunnerElement(900, 465, 80, 80, "sprites/Obstacle3.png", true, false, 0);
+		Obstacles[3] = CreateRunnerElement(1200, 420, 80, 80, "sprites/Obstacle4.png", true, false, 0);*/
         
         
         
@@ -203,7 +202,7 @@ var Obstacles = new Array();
          	} else if(player.y + player.height/2 > other.y - other.height/2) {
          		var direction = 1;
          		if(player.x < other.x) direction = -1;
-				var deltaVelocity = (direction * 3);
+				var deltaVelocity = (direction * player.maxSpeed);
 				var impulse = new b2.Vec2(player.body.GetMass() * deltaVelocity, player.body.GetMass() * -2);
 				player.body.SetLinearVelocity(new b2.Vec2(0, 0));
 				player.body.ApplyLinearImpulse(impulse, player.body.GetWorldCenter(), true);
@@ -271,22 +270,14 @@ var Obstacles = new Array();
 		player.near = false;//check for whether or not the player is near an interactable obj
 		
 		var bodyDef = CreateBodyDef(player, b2.Body.b2_dynamicBody);
-		var fixDef = CreateFixtureDef(10.0, 1.0, 0);
-		var scaled_width = player.width / PHYSICS_SCALE;
-		var scaled_height = player.height / PHYSICS_SCALE;
-		fixDef.shape = new b2.PolygonShape();
-		fixDef.shape.SetAsBox(scaled_width / 2, scaled_height / 2);
 		player.body = physics.CreateBody(bodyDef);
-		player.fixture = player.body.CreateFixture(fixDef);
-		/*fixDef.shape = new b2.CircleShape();
-		fixDef.shape.m_radius = scaled_width / 2;
-		fixDef.shape.m_p = new b2.Vec2(0, scaled_width / 2);
-		player.body.CreateFixture(fixDef);*/
+		CreateStandingFixture(player);
 		player.body.SetUserData(player);
 		player.body.SetFixedRotation(true);
 		
 		player.state = PLAYER_STATE_NORMAL;
 		player.maxSpeed = PLAYER_WALK_SPEED;
+		player.sliding = false;
 		player.update = function(d) {
 			// Move the sprite according to the physics body
 			var pos = this.body.GetPosition();
@@ -325,8 +316,17 @@ var Obstacles = new Array();
 					var impulse = new b2.Vec2(this.body.GetMass() * deltaVelocity, 0);
 					this.body.ApplyLinearImpulse(impulse, this.body.GetWorldCenter(), true);
 				}
+				if(gInput.down && !this.sliding) {
+					this.body.DestroyFixture(this.fixture);
+					CreateSlidingFixture(this);
+					this.sliding = true;
+				} else if(!gInput.down && this.sliding) {
+					this.body.DestroyFixture(this.fixture);
+					CreateStandingFixture(this);
+					this.sliding = false;
+				}
 			}
-			if(gInput.up && this.onGround) {
+			if(gInput.up && this.onGround && !this.sliding) {
 				this.onGround = false;
 				var deltaVelocity = velocity.y - 6;
 				var impulse = new b2.Vec2(0, this.body.GetMass() * deltaVelocity);
@@ -337,21 +337,66 @@ var Obstacles = new Array();
 	}
 	
 	//
-	// CreateWorldElement - creates a world element that will spawn and despawn based on visibility
+	// CreateStandingFixture - creates the standing body for player
+	//
+	function CreateStandingFixture(sprite) {
+		var fixDef = CreateFixtureDef(10.0, 1.0, 0);
+		var scaled_width = sprite.width / PHYSICS_SCALE;
+		var scaled_height = sprite.height / PHYSICS_SCALE;
+		fixDef.shape = new b2.PolygonShape();
+		fixDef.shape.SetAsBox(scaled_width / 2, scaled_height / 2);
+		sprite.fixture = sprite.body.CreateFixture(fixDef);
+	}
+	
+	//
+	// CreateSlidingFixture - creates the sliding body for player
+	//
+	function CreateSlidingFixture(sprite) {
+		var fixDef = CreateFixtureDef(10.0, 1.0, 0);
+		var scaled_width = sprite.width / PHYSICS_SCALE;
+		var scaled_height = sprite.height / PHYSICS_SCALE;
+		fixDef.shape = new b2.PolygonShape();
+		fixDef.shape.SetAsBox(scaled_width / 2, scaled_height / 4);
+		sprite.fixture = sprite.body.CreateFixture(fixDef);
+	}
+	
+	//
+	// CreateWorldElement - creates a world element that is always there
 	// 						float x, float y, float width, float height, image, bool solid, bool sensor, int index
 	//						Note: Sensor can't be true and not be solid
+	//						Note: Use this for creating hub worlds (i.e. non runner levels)
 	//
 	function CreateWorldElement(x, y, width, height, image, solid, sensor, index) {
 		var element = CreateSprite(x, y, width, height, image, index);
 		if(solid) ApplyRectBBox(element, b2.Body.b2_staticBody, 1.0, 1, 0);
 		if(sensor && solid) element.fixture.SetSensor(true);
+		return element;
+	}
+	
+	//
+	// CreateRunnerElement - creates a world element that will spawn and despawn based on visibility
+	// 						float x, float y, float width, float height, image, bool solid, bool sensor, int index
+	//						Note: Sensor can't be true and not be solid
+	//
+	function CreateRunnerElement(x, y, width, height, image, solid, sensor, index) {
+		var element = CreateSprite(x, y, width, height, image, index);
+		if(solid) ApplyRectBBox(element, b2.Body.b2_staticBody, 1.0, 1, 0);
+		if(sensor && solid) element.fixture.SetSensor(true);
 		element.update = function(d) {
 			var xpos = this.x + States.current().world.x;
-			if(xpos + this.width/2 < world.x) {
+			if(xpos + this.width/2 < -States.current().world.level.width / 2) {
 				this.x += States.current().world.level.width;
 				if(typeof(this.body) !== "undefined") {
 					var pos = this.body.GetPosition();
 					pos.x += States.current().world.level.width / PHYSICS_SCALE;
+					this.body.SetTransform(pos, 0);
+				}
+			}
+			if(xpos + this.width/2 > States.current().world.level.width / 2) {
+				this.x -= States.current().world.level.width;
+				if(typeof(this.body) !== "undefined") {
+					var pos = this.body.GetPosition();
+					pos.x -= States.current().world.level.width / PHYSICS_SCALE;
 					this.body.SetTransform(pos, 0);
 				}
 			}
@@ -360,10 +405,11 @@ var Obstacles = new Array();
 	}
 	
 	//
-	// CreateWorldElement - creates a world element that will spawn and despawn based on visibility
+	// CreateFloorElement - creates a world element, if respawn is true, when it goes offscreen, it will be moved
+	//						to create and infinite level
 	// 						NOTE: Defines a different type of shape for floor tiles
 	//
-	function CreateFloorElement(x, y, width, height, image, index) {
+	function CreateFloorElement(x, y, width, height, image, index, respawn) {
 		var element = CreateSprite(x, y, width, height, image, index);
 		var fixDef = CreateFixtureDef(1.0, 1, 0);
 		var scaled_width = width / PHYSICS_SCALE;
@@ -374,19 +420,29 @@ var Obstacles = new Array();
 		vertices.push(new b2.Vec2(scaled_width / 2, -scaled_height / 2));
 		vertices.push(new b2.Vec2(scaled_width / 2, scaled_height / 2));
 		vertices.push(new b2.Vec2(-scaled_width / 2, scaled_height / 2));
-		fixDef.shape.CreateChain(vertices, 4);
+		fixDef.shape.CreateLoop(vertices, 4);
 		ApplyBBox(element, b2.Body.b2_staticBody, fixDef);
-		element.update = function(d) {
-			var xpos = this.x + States.current().world.x;
-			if(xpos + this.width/2 < world.x) {
-				this.x += States.current().world.level.width;
-				if(typeof(this.body) !== "undefined") {
-					var pos = this.body.GetPosition();
-					pos.x += States.current().world.level.width / PHYSICS_SCALE;
-					this.body.SetTransform(pos, 0);
+		if(respawn) {
+			element.update = function(d) {
+				var xpos = this.x + States.current().world.x;
+				if(xpos + this.width/2 < -States.current().world.level.width / 2) {
+					this.x += States.current().world.level.width;
+					if(typeof(this.body) !== "undefined") {
+						var pos = this.body.GetPosition();
+						pos.x += States.current().world.level.width / PHYSICS_SCALE;
+						this.body.SetTransform(pos, 0);
+					}
 				}
-			}
-		};
+				if(xpos + this.width/2 > States.current().world.level.width / 2) {
+					this.x -= States.current().world.level.width;
+					if(typeof(this.body) !== "undefined") {
+						var pos = this.body.GetPosition();
+						pos.x -= States.current().world.level.width / PHYSICS_SCALE;
+						this.body.SetTransform(pos, 0);
+					}
+				}
+			};
+		}
 		return element;
 	}
 	
