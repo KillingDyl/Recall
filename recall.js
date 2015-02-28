@@ -172,49 +172,49 @@ var fill = new Array();
 				this.floor[i] = CreateFloorElement(x, 550, 100, 100, "sprites/Wall1.png", 0, true);
 				x += 100;
 			}
-			x = 6800
+			x = 6800;
 			for(var i=60; i<65; i++)
 			{
 				this.floor[i] = CreateFloorElement(x, 550, 100, 100, "sprites/Wall1.png", 0, true);
 				x += 100;
 			}
-			x = 7700
+			x = 7700;
 			for(var i=65; i<85; i++)
 			{
 				this.floor[i] = CreateFloorElement(x, 550, 100, 100, "sprites/Wall1.png", 0, true);
 				x += 100;
 			}
-			x=10100
+			x = 10100;
 			for(var i=85; i<95; i++)
 			{
 				this.floor[i] = CreateFloorElement(x, 550, 100, 100, "sprites/Wall1.png", 0, true);
 				x += 100;
-				this.obstacles[0] = CreateRunnerElement(10700, 432, 100, 150, "sprites/Obstacle2.png", true, false, 0);
 			}
-			x=11400
+			this.obstacles[0] = CreateRunnerElement(10700, 432, 100, 150, "sprites/Obstacle2.png", true, false, 0);
+			x = 11400;
 			for(var i=95; i<110; i++)
 			{
 				this.floor[i] = CreateFloorElement(x, 550, 100, 100, "sprites/Wall1.png", 0, true);
 				x += 100;
-				this.obstacles[1] = CreateRunnerElement(11900, 432, 100, 150, "sprites/Obstacle2.png", true, false, 0);
 			}
-			x=13100
+			this.obstacles[1] = CreateRunnerElement(11900, 432, 100, 150, "sprites/Obstacle2.png", true, false, 0);
+			x=13100;
 			for(var i=110; i<125; i++)
 			{
 				this.floor[i] = CreateFloorElement(x, 550, 100, 100, "sprites/Wall1.png", 0, true);
 				x += 100;
-				this.obstacles[2] = CreateRunnerElement(13800, 460, 100, 100, "sprites/Obstacle4.png", true, false, 0);
 			}
-			x=14800
+			this.obstacles[2] = CreateRunnerElement(13800, 460, 100, 100, "sprites/Obstacle4.png", true, false, 0);
+			x=14800;
 			for(var i=110; i<125; i++)
 			{
 				this.floor[i] = CreateFloorElement(x, 450, 100, 100, "sprites/Wall1.png", 0, true);
 				fill[i] = CreateFloorElement(x, 550, 100, 100, "sprites/Wall1.png", 0, true);
 				fill[i] = CreateFloorElement(x, 650, 100, 100, "sprites/Wall1.png", 0, true);
 				x += 100;
-				this.obstacles[3] = CreateRunnerElement(15400, 360, 100, 100, "sprites/Obstacle4.png", true, false, 0);
 			}
-			x=16500
+			this.obstacles[3] = CreateRunnerElement(15400, 360, 100, 100, "sprites/Obstacle4.png", true, false, 0);
+			x=16500;
 			for(var i=125; i<140; i++)
 			{
 				this.floor[i] = CreateFloorElement(x, 300, 100, 100, "sprites/Wall1.png", 0, true);
@@ -223,22 +223,22 @@ var fill = new Array();
 				fill[i] = CreateFloorElement(x, 600, 100, 100, "sprites/Wall1.png", 0, true);
 				fill[i] = CreateFloorElement(x, 700, 100, 100, "sprites/Wall1.png", 0, true);
 				x += 100;
-				this.obstacles[4] = CreateRunnerElement(17500, 180, 100, 160, "sprites/Obstacle3.png", true, false, 0);
 			}
-			x=18600
+			this.obstacles[4] = CreateRunnerElement(17500, 180, 100, 160, "sprites/Obstacle3.png", true, false, 0);
+			x=18600;
 			for(var i=140; i<160; i++)
 			{
 				this.floor[i] = CreateFloorElement(x, 550, 100, 100, "sprites/Wall1.png", 0, true);
 				x += 100;
-				this.obstacles[5] = CreateRunnerElement(20100, 430, 100, 160, "sprites/Obstacle3.png", true, false, 0);
 			}
-			x=20800
+			this.obstacles[5] = CreateRunnerElement(20100, 430, 100, 160, "sprites/Obstacle3.png", true, false, 0);
+			x=20800;
 			for(var i=160; i<170; i++)
 			{
 				this.floor[i] = CreateFloorElement(x, 550, 100, 100, "sprites/Wall1.png", 0, true);
 				x += 100;
 			}
-			x=22000
+			x=22000;
 			for(var i=170; i<190; i++)
 			{
 				this.floor[i] = CreateFloorElement(x, 380, 100, 100, "sprites/Wall1.png", 0, true);
@@ -247,22 +247,22 @@ var fill = new Array();
 				fill[i] = CreateFloorElement(x, 680, 100, 100, "sprites/Wall1.png", 0, true);
 				fill[i] = CreateFloorElement(x, 780, 100, 100, "sprites/Wall1.png", 0, true);
 				x += 100;
-				this.obstacles[6] = CreateRunnerElement(23900, 260, 100, 160, "sprites/Obstacle2.png", true, false, 0);
 			}
-			x=24200
+			this.obstacles[6] = CreateRunnerElement(23900, 260, 100, 160, "sprites/Obstacle2.png", true, false, 0);
+			x=24200;
 			for(var i=190; i<210; i++)
 			{
 				this.floor[i] = CreateFloorElement(x, 550, 100, 100, "sprites/Wall1.png", 0, true);
 				x += 100;
-				this.obstacles[7] = CreateRunnerElement(25700, 460, 100, 100, "sprites/Obstacle4.png", true, false, 0);
 			}
-			x=26200
+			this.obstacles[7] = CreateRunnerElement(25700, 460, 100, 100, "sprites/Obstacle4.png", true, false, 0);
+			x=26200;
 			for(var i=210; i<230; i++)
 			{
 				this.floor[i] = CreateFloorElement(x, 550, 100, 100, "sprites/Wall1.png", 0, true);
 				x += 100;
 			}
-			x=28400
+			x=28400;
 			for(var i=230; i<260; i++)
 			{
 				this.floor[i] = CreateFloorElement(x, 550, 100, 100, "sprites/Wall1.png", 0, true);
