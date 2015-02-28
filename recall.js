@@ -22,6 +22,7 @@ var VIEWPORT_HEIGHT = document.getElementById("recall").height;
 // Global Variables
 var physics;
 var player;
+var fill = new Array();
 
 //
 // Initialization
@@ -154,51 +155,125 @@ var player;
 	  		this.floor = [];
 	  		this.interactive = [];
 	  		this.obstacles = [];
+	  		////work after this
 	  		
+	  		
+	  		//pathing
 			var x = 100;
-			for(var i=0; i<10; i++)
+			for(var i=0; i<30; i++)
+			{
+				this.floor[i] = CreateFloorElement(x, 550, 100, 100, "sprites/Wall1.png", 0, true);
+				x += 100;
+				//this.obstacles[0] = CreateRunnerElement(500, 260, 100, 150, "sprites/Obstacle2.png", true, false, 0);
+			}
+			x=3500;
+			for(var i=30; i<60; i++)
 			{
 				this.floor[i] = CreateFloorElement(x, 550, 100, 100, "sprites/Wall1.png", 0, true);
 				x += 100;
 			}
-			x = 1150;
-			for(var i=10; i<15; i++)
+			x = 6800
+			for(var i=60; i<65; i++)
 			{
-				this.floor[i] = CreateFloorElement(x, 500, 100, 100, "sprites/Wall2.png", 0, true);
+				this.floor[i] = CreateFloorElement(x, 550, 100, 100, "sprites/Wall1.png", 0, true);
 				x += 100;
 			}
-			x = 1700;
-			for(var i = 15; i<20; i++)
+			x = 7700
+			for(var i=65; i<85; i++)
 			{
-				this.floor[i] = CreateFloorElement(x, 620, 100, 100, "sprites/Wall2.png", 0, true);
+				this.floor[i] = CreateFloorElement(x, 550, 100, 100, "sprites/Wall1.png", 0, true);
 				x += 100;
 			}
-			x = 2250;
-			for(var i = 20; i<25; i++)
+			x=10100
+			for(var i=85; i<95; i++)
 			{
-				this.floor[i] = CreateFloorElement(x, 450, 100, 100, "sprites/Wall2.png", 0, true);
+				this.floor[i] = CreateFloorElement(x, 550, 100, 100, "sprites/Wall1.png", 0, true);
+				x += 100;
+				this.obstacles[0] = CreateRunnerElement(10700, 432, 100, 150, "sprites/Obstacle2.png", true, false, 0);
+			}
+			x=11400
+			for(var i=95; i<110; i++)
+			{
+				this.floor[i] = CreateFloorElement(x, 550, 100, 100, "sprites/Wall1.png", 0, true);
+				x += 100;
+				this.obstacles[1] = CreateRunnerElement(11900, 432, 100, 150, "sprites/Obstacle2.png", true, false, 0);
+			}
+			x=13100
+			for(var i=110; i<125; i++)
+			{
+				this.floor[i] = CreateFloorElement(x, 550, 100, 100, "sprites/Wall1.png", 0, true);
+				x += 100;
+				this.obstacles[2] = CreateRunnerElement(13800, 460, 100, 100, "sprites/Obstacle4.png", true, false, 0);
+			}
+			x=14800
+			for(var i=110; i<125; i++)
+			{
+				this.floor[i] = CreateFloorElement(x, 450, 100, 100, "sprites/Wall1.png", 0, true);
+				fill[i] = CreateFloorElement(x, 550, 100, 100, "sprites/Wall1.png", 0, true);
+				fill[i] = CreateFloorElement(x, 650, 100, 100, "sprites/Wall1.png", 0, true);
+				x += 100;
+				this.obstacles[3] = CreateRunnerElement(15400, 360, 100, 100, "sprites/Obstacle4.png", true, false, 0);
+			}
+			x=16500
+			for(var i=125; i<140; i++)
+			{
+				this.floor[i] = CreateFloorElement(x, 300, 100, 100, "sprites/Wall1.png", 0, true);
+				fill[i] = CreateFloorElement(x, 400, 100, 100, "sprites/Wall1.png", 0, true);
+				fill[i] = CreateFloorElement(x, 500, 100, 100, "sprites/Wall1.png", 0, true);
+				fill[i] = CreateFloorElement(x, 600, 100, 100, "sprites/Wall1.png", 0, true);
+				fill[i] = CreateFloorElement(x, 700, 100, 100, "sprites/Wall1.png", 0, true);
+				x += 100;
+				this.obstacles[4] = CreateRunnerElement(17500, 180, 100, 160, "sprites/Obstacle3.png", true, false, 0);
+			}
+			x=18600
+			for(var i=140; i<160; i++)
+			{
+				this.floor[i] = CreateFloorElement(x, 550, 100, 100, "sprites/Wall1.png", 0, true);
+				x += 100;
+				this.obstacles[5] = CreateRunnerElement(20100, 430, 100, 160, "sprites/Obstacle3.png", true, false, 0);
+			}
+			x=20800
+			for(var i=160; i<170; i++)
+			{
+				this.floor[i] = CreateFloorElement(x, 550, 100, 100, "sprites/Wall1.png", 0, true);
 				x += 100;
 			}
-			var y = 400;
-			x = 2800;
-			for(var i = 25; i<30; i++)
+			x=22000
+			for(var i=170; i<190; i++)
 			{
-				this.floor[i] = CreateFloorElement(x, y, 100, 100, "sprites/Wall2.png", 0, true);
+				this.floor[i] = CreateFloorElement(x, 380, 100, 100, "sprites/Wall1.png", 0, true);
+				fill[i] = CreateFloorElement(x, 480, 100, 100, "sprites/Wall1.png", 0, true);
+				fill[i] = CreateFloorElement(x, 580, 100, 100, "sprites/Wall1.png", 0, true);
+				fill[i] = CreateFloorElement(x, 680, 100, 100, "sprites/Wall1.png", 0, true);
+				fill[i] = CreateFloorElement(x, 780, 100, 100, "sprites/Wall1.png", 0, true);
 				x += 100;
-				y -= 50;
+				this.obstacles[6] = CreateRunnerElement(23900, 260, 100, 160, "sprites/Obstacle2.png", true, false, 0);
+			}
+			x=24200
+			for(var i=190; i<210; i++)
+			{
+				this.floor[i] = CreateFloorElement(x, 550, 100, 100, "sprites/Wall1.png", 0, true);
+				x += 100;
+				this.obstacles[7] = CreateRunnerElement(25700, 460, 100, 100, "sprites/Obstacle4.png", true, false, 0);
+			}
+			x=26200
+			for(var i=210; i<230; i++)
+			{
+				this.floor[i] = CreateFloorElement(x, 550, 100, 100, "sprites/Wall1.png", 0, true);
+				x += 100;
+			}
+			x=28400
+			for(var i=230; i<260; i++)
+			{
+				this.floor[i] = CreateFloorElement(x, 550, 100, 100, "sprites/Wall1.png", 0, true);
+				x += 100;
 			}
 			//OBJ
-			//sky1 = CreateRunnerElement(0, 0, 3000, 1200, "sprites/Sky.png", false, false, 0);
-			//sky2 = CreateRunnerElement(3000, 0, 3000, 1200, "sprites/Sky.png", false, false, 0);
 	        door = CreateRunnerElement(400, 454, 80, 100, "sprites/door.png", true, true, 0);
 	        door.action = printWords;//give it a function if the player interacts
 	        this.interactive.push(door);
 	        
-			this.obstacles[0] = CreateRunnerElement(250, 480, 80, 80, "sprites/Obstacle1.png", true, false, 0);
-			this.obstacles[1] = CreateRunnerElement(700, 465, 80, 80, "sprites/Obstacle2.png", true, false, 0);
-			this.obstacles[2] = CreateRunnerElement(900, 465, 80, 80, "sprites/Obstacle3.png", true, false, 0);
-			this.obstacles[3] = CreateRunnerElement(1200, 420, 80, 80, "sprites/Obstacle4.png", true, false, 0); 
-			
+			///////work before this
 			this.width = this.floor[0].width/2 + this.floor[this.floor.length-1].x - this.floor[0].x + this.floor[this.floor.length-1].width/2;
 	  		this.constructed = true;
 		};
