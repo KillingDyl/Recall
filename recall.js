@@ -23,32 +23,6 @@ var VIEWPORT_HEIGHT = document.getElementById("recall").height;
 var physics;
 var player;
 
-//OBJ
-var black;
-var door;
-var objects = new Array();
-var clouds;
-var sky1;
-var sky2;
-var charSprite;
-var Obstacles = new Array();
-
-
-// Box2d Declarations for ease of use
-/*var	b2Vec2 = Box2D.Common.Math.b2Vec2, 
-	b2AABB = Box2D.Collision.b2AABB,
-	b2BodyDef = Box2D.Dynamics.b2BodyDef,
-	b2Body = Box2D.Dynamics.b2Body,
-	b2ContactListener = Box2D.Dynamics.b2ContactListener,
-	b2FixtureDef = Box2D.Dynamics.b2FixtureDef,
-	b2Fixture = Box2D.Dynamics.b2Fixture,
-	b2World = Box2D.Dynamics.b2World,
-	b2MassData = Box2D.Collision.Shapes.b2MassData,
-	b2PolygonShape = Box2D.Collision.Shapes.b2PolygonShape,
-	b2CircleShape = Box2D.Collision.Shapes.b2CircleShape,
-	b2DebugDraw = Box2D.Dynamics.b2DebugDraw,
-	b2MouseJointDef =  Box2D.Dynamics.Joints.b2MouseJointDef;*/
-
 //
 // Initialization
 // Set up physics engine and brine engine
@@ -74,6 +48,10 @@ var Obstacles = new Array();
 	game.alwaysUpdate = false;
 	physics = new b2.World(new b2.Vec2(0, 10), true);
 	
+	// Initiates all levels
+	new HubWorld();
+	new LevelOne();
+	
 	game.init = function() {
 		
 		var listener = new b2.ContactListener();
@@ -94,7 +72,10 @@ var Obstacles = new Array();
 		
 		println("World Initialized");
 		
-		constructWorld();
+		this.level = HubWorld();
+		this.level.Construct();
+		
+		player = CreatePlayer(0, 100, 57, 50, "sprites/Char.png");
 	};
 	
 	game.world.update = function(d) {
@@ -119,63 +100,123 @@ var Obstacles = new Array();
 	println("Game Initialized");
 	
 	//
+	// Level objects
+	//
+	function HubWorld() {
+		if (arguments.callee._singletonInstance)
+	    	return arguments.callee._singletonInstance;
+	  	arguments.callee._singletonInstance = this;
+	  	this.constructed = false;
+	  	
+	  	this.Construct = function() {
+	  		if(this.constructed) return;
+	  		this.floor = [];
+	  		this.interactive = [];
+	  		this.obstacles = [];
+	  		
+	  		var x = 0;
+	  		for(var i=0; i<10; i++)
+			{
+				this.floor[i] = CreateFloorElement(x, 550, 100, 100, "sprites/Wall1.png", 0, false);
+				x += 100;
+			}
+			
+			var door = CreateWorldElement(400, 454, 80, 100, "sprites/door.png", true, true, 0);
+			door.action = function() {
+				States.current().level.Destruct();
+				States.current().level = LevelOne();
+				States.current().level.Construct();
+			};
+       		this.interactive.push(door);
+			
+			this.width = this.floor[0].width/2 + this.floor[this.floor.length-1].x - this.floor[0].x + this.floor[this.floor.length-1].width/2;
+	  		this.constructed = true;
+	  	};
+	  	
+	  	this.Destruct = function() {
+	  		if(!this.constructed) return;
+	  		for(var i = 0; i < this.floor.length; i++) this.floor[i].Destroy();
+	  		for(var i = 0; i < this.interactive.length; i++) this.interactive[i].Destroy();
+	  		for(var i = 0; i < this.obstacles.length; i++) this.obstacles[i].Destroy();
+	  		this.width = 0;
+	  		this.constructed = false;
+	  	};
+	}
+	
+	function LevelOne() {
+		if (arguments.callee._singletonInstance)
+	    	return arguments.callee._singletonInstance;
+	  	arguments.callee._singletonInstance = this;
+	  	this.constructed = false;
+	  	
+	  	this.Construct = function() {
+	  		if(this.constructed) return;
+	  		this.floor = [];
+	  		this.interactive = [];
+	  		this.obstacles = [];
+	  		
+			var x = 100;
+			for(var i=0; i<10; i++)
+			{
+				this.floor[i] = CreateFloorElement(x, 550, 100, 100, "sprites/Wall1.png", 0, true);
+				x += 100;
+			}
+			x = 1150;
+			for(var i=10; i<15; i++)
+			{
+				this.floor[i] = CreateFloorElement(x, 500, 100, 100, "sprites/Wall2.png", 0, true);
+				x += 100;
+			}
+			x = 1700;
+			for(var i = 15; i<20; i++)
+			{
+				this.floor[i] = CreateFloorElement(x, 620, 100, 100, "sprites/Wall2.png", 0, true);
+				x += 100;
+			}
+			x = 2250;
+			for(var i = 20; i<25; i++)
+			{
+				this.floor[i] = CreateFloorElement(x, 450, 100, 100, "sprites/Wall2.png", 0, true);
+				x += 100;
+			}
+			var y = 400;
+			x = 2800;
+			for(var i = 25; i<30; i++)
+			{
+				this.floor[i] = CreateFloorElement(x, y, 100, 100, "sprites/Wall2.png", 0, true);
+				x += 100;
+				y -= 50;
+			}
+			//OBJ
+			//sky1 = CreateRunnerElement(0, 0, 3000, 1200, "sprites/Sky.png", false, false, 0);
+			//sky2 = CreateRunnerElement(3000, 0, 3000, 1200, "sprites/Sky.png", false, false, 0);
+	        door = CreateRunnerElement(400, 454, 80, 100, "sprites/door.png", true, true, 0);
+	        door.action = printWords;//give it a function if the player interacts
+	        this.interactive.push(door);
+	        
+			this.obstacles[0] = CreateRunnerElement(250, 480, 80, 80, "sprites/Obstacle1.png", true, false, 0);
+			this.obstacles[1] = CreateRunnerElement(700, 465, 80, 80, "sprites/Obstacle2.png", true, false, 0);
+			this.obstacles[2] = CreateRunnerElement(900, 465, 80, 80, "sprites/Obstacle3.png", true, false, 0);
+			this.obstacles[3] = CreateRunnerElement(1200, 420, 80, 80, "sprites/Obstacle4.png", true, false, 0); 
+			
+			this.width = this.floor[0].width/2 + this.floor[this.floor.length-1].x - this.floor[0].x + this.floor[this.floor.length-1].width/2;
+	  		this.constructed = true;
+		};
+		
+		this.Destruct = function() {
+	  		if(!this.constructed) return;
+	  		for(var i = 0; i < this.floor.length; i++) this.floor[i].Destroy();
+	  		for(var i = 0; i < this.interactive.length; i++) this.interactive[i].Destroy();
+	  		for(var i = 0; i < this.obstacles.length; i++) this.obstacles[i].Destroy();
+	  		this.width = 0;
+	  		this.constructed = false;
+	  	};
+	}
+	
+	//
 	// Function definitions
 	//
-	function constructWorld() {
-		player = CreatePlayer(100, 100, 57, 50, "sprites/Char.png");
-		
-		States.current().world.level = [];
-		level = States.current().world.level;
-		var x = 100;
-		for(var i=0; i<10; i++)
-		{
-			level[i] = CreateFloorElement(x, 550, 100, 100, "sprites/Wall1.png", 0, true);
-			x += 100;
-		}
-		x = 1150;
-		for(var i=10; i<15; i++)
-		{
-			level[i] = CreateFloorElement(x, 500, 100, 100, "sprites/Wall2.png", 0, true);
-			x += 100;
-		}
-		x = 1700;
-		for(var i = 15; i<20; i++)
-		{
-			level[i] = CreateFloorElement(x, 620, 100, 100, "sprites/Wall2.png", 0, true);
-			x += 100;
-		}
-		x = 2250;
-		for(var i = 20; i<25; i++)
-		{
-			level[i] = CreateFloorElement(x, 450, 100, 100, "sprites/Wall2.png", 0, true);
-			x += 100;
-		}
-		var y = 400;
-		x = 2800;
-		for(var i = 25; i<30; i++)
-		{
-			level[i] = CreateFloorElement(x, y, 100, 100, "sprites/Wall2.png", 0, true);
-			x += 100;
-			y -= 50;
-		}
-		level.width = level[0].width/2 + level[level.length-1].x - level[0].x + level[level.length-1].width/2;
-		//OBJ
-		//sky1 = CreateRunnerElement(0, 0, 3000, 1200, "sprites/Sky.png", false, false, 0);
-		//sky2 = CreateRunnerElement(3000, 0, 3000, 1200, "sprites/Sky.png", false, false, 0);
-        door = CreateRunnerElement(400, 454, 80, 100, "sprites/door.png", true, true, 0);
-        door.action = printWords;//give it a function if the player interacts
-        objects.push(door);
-        
-		/*Obstacles[0] = CreateRunnerElement(250, 480, 80, 80, "sprites/Obstacle1.png", true, false, 0);
-		Obstacles[1] = CreateRunnerElement(700, 465, 80, 80, "sprites/Obstacle2.png", true, false, 0);
-		Obstacles[2] = CreateRunnerElement(900, 465, 80, 80, "sprites/Obstacle3.png", true, false, 0);
-		Obstacles[3] = CreateRunnerElement(1200, 420, 80, 80, "sprites/Obstacle4.png", true, false, 0);*/
-        
-        
-        
-        
-        
-}
+	
 	//
 	// Event that triggers when any contact begins
 	//
@@ -187,10 +228,11 @@ var Obstacles = new Array();
 			if(objectA == player) other = objectB;
 			if(objectB == player) other = objectA;
 			//OBJ
-			for (var i = 0; i < objects.length; i++ ) {//TODO fix logix if need
-	        	if(other == objects[i]){ //check if it is specifically near the door
+			var interactives = States.current().level.interactive;
+			for (var i = 0; i < interactives.length; i++ ) {//TODO fix logix if need
+	        	if(other == interactives[i]){ //check if it is specifically near the door
 	        		player.near = true;
-	        		player.ob = objects[i];//give it the object that it is near
+	        		player.ob = interactives[i];//give it the object that it is near
 	        		println("near");
 	        		break;
 	        	}	
@@ -204,6 +246,7 @@ var Obstacles = new Array();
          		if(player.x < other.x) direction = -1;
 				var deltaVelocity = (direction * player.maxSpeed);
 				var impulse = new b2.Vec2(player.body.GetMass() * deltaVelocity, player.body.GetMass() * -2);
+				player.body.SetTransform(new b2.Vec2(direction * .1, 0), 0);
 				player.body.SetLinearVelocity(new b2.Vec2(0, 0));
 				player.body.ApplyLinearImpulse(impulse, player.body.GetWorldCenter(), true);
 				player.onGround = false;
@@ -225,8 +268,9 @@ var Obstacles = new Array();
 			var other;
 			if(objectA == player) other = objectB;
 			if(objectB == player) other = objectA;
-			for (var i = 0; i < objects.length; i++ ) {
-	        	if(other == objects[i]){	
+			var interactives = States.current().level.interactive;
+			for (var i = 0; i < interactives.length; i++ ) {
+	        	if(other == interactives[i]){	
 					player.near = false;
 	        		println("away");
 	      	 	}
@@ -370,6 +414,10 @@ var Obstacles = new Array();
 		var element = CreateSprite(x, y, width, height, image, index);
 		if(solid) ApplyRectBBox(element, b2.Body.b2_staticBody, 1.0, 1, 0);
 		if(sensor && solid) element.fixture.SetSensor(true);
+		element.Destroy = function() {
+			if(typeof(this.body) !== "undefined") physics.DestroyBody(this.body);
+			States.current().world.removeChild(this);
+		};
 		return element;
 	}
 	
@@ -384,23 +432,29 @@ var Obstacles = new Array();
 		if(sensor && solid) element.fixture.SetSensor(true);
 		element.update = function(d) {
 			var xpos = this.x + States.current().world.x;
-			if(xpos + this.width/2 < -States.current().world.level.width / 2) {
-				this.x += States.current().world.level.width;
+			if(xpos + this.width/2 < -States.current().level.width / 2) {
+				this.x += States.current().level.width;
 				if(typeof(this.body) !== "undefined") {
 					var pos = this.body.GetPosition();
-					pos.x += States.current().world.level.width / PHYSICS_SCALE;
+					pos.x += States.current().level.width / PHYSICS_SCALE;
 					this.body.SetTransform(pos, 0);
 				}
 			}
-			if(xpos + this.width/2 > States.current().world.level.width / 2) {
-				this.x -= States.current().world.level.width;
+			if(xpos + this.width/2 > States.current().level.width / 2) {
+				this.x -= States.current().level.width;
 				if(typeof(this.body) !== "undefined") {
 					var pos = this.body.GetPosition();
-					pos.x -= States.current().world.level.width / PHYSICS_SCALE;
+					pos.x -= States.current().level.width / PHYSICS_SCALE;
 					this.body.SetTransform(pos, 0);
 				}
 			}
 		};
+		if(typeof(this.body) !== "undefined") {
+			element.Destroy = function() {
+				physics.DestroyBody(this.body);
+				States.current().world.removeChild(this);
+			};
+		}
 		return element;
 	}
 	
@@ -425,24 +479,28 @@ var Obstacles = new Array();
 		if(respawn) {
 			element.update = function(d) {
 				var xpos = this.x + States.current().world.x;
-				if(xpos + this.width/2 < -States.current().world.level.width / 2) {
-					this.x += States.current().world.level.width;
+				if(xpos + this.width/2 < -States.current().level.width / 2) {
+					this.x += States.current().level.width;
 					if(typeof(this.body) !== "undefined") {
 						var pos = this.body.GetPosition();
-						pos.x += States.current().world.level.width / PHYSICS_SCALE;
+						pos.x += States.current().level.width / PHYSICS_SCALE;
 						this.body.SetTransform(pos, 0);
 					}
 				}
-				if(xpos + this.width/2 > States.current().world.level.width / 2) {
-					this.x -= States.current().world.level.width;
+				if(xpos + this.width/2 > States.current().level.width / 2) {
+					this.x -= States.current().level.width;
 					if(typeof(this.body) !== "undefined") {
 						var pos = this.body.GetPosition();
-						pos.x -= States.current().world.level.width / PHYSICS_SCALE;
+						pos.x -= States.current().level.width / PHYSICS_SCALE;
 						this.body.SetTransform(pos, 0);
 					}
 				}
 			};
 		}
+		element.Destroy = function() {
+			physics.DestroyBody(this.body);
+			States.current().world.removeChild(this);
+		};
 		return element;
 	}
 	
