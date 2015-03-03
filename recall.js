@@ -12,17 +12,18 @@ var KEY_RIGHT = 39;
 var KEY_DOWN = 40;
 var KEY_SPACE = 32;
 var KEY_ESC = 27;
+var VIEWPORT_WIDTH = document.getElementById("recall").width;
+var VIEWPORT_HEIGHT = document.getElementById("recall").height;
+
+// PLAYER CONSTANTS
+var PLAYER_WIDTH_RUNNING = 57;
+var PLAYER_HEIGHT_RUNNING = 50;
+var PLAYER_WIDTH_SLIDING = 57;
+var PLAYER_HEIGHT_SLIDING = 30;
 var PLAYER_STATE_NORMAL = 0;
 var PLAYER_STATE_RUNNER = 1;
 var PLAYER_WALK_SPEED = 1;
 var PLAYER_RUN_SPEED = 4;
-var VIEWPORT_WIDTH = document.getElementById("recall").width;
-var VIEWPORT_HEIGHT = document.getElementById("recall").height;
-
-// Global Variables
-var physics;
-var player;
-var fill = new Array();
 
 //
 // Initialization
@@ -31,6 +32,10 @@ var fill = new Array();
 (function() {
 	use2D = true;
 	showConsole = DEBUGMODE;
+	
+	// Global Variables
+	var physics;
+	var player;
 	
 	gInput.addBool(KEY_LEFT, "left");
 	gInput.addBool(KEY_UP, "up");
@@ -76,7 +81,7 @@ var fill = new Array();
 		this.level = HubWorld();
 		this.level.Construct();
 		
-		player = CreatePlayer(0, 100, 57, 50, "sprites/Char.png");
+		player = CreatePlayer(0, 100);
 	};
 	
 	game.world.update = function(d) {
@@ -103,6 +108,38 @@ var fill = new Array();
 	//
 	// Level objects
 	//
+	
+	/* LEVEL TEMPLATE
+	function LEVEL_NAME_HERE() {
+		if(arguments.callee._singletonInstance)
+			return arguments.callee._singletonInstance;
+		arguments.callee._singletonInstance = this;
+		this.constructed = false;
+		
+		this.Construct = function() {
+	  		if(this.constructed) return;
+	  		this.fill = []; // Shouldn't need to use this after Rahil changes the wall size to reflect the image size
+	  		this.floor = [];
+	  		this.interactive = [];
+	  		this.obstacles = [];
+	  		
+	  		this.width = this.floor[0].width/2 + this.floor[this.floor.length-1].x - this.floor[0].x + this.floor[this.floor.length-1].width/2;
+	  		this.constructed = true;
+	  	};
+	  	
+	  	this.Destruct = function() {
+	  		if(!this.constructed) return;
+	  		for(var i = 0; i < this.fill.length; i++) this.fill[i].Destroy();
+	  		for(var i = 0; i < this.floor.length; i++) this.floor[i].Destroy();
+	  		for(var i = 0; i < this.interactive.length; i++) this.interactive[i].Destroy();
+	  		for(var i = 0; i < this.obstacles.length; i++) this.obstacles[i].Destroy();
+	  		this.width = 0;
+	  		this.constructed = false;
+	  	};
+	}
+	 
+	 */
+	
 	function HubWorld() {
 		if (arguments.callee._singletonInstance)
 	    	return arguments.callee._singletonInstance;
@@ -153,6 +190,7 @@ var fill = new Array();
 	  	this.Construct = function() {
 	  		if(this.constructed) return;
 	  		this.floor = [];
+	  		this.fill = [];
 	  		this.interactive = [];
 	  		this.obstacles = [];
 	  		////work after this
@@ -164,7 +202,6 @@ var fill = new Array();
 			{
 				this.floor[i] = CreateFloorElement(x, 550, 100, 100, "sprites/Wall1.png", 0, true);
 				x += 100;
-				//this.obstacles[0] = CreateRunnerElement(500, 260, 100, 150, "sprites/Obstacle2.png", true, false, 0);
 			}
 			x=3500;
 			for(var i=30; i<60; i++)
@@ -209,8 +246,8 @@ var fill = new Array();
 			for(var i=110; i<125; i++)
 			{
 				this.floor[i] = CreateFloorElement(x, 450, 100, 100, "sprites/Wall1.png", 0, true);
-				fill[i] = CreateFloorElement(x, 550, 100, 100, "sprites/Wall1.png", 0, true);
-				fill[i] = CreateFloorElement(x, 650, 100, 100, "sprites/Wall1.png", 0, true);
+				this.fill[i] = CreateFloorElement(x, 550, 100, 100, "sprites/Wall1.png", 0, true);
+				this.fill[i] = CreateFloorElement(x, 650, 100, 100, "sprites/Wall1.png", 0, true);
 				x += 100;
 			}
 			this.obstacles[3] = CreateRunnerElement(15400, 360, 100, 100, "sprites/Obstacle4.png", true, false, 0);
@@ -218,10 +255,10 @@ var fill = new Array();
 			for(var i=125; i<140; i++)
 			{
 				this.floor[i] = CreateFloorElement(x, 300, 100, 100, "sprites/Wall1.png", 0, true);
-				fill[i] = CreateFloorElement(x, 400, 100, 100, "sprites/Wall1.png", 0, true);
-				fill[i] = CreateFloorElement(x, 500, 100, 100, "sprites/Wall1.png", 0, true);
-				fill[i] = CreateFloorElement(x, 600, 100, 100, "sprites/Wall1.png", 0, true);
-				fill[i] = CreateFloorElement(x, 700, 100, 100, "sprites/Wall1.png", 0, true);
+				this.fill[i] = CreateFloorElement(x, 400, 100, 100, "sprites/Wall1.png", 0, true);
+				this.fill[i] = CreateFloorElement(x, 500, 100, 100, "sprites/Wall1.png", 0, true);
+				this.fill[i] = CreateFloorElement(x, 600, 100, 100, "sprites/Wall1.png", 0, true);
+				this.fill[i] = CreateFloorElement(x, 700, 100, 100, "sprites/Wall1.png", 0, true);
 				x += 100;
 			}
 			this.obstacles[4] = CreateRunnerElement(17500, 180, 100, 160, "sprites/Obstacle3.png", true, false, 0);
@@ -242,10 +279,10 @@ var fill = new Array();
 			for(var i=170; i<190; i++)
 			{
 				this.floor[i] = CreateFloorElement(x, 380, 100, 100, "sprites/Wall1.png", 0, true);
-				fill[i] = CreateFloorElement(x, 480, 100, 100, "sprites/Wall1.png", 0, true);
-				fill[i] = CreateFloorElement(x, 580, 100, 100, "sprites/Wall1.png", 0, true);
-				fill[i] = CreateFloorElement(x, 680, 100, 100, "sprites/Wall1.png", 0, true);
-				fill[i] = CreateFloorElement(x, 780, 100, 100, "sprites/Wall1.png", 0, true);
+				this.fill[i] = CreateFloorElement(x, 480, 100, 100, "sprites/Wall1.png", 0, true);
+				this.fill[i] = CreateFloorElement(x, 580, 100, 100, "sprites/Wall1.png", 0, true);
+				this.fill[i] = CreateFloorElement(x, 680, 100, 100, "sprites/Wall1.png", 0, true);
+				this.fill[i] = CreateFloorElement(x, 780, 100, 100, "sprites/Wall1.png", 0, true);
 				x += 100;
 			}
 			this.obstacles[6] = CreateRunnerElement(23900, 260, 100, 160, "sprites/Obstacle2.png", true, false, 0);
@@ -280,6 +317,7 @@ var fill = new Array();
 		
 		this.Destruct = function() {
 	  		if(!this.constructed) return;
+	  		for(var i = 0; i < this.fill.length; i++) this.fill[i].Destroy();
 	  		for(var i = 0; i < this.floor.length; i++) this.floor[i].Destroy();
 	  		for(var i = 0; i < this.interactive.length; i++) this.interactive[i].Destroy();
 	  		for(var i = 0; i < this.obstacles.length; i++) this.obstacles[i].Destroy();
@@ -383,20 +421,21 @@ var fill = new Array();
 	//
 	// CreatePlayer - creates the player sprite, physics body, and update functions
 	//
-	function CreatePlayer(x, y, width, height, image) {
-		var player = CreateSprite(x, y, width, height, image, -9990);
+	function CreatePlayer(x, y) {
+		var player = CreateSprite(x, y, PLAYER_WIDTH_RUNNING, PLAYER_HEIGHT_RUNNING, "sprites/Char.png", -9990);
 		player.onGround = true;
 		player.near = false;//check for whether or not the player is near an interactable obj
 		
 		var bodyDef = CreateBodyDef(player, b2.Body.b2_dynamicBody);
 		player.body = physics.CreateBody(bodyDef);
-		CreateStandingFixture(player);
+		CreateRunningFixture(player);
 		player.body.SetUserData(player);
 		player.body.SetFixedRotation(true);
 		
 		player.state = PLAYER_STATE_NORMAL;
 		player.maxSpeed = PLAYER_WALK_SPEED;
 		player.sliding = false;
+		player.latency = 0;
 		player.update = function(d) {
 			// Move the sprite according to the physics body
 			var pos = this.body.GetPosition();
@@ -404,13 +443,15 @@ var fill = new Array();
 			this.y = pos.y * PHYSICS_SCALE;
 			this.rotation = this.body.GetAngle();
 			//OBJ
-			if(this.near && gInput.E){
+			if(this.near && gInput.E && this.latency < 0){
+				this.latency = 15;
 				this.ob.action();
 				//println("E");
 			} 
 			//
 			// Movement code
 			var velocity = this.body.GetLinearVelocity();
+			this.latency--;
 			if(this.state == PLAYER_STATE_NORMAL) {
 				if(gInput.right && this.onGround) {
 					var deltaVelocity = this.maxSpeed - velocity.x;
@@ -441,12 +482,13 @@ var fill = new Array();
 					this.sliding = true;
 				} else if(!gInput.down && this.sliding) {
 					this.body.DestroyFixture(this.fixture);
-					CreateStandingFixture(this);
+					CreateRunningFixture(this);
 					this.sliding = false;
 				}
 			}
-			if(gInput.up && this.onGround && !this.sliding) {
+			if(gInput.up && this.onGround && !this.sliding && this.latency < 0) {
 				this.onGround = false;
+				this.latency = 15;
 				var deltaVelocity = velocity.y - 6;
 				var impulse = new b2.Vec2(0, this.body.GetMass() * deltaVelocity);
 				this.body.ApplyLinearImpulse(impulse, this.body.GetWorldCenter(), true);
@@ -456,9 +498,9 @@ var fill = new Array();
 	}
 	
 	//
-	// CreateStandingFixture - creates the standing body for player
+	// CreateRunningFixture - creates the running body for player
 	//
-	function CreateStandingFixture(sprite) {
+	function CreateRunningFixture(sprite) {
 		var fixDef = CreateFixtureDef(10.0, 1.0, 0);
 		var scaled_width = sprite.width / PHYSICS_SCALE;
 		var scaled_height = sprite.height / PHYSICS_SCALE;
@@ -472,8 +514,8 @@ var fill = new Array();
 	//
 	function CreateSlidingFixture(sprite) {
 		var fixDef = CreateFixtureDef(10.0, 1.0, 0);
-		var scaled_width = sprite.width / PHYSICS_SCALE;
-		var scaled_height = sprite.height / PHYSICS_SCALE;
+		var scaled_width = 57 / PHYSICS_SCALE;
+		var scaled_height = 30 / PHYSICS_SCALE;
 		fixDef.shape = new b2.PolygonShape();
 		fixDef.shape.SetAsBox(scaled_width / 2, scaled_height / 4);
 		sprite.fixture = sprite.body.CreateFixture(fixDef);
@@ -515,7 +557,7 @@ var fill = new Array();
 					this.body.SetTransform(pos, 0);
 				}
 			}
-			if(xpos + this.width/2 > States.current().level.width / 2) {
+			if(xpos - this.width/2 > States.current().level.width / 2) {
 				this.x -= States.current().level.width;
 				if(typeof(this.body) !== "undefined") {
 					var pos = this.body.GetPosition();
@@ -562,7 +604,7 @@ var fill = new Array();
 						this.body.SetTransform(pos, 0);
 					}
 				}
-				if(xpos + this.width/2 > States.current().level.width / 2) {
+				if(xpos - this.width/2 > States.current().level.width / 2) {
 					this.x -= States.current().level.width;
 					if(typeof(this.body) !== "undefined") {
 						var pos = this.body.GetPosition();
