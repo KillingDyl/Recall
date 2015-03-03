@@ -1,7 +1,7 @@
 /**
  * @author Dylan
  */
-var DEBUGMODE = true;
+var DEBUGMODE = false;
 
 // Constant Declarations
 var PHYSICS_SCALE = 100.0;
@@ -50,12 +50,12 @@ var PLAYER_RUN_SPEED = 4;
 	pause.alwaysDraw = false;
 	pause.alwaysUpdate = false;
 	var game = new State();
-	game.alwaysDraw = false;
+	game.alwaysDraw = true;
 	game.alwaysUpdate = false;
 	physics = new b2.World(new b2.Vec2(0, 10), true);
 	
 	// Initiates all levels
-	new HubWorld();
+	new StoryOne();
 	new LevelOne();
 	
 	game.init = function() {
@@ -78,10 +78,10 @@ var PLAYER_RUN_SPEED = 4;
 		
 		println("World Initialized");
 		
-		this.level = HubWorld();
+		this.level = StoryOne();
 		this.level.Construct();
 		
-		player = CreatePlayer(0, 100);
+		player = CreatePlayer(0, 450);//TODO where player starts
 	};
 	
 	game.world.update = function(d) {
@@ -140,7 +140,7 @@ var PLAYER_RUN_SPEED = 4;
 	 
 	 */
 	
-	function HubWorld() {
+	function StoryOne() {
 		if (arguments.callee._singletonInstance)
 	    	return arguments.callee._singletonInstance;
 	  	arguments.callee._singletonInstance = this;
@@ -152,20 +152,28 @@ var PLAYER_RUN_SPEED = 4;
 	  		this.interactive = [];
 	  		this.obstacles = [];
 	  		
-	  		var x = 0;
-	  		for(var i=0; i<10; i++)
+	  		var x = -400;
+	  		for(var i=0; i<15; i++)
 			{
-				this.floor[i] = CreateFloorElement(x, 550, 100, 100, "sprites/Wall1.png", 0, false);
+				this.floor[i] = CreateFloorElement(x, 550, 100, 100, "", 0, false);
 				x += 100;
 			}
 			
-			var door = CreateWorldElement(400, 454, 80, 100, "sprites/door.png", true, true, 0);
-			door.action = function() {
+			var background = CreateSprite(250,400,1275,420,"sprites/Labratory.png", 0);
+			var fore_desk = CreateSprite(300,500,442,214,"sprites/Labratory_bottom_desk.png",-9995);
+			var text_image = CreateSprite(775,275, 173,225,"sprites/Right_text.png",-400);
+			var text = CreateText(775,275, "Hey Bill");
+			
+			var right_door = CreateWorldElement(828, 370, 825, 942, "sprites/Right_door.png", true, true, 0);
+			right_door.action = function() {
 				States.current().level.Destruct();
 				States.current().level = LevelOne();
 				States.current().level.Construct();
+				States.current().world.removeChild(background);
+				States.current().world.removeChild(fore_desk);
+				States.curremt().world.removeChild(text.image);
 			};
-       		this.interactive.push(door);
+       		this.interactive.push(right_door);
 			
 			this.width = this.floor[0].width/2 + this.floor[this.floor.length-1].x - this.floor[0].x + this.floor[this.floor.length-1].width/2;
 	  		this.constructed = true;
@@ -416,6 +424,18 @@ var PLAYER_RUN_SPEED = 4;
 		sprite.index = index;
 		States.current().world.addChild(sprite);
 		return sprite;
+	}
+	
+	//
+	// CreateText - function to create a basic text to be displayed
+	//
+	function CreateText(x, y, text) {
+		var scoreText = new TextBox();
+		scoreText.x = x;
+		scoreText.y = y;
+		scoreText.fontSize = 32;
+		scoreText.text = text;
+		States.current().world.addChild(scoreText);
 	}
 	
 	//
