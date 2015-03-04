@@ -57,6 +57,7 @@ var PLAYER_RUN_SPEED = 4;
 	// Initiates all levels
 	new StoryOne();
 	new LevelOne();
+	new LevelTwo();
 	
 	game.init = function() {
 		
@@ -167,11 +168,11 @@ var PLAYER_RUN_SPEED = 4;
 			var right_door = CreateWorldElement(828, 370, 825, 942, "sprites/Right_door.png", true, true, 0);
 			right_door.action = function() {
 				States.current().level.Destruct();
-				States.current().level = LevelOne();
+				States.current().level = LevelTwo();
 				States.current().level.Construct();
 				States.current().world.removeChild(background);
 				States.current().world.removeChild(fore_desk);
-				States.curremt().world.removeChild(text.image);
+				States.current().world.removeChild(text_image);
 			};
        		this.interactive.push(right_door);
 			
@@ -211,6 +212,302 @@ var PLAYER_RUN_SPEED = 4;
 			///////work before this
 			this.width = this.floor[0].width/2 + this.floor[this.floor.length-1].x - this.floor[0].x + this.floor[this.floor.length-1].width/2;
 	  		this.constructed = true;
+		};
+		
+		this.Destruct = function() {
+	  		if(!this.constructed) return;
+	  		for(var i = 0; i < this.fill.length; i++) this.fill[i].Destroy();
+	  		for(var i = 0; i < this.floor.length; i++) this.floor[i].Destroy();
+	  		for(var i = 0; i < this.interactive.length; i++) this.interactive[i].Destroy();
+	  		for(var i = 0; i < this.obstacles.length; i++) this.obstacles[i].Destroy();
+	  		this.width = 0;
+	  		this.constructed = false;
+	  	};
+	}
+	
+	function LevelTwo() {
+		if (arguments.callee._singletonInstance)
+	    	return arguments.callee._singletonInstance;
+	  	arguments.callee._singletonInstance = this;
+	  	this.constructed = false;
+	  	
+	  	this.Construct = function() {
+	  		if(this.constructed) return;
+	  		this.floor = [];
+	  		this.fill = [];
+	  		this.interactive = [];
+	  		this.obstacles = [];
+	  		////work after this
+	  		var x = 100;
+			var y = 450;
+			var tracker = 0;
+			var buildingLength = tracker;
+			var xobstacle;
+			var obstacleCount = 0;
+			var obstacle1offset = 215;
+			var obstacle2offset = 295;
+			var obstacle3offset = 233;
+			var obstacle4offset = 240;
+	  		
+			
+			//FLOOR 1///////////////////////////////////////////////////////////////////
+	  		//left side
+	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/LeftWall.png", 0, true);
+			x += 183;
+			tracker++;
+			buildingLength = tracker +40;
+			for(var i=tracker; i<buildingLength; i++) //middle
+			{
+				this.floor[i] = CreateFloorElement(x, y, 183, 371, "sprites/MiddleWall.png", 0, true);
+				x += 183;
+				tracker++;
+			}
+			//right side
+			tracker++;
+			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/RightWall.png", 0, true);
+			x += 383;
+			//floor 1 obstacles
+			xobstacle = 1198;
+			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle4offset, 147, 142, "sprites/Obstacle4.png", true, false, 0);
+			xobstacle += 915;
+			obstacleCount++;
+			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle4offset, 147, 142, "sprites/Obstacle4.png", true, false, 0);
+			xobstacle += 915;
+			obstacleCount++;
+			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle4offset, 147, 142, "sprites/Obstacle4.png", true, false, 0);
+			xobstacle += 915;
+			obstacleCount++;
+			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle4offset, 147, 142, "sprites/Obstacle4.png", true, false, 0);
+			xobstacle += 1830;
+			obstacleCount++;
+			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle2offset, 211, 246, "sprites/Obstacle2.png", false, false, 0);
+			xobstacle += 915;
+			obstacleCount++;
+			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle4offset, 147, 142, "sprites/Obstacle4.png", true, false, 0);
+			obstacleCount++;
+			//END FLOOR1//////////////////////////////////////////////////////////////////
+			
+			y = 550;
+			//FLOOR 2///////////////////////////////////////////////////////////////////
+	  		//left side
+	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/LeftWall.png", 0, true);
+			x += 183;
+			tracker++;
+			buildingLength = tracker +15;
+			for(var i=tracker; i<buildingLength; i++) //middle
+			{
+				this.floor[i] = CreateFloorElement(x, y, 183, 371, "sprites/MiddleWall.png", 0, true);
+				x += 183;
+				tracker++;
+			}
+			//right side
+			tracker++;
+			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/RightWall.png", 0, true);
+			x += 383;
+			//floor 2 obstacles
+			xobstacle += 2500;
+			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle4offset, 147, 142, "sprites/Obstacle4.png", true, false, 0);
+			xobstacle += 915;
+			obstacleCount++;
+			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle3offset, 73, 108, "sprites/Obstacle3.png", true, false, 0);
+			xobstacle += 500;
+			obstacleCount++;
+			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle1offset, 155, 113, "sprites/Obstacle1.png", true, false, 0);
+			xobstacle += 915;
+			obstacleCount++;
+			//END FLOOR2//////////////////////////////////////////////////////////////////
+			
+			y= 500;
+			//FLOOR 3///////////////////////////////////////////////////////////////////
+	  		//left side
+	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/LeftWall.png", 0, true);
+			x += 183;
+			tracker++;
+			buildingLength = tracker +60;
+			for(var i=tracker; i<buildingLength; i++) //middle
+			{
+				this.floor[i] = CreateFloorElement(x, y, 183, 371, "sprites/MiddleWall.png", 0, true);
+				x += 183;
+				tracker++;
+			}
+			//right side
+			tracker++;
+			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/RightWall.png", 0, true);
+			x += 383;
+			//floor 3 obstacles
+			xobstacle += 915;
+			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle4offset, 147, 142, "sprites/Obstacle4.png", true, false, 0);
+			xobstacle += 915;
+			obstacleCount++;
+			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle2offset, 211, 246, "sprites/Obstacle2.png", false, false, 0);
+			xobstacle += 915;
+			obstacleCount++;
+			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle2offset, 211, 246, "sprites/Obstacle2.png", false, false, 0);
+			xobstacle += 915;
+			obstacleCount++;
+			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle2offset, 211, 246, "sprites/Obstacle2.png", false, false, 0);
+			xobstacle += 915;
+			obstacleCount++;
+			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle2offset, 211, 246, "sprites/Obstacle2.png", false, false, 0);
+			xobstacle += 915;
+			obstacleCount++;
+			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle2offset, 211, 246, "sprites/Obstacle2.png", false, false, 0);
+			xobstacle += 915;
+			obstacleCount++;
+			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle2offset, 211, 246, "sprites/Obstacle2.png", false, false, 0);
+			xobstacle += 915;
+			obstacleCount++;
+			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle2offset, 211, 246, "sprites/Obstacle2.png", false, false, 0);
+			xobstacle += 915;
+			obstacleCount++;
+			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle2offset, 211, 246, "sprites/Obstacle2.png", false, false, 0);
+			xobstacle += 915;
+			obstacleCount++;
+			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle2offset, 211, 246, "sprites/Obstacle2.png", false, false, 0);
+			xobstacle += 915;
+			obstacleCount++;
+			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle4offset, 147, 142, "sprites/Obstacle4.png", true, false, 0);
+			xobstacle += 880;
+			obstacleCount++;
+			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle4offset, 147, 142, "sprites/Obstacle4.png", true, false, 0);
+			xobstacle += 915;
+			obstacleCount++;
+			//END FLOOR3//////////////////////////////////////////////////////////////////
+			
+			y = 450;
+			//FLOOR 4///////////////////////////////////////////////////////////////////
+	  		//left side
+	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/LeftWall.png", 0, true);
+			x += 183;
+			tracker++;
+			buildingLength = tracker +15;
+			for(var i=tracker; i<buildingLength; i++) //middle
+			{
+				this.floor[i] = CreateFloorElement(x, y, 183, 371, "sprites/MiddleWall.png", 0, true);
+				x += 183;
+				tracker++;
+			}
+			//right side
+			tracker++;
+			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/RightWall.png", 0, true);
+			x += 383;
+			//floor 4 obstacles
+			xobstacle += 915;
+			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle4offset, 147, 142, "sprites/Obstacle4.png", true, false, 0);
+			xobstacle += 915;
+			obstacleCount++;
+			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle1offset, 155, 113, "sprites/Obstacle1.png", true, false, 0);
+			xobstacle += 915;
+			obstacleCount++;
+			//END FLOOR4//////////////////////////////////////////////////////////////////
+			
+			y = 500;
+			//FLOOR 5///////////////////////////////////////////////////////////////////
+	  		//left side
+	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/LeftWall.png", 0, true);
+			x += 183;
+			tracker++;
+			buildingLength = tracker +5;
+			for(var i=tracker; i<buildingLength; i++) //middle
+			{
+				this.floor[i] = CreateFloorElement(x, y, 183, 371, "sprites/MiddleWall.png", 0, true);
+				x += 183;
+				tracker++;
+			}
+			//right side
+			tracker++;
+			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/RightWall.png", 0, true);
+			x += 383;
+			//floor 5 obstacles
+			xobstacle += 915;
+			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle4offset, 147, 142, "sprites/Obstacle4.png", true, false, 0);
+			xobstacle += 915;
+			obstacleCount++;
+			//END FLOOR5//////////////////////////////////////////////////////////////////
+			
+			y = 550;
+			//FLOOR 6///////////////////////////////////////////////////////////////////
+	  		//left side
+	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/LeftWall.png", 0, true);
+			x += 183;
+			tracker++;
+			buildingLength = tracker +5;
+			for(var i=tracker; i<buildingLength; i++) //middle
+			{
+				this.floor[i] = CreateFloorElement(x, y, 183, 371, "sprites/MiddleWall.png", 0, true);
+				x += 183;
+				tracker++;
+			}
+			//right side
+			tracker++;
+			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/RightWall.png", 0, true);
+			x += 383;
+			//floor 6 obstacles
+			//END FLOOR6//////////////////////////////////////////////////////////////////
+			
+			y = 600;
+			//FLOOR 7///////////////////////////////////////////////////////////////////
+	  		//left side
+	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/LeftWall.png", 0, true);
+			x += 183;
+			tracker++;
+			buildingLength = tracker +5;
+			for(var i=tracker; i<buildingLength; i++) //middle
+			{
+				this.floor[i] = CreateFloorElement(x, y, 183, 371, "sprites/MiddleWall.png", 0, true);
+				x += 183;
+				tracker++;
+			}
+			//right side
+			tracker++;
+			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/RightWall.png", 0, true);
+			x += 383;
+			//END FLOOR7//////////////////////////////////////////////////////////////////
+			
+			y = 450;
+			//FLOOR 8///////////////////////////////////////////////////////////////////
+	  		//left side
+	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/LeftWall.png", 0, true);
+			x += 183;
+			tracker++;
+			buildingLength = tracker +20;
+			for(var i=tracker; i<buildingLength; i++) //middle
+			{
+				this.floor[i] = CreateFloorElement(x, y, 183, 371, "sprites/MiddleWall.png", 0, true);
+				x += 183;
+				tracker++;
+			}
+			//right side
+			tracker++;
+			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/RightWall.png", 0, true);
+			x += 383;
+			//floor 8 obstacles
+			xobstacle += 1830;
+			xobstacle += 1830;
+			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle4offset, 147, 142, "sprites/Obstacle4.png", true, false, 0);
+			xobstacle += 915;
+			obstacleCount++;
+			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle2offset, 211, 246, "sprites/Obstacle2.png", false, false, 0);
+			xobstacle += 915;
+			obstacleCount++;
+			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle3offset, 73, 108, "sprites/Obstacle3.png", true, false, 0);
+			xobstacle += 915;
+			obstacleCount++;
+			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle1offset, 155, 113, "sprites/Obstacle1.png", true, false, 0);
+			xobstacle += 915;
+			obstacleCount++;
+			//END FLOOR8//////////////////////////////////////////////////////////////////
+			
+			
+			//OBJ
+	        door = CreateRunnerElement(400, 218, 80, 100, "sprites/door.png", true, true, 0);
+	        door.action = printWords;//give it a function if the player interacts
+	        this.interactive.push(door);
+	        
+			///////work before this
+			this.width = this.floor[0].width/2 + this.floor[this.floor.length-1].x - this.floor[0].x + this.floor[this.floor.length-1].width/2;
+	  		this.constructed = true;
+	  		player.body.SetTransform(new b2.Vec2(400/PHYSICS_SCALE,100/PHYSICS_SCALE), 0);
 		};
 		
 		this.Destruct = function() {
