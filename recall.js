@@ -46,18 +46,27 @@ var PLAYER_RUN_SPEED = 4;
 	gInput.addBool(KEY_ESC, "esc");
 	
 	initGame("recall");
+	
 	var pause = new State();
 	pause.alwaysDraw = false;
 	pause.alwaysUpdate = false;
+	
 	var game = new State();
 	game.alwaysDraw = true;
 	game.alwaysUpdate = false;
 	physics = new b2.World(new b2.Vec2(0, 10), true);
 	
+	var chat = new State();
+	chat.alwaysDraw = false;
+	chat.alwaysUpdate = false;
+	
 	// Initiates all levels
 	new StoryOne();
+	new StoryTwo();
+	new StoryThree();
 	new LevelOne();
 	new LevelTwo();
+	new StoryFour();
 	
 	game.init = function() {
 		
@@ -143,11 +152,11 @@ var PLAYER_RUN_SPEED = 4;
 	
 	function StoryOne() {
 		if (arguments.callee._singletonInstance)
-	    	return arguments.callee._singletonInstance;
+	    return arguments.callee._singletonInstance;
 	  	arguments.callee._singletonInstance = this;
 	  	this.constructed = false;
-	  	
-	  	this.Construct = function() {
+	  
+	  	this.Construct = function() {//TODO
 	  		if(this.constructed) return;
 	  		this.floor = [];
 	  		this.interactive = [];
@@ -160,12 +169,13 @@ var PLAYER_RUN_SPEED = 4;
 				x += 100;
 			}
 			
-			var background = CreateSprite(250,400,1275,420,"sprites/Labratory.png", 0);
+			var background = CreateSprite(250,400,1275,420,"sprites/Labratory.png", 500);
 			var fore_desk = CreateSprite(300,500,442,214,"sprites/Labratory_bottom_desk.png",-9995);
-			var text_image = CreateSprite(775,275, 173,225,"sprites/Right_text.png",-400);
-			var text = CreateText(775,275, "Hey Bill");
-			
-			var right_door = CreateWorldElement(828, 370, 825, 942, "sprites/Right_door.png", true, true, 0);
+			var text_image = CreateSprite(675,275, 173,225,"sprites/Right_text.png",100);
+			var text = CreateText(620,255, "Hey Bill");
+			var left_door = CreateSprite(-337, 362, 825, 942, "sprites/Left_door.png", 400);
+			var middle_door = CreateSprite(250 , 362, 925, 1042,"sprites/Middle_door.png", 400);
+			var right_door = CreateWorldElement(828, 370, 825, 942, "sprites/Right_door.png", true, true, 400);
 			right_door.action = function() {
 				States.current().level.Destruct();
 				States.current().level = LevelOne();
@@ -173,6 +183,9 @@ var PLAYER_RUN_SPEED = 4;
 				States.current().world.removeChild(background);
 				States.current().world.removeChild(fore_desk);
 				States.current().world.removeChild(text_image);
+				States.current().world.removeChild(text);
+				States.current().world.removeChild(left_door);
+				States.current().world.removeChild(middle_door);
 			};
        		this.interactive.push(right_door);
 			
@@ -189,7 +202,7 @@ var PLAYER_RUN_SPEED = 4;
 	  		this.constructed = false;
 	  	};
 	}
-	
+    	
 	function LevelOne() {
 		if (arguments.callee._singletonInstance)
 	    	return arguments.callee._singletonInstance;
@@ -524,6 +537,61 @@ var PLAYER_RUN_SPEED = 4;
 	  	};
 	}
 	
+	function StoryTwo() {
+		if (arguments.callee._singletonInstance)
+	    return arguments.callee._singletonInstance;
+	  	arguments.callee._singletonInstance = this;
+	  	this.constructed = false;
+	  
+	  	this.Construct = function() {
+	  		if(this.constructed) return;
+	  		this.floor = [];
+	  		this.interactive = [];
+	  		var x = -400;
+	  		for(var i=0; i<15; i++)
+			{
+				this.floor[i] = CreateFloorElement(x, 550, 100, 100, "", 0, false);
+				x += 100;
+			}
+			
+			var background = CreateSprite(400,400,1055.33,560,"sprites/Office.png", 500);
+		    var boss = CreateSprite(550,440,900,582,"sprites/boss.png",100);
+		    this.width = this.floor[0].width/2 + this.floor[this.floor.length-1].x - this.floor[0].x + this.floor[this.floor.length-1].width/2;
+	  	    this.constructed = true;
+	  	    player.body.SetTransform(new b2.Vec2(300/PHYSICS_SCALE,475/PHYSICS_SCALE), 0);
+	  	};	
+	};
+	
+	function StoryThree() {//TODO
+		if (arguments.callee._singletonInstance)
+	    return arguments.callee._singletonInstance;
+	  	arguments.callee._singletonInstance = this;
+	  	this.constructed = false;
+	  
+	  	this.Construct = function() {
+	  		if(this.constructed) return;
+	  		this.floor = [];
+	  		this.interactive = [];
+	  		var x = -400;
+	  		for(var i=0; i<15; i++)
+			{
+				this.floor[i] = CreateFloorElement(x, 550, 100, 100, "", 0, false);
+				x += 100;
+			}
+			
+			var background = CreateSprite(250,400,1275,420,"sprites/Labratory.png", 500);
+			var fore_desk = CreateSprite(300,500,442,214,"sprites/Labratory_bottom_desk.png",-9995);
+			var right_door = CreateSprite(828, 370, 825, 942, "sprites/Right_door.png", 400);
+			var left_door = CreateSprite(-337, 362, 825, 942, "sprites/Left_door.png", 400);
+			var middle_door = CreateSprite(250 , 362, 925, 1042,"sprites/Middle_door.png", 400);
+			var female = CreateSprite(100,450,900,582,"sprites/female_teammate.png",400);
+			var male = CreateSprite(400,475,900,582,"sprites/male_teammate.png",400);
+		    this.width = this.floor[0].width/2 + this.floor[this.floor.length-1].x - this.floor[0].x + this.floor[this.floor.length-1].width/2;
+	  	    this.constructed = true;
+	  	    player.body.SetTransform(new b2.Vec2(275/PHYSICS_SCALE,475/PHYSICS_SCALE), 0);
+	  	};	
+	};
+	
 	function LevelTwo() {
 		if (arguments.callee._singletonInstance)
 	    	return arguments.callee._singletonInstance;
@@ -820,6 +888,50 @@ var PLAYER_RUN_SPEED = 4;
 	  	};
 	}
 	
+	function StoryFour(){
+		if (arguments.callee._singletonInstance)
+	    return arguments.callee._singletonInstance;
+	  	arguments.callee._singletonInstance = this;
+	  	this.constructed = false;
+	  
+	  	this.Construct = function() {//TODO
+	  		if(this.constructed) return;
+	  		this.floor = [];
+	  		this.interactive = [];
+	  		this.obstacles = [];
+	  		
+	  		var x = -400;
+	  		for(var i=0; i<15; i++)
+			{
+				this.floor[i] = CreateFloorElement(x, 550, 100, 100, "", 0, false);
+				x += 100;
+			}
+			
+			var background = CreateSprite(250,400,1275,420,"sprites/Hallway.png", 500);
+			var left_door = CreateSprite(-337, 362, 825, 942, "sprites/Left_door.png", 400);
+			var right_door = CreateWorldElement(828, 370, 825, 942, "sprites/Right_door.png", true, true, 400);
+			right_door.action = function() {
+				States.current().level.Destruct();
+				States.current().level = StoryThree();
+				States.current().level.Construct();
+				States.current().world.removeChild(background);
+			};
+       		this.interactive.push(right_door);
+			
+			this.width = this.floor[0].width/2 + this.floor[this.floor.length-1].x - this.floor[0].x + this.floor[this.floor.length-1].width/2;
+	  		this.constructed = true;
+	  		player.body.SetTransform(new b2.Vec2(-100/PHYSICS_SCALE,475/PHYSICS_SCALE), 0);
+	  	};
+	  	
+	  	this.Destruct = function() {
+	  		if(!this.constructed) return;
+	  		for(var i = 0; i < this.floor.length; i++) this.floor[i].Destroy();
+	  		for(var i = 0; i < this.interactive.length; i++) this.interactive[i].Destroy();
+	  		for(var i = 0; i < this.obstacles.length; i++) this.obstacles[i].Destroy();
+	  		this.width = 0;
+	  		this.constructed = false;
+	  	};
+	}
 	//
 	// Function definitions
 	//
@@ -916,12 +1028,13 @@ var PLAYER_RUN_SPEED = 4;
 	// CreateText - function to create a basic text to be displayed
 	//
 	function CreateText(x, y, text) {
-		var scoreText = new TextBox();
-		scoreText.x = x;
-		scoreText.y = y;
-		scoreText.fontSize = 32;
-		scoreText.text = text;
-		States.current().world.addChild(scoreText);
+		var Text = new TextBox();
+		Text.x = x;
+		Text.y = y;
+		Text.fontSize = 32;
+		Text.text = text;
+		States.current().world.addChild(Text);
+		return Text;
 	}
 	
 	//
@@ -942,7 +1055,7 @@ var PLAYER_RUN_SPEED = 4;
 		player.maxSpeed = PLAYER_WALK_SPEED;
 		player.sliding = false;
 		player.latency = 0;
-		player.update = function(d) {
+		player.update = function(d) { 
 			// Move the sprite according to the physics body
 			var pos = this.body.GetPosition();
 			this.x = pos.x * PHYSICS_SCALE;
