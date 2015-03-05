@@ -24,6 +24,9 @@ var PLAYER_STATE_NORMAL = 0;
 var PLAYER_STATE_RUNNER = 1;
 var PLAYER_WALK_SPEED = 1;
 var PLAYER_RUN_SPEED = 4;
+var PLAYER_DASH_SPEED = 10;
+var PLAYER_DASH_DURATION = 60;
+var PLAYER_SLIDE_DURATION = 60;
 
 //
 // Initialization
@@ -78,17 +81,26 @@ var PLAYER_RUN_SPEED = 4;
 		
 		println("World Initialized");
 		
+		player = CreatePlayer(0, 400);
+		
 		this.level = HubWorld();
 		this.level.Construct();
-		
-		player = CreatePlayer(0, 100);
 	};
 	
 	game.world.update = function(d) {
 		physics.Step(1/60, 10, 10);
 		physics.ClearForces();
 		
-		this.x = VIEWPORT_WIDTH / 2 - player.x;
+		if(player.state == PLAYER_STATE_NORMAL) {
+			this.x = VIEWPORT_WIDTH / 2 - player.x;
+			//this.y = VIEWPORT_HEIGHT * 0.75 - player.y;
+		} else {
+			var deltaX = (VIEWPORT_WIDTH / 5 - player.x) - this.x;
+			var deltaY = (VIEWPORT_HEIGHT * 0.75 - player.y) - this.y;
+			var accel = deltaX < VIEWPORT_WIDTH / 2 ? 10 : 1;
+			this.x += deltaX / accel;
+			this.y += deltaY / accel;
+		}
 				
 		this.updateChildren(d);
 	};
@@ -148,18 +160,20 @@ var PLAYER_RUN_SPEED = 4;
 	  	
 	  	this.Construct = function() {
 	  		if(this.constructed) return;
+	  		this.checkpoint = [];
 	  		this.floor = [];
 	  		this.interactive = [];
-	  		this.obstacles = [];
+	  		this.obstacle = [];
 	  		
 	  		var x = 0;
-	  		for(var i=0; i<10; i++)
+	  		this.checkpoint[0] = CreateCheckpoint(0, 400, false);
+	  		for(var i=0; i<50; i++)
 			{
 				this.floor[i] = CreateFloorElement(x, 550, 100, 100, "sprites/Wall1.png", 0, false);
 				x += 100;
 			}
 			
-			var door = CreateWorldElement(400, 454, 80, 100, "sprites/door.png", true, true, 0);
+			var door = CreateWorldElement(200, 454, 80, 100, "sprites/door.png", true, true, 0);
 			door.action = function() {
 				States.current().level.Destruct();
 				States.current().level = LevelOne();
@@ -169,13 +183,17 @@ var PLAYER_RUN_SPEED = 4;
 			
 			this.width = this.floor[0].width/2 + this.floor[this.floor.length-1].x - this.floor[0].x + this.floor[this.floor.length-1].width/2;
 	  		this.constructed = true;
+	  		player.checkpoint = this.checkpoint[0];
+	  		var position = player.checkpoint.body.GetPosition();
+	  		player.body.SetTransform(position, 0);
 	  	};
 	  	
 	  	this.Destruct = function() {
 	  		if(!this.constructed) return;
+	  		for(var i = 0; i < this.checkpoint.length; i++) this.checkpoint[i].Destroy();
 	  		for(var i = 0; i < this.floor.length; i++) this.floor[i].Destroy();
 	  		for(var i = 0; i < this.interactive.length; i++) this.interactive[i].Destroy();
-	  		for(var i = 0; i < this.obstacles.length; i++) this.obstacles[i].Destroy();
+	  		for(var i = 0; i < this.obstacle.length; i++) this.obstacle[i].Destroy();
 	  		this.width = 0;
 	  		this.constructed = false;
 	  	};
@@ -189,138 +207,46 @@ var PLAYER_RUN_SPEED = 4;
 	  	
 	  	this.Construct = function() {
 	  		if(this.constructed) return;
+	  		this.checkpoint = [];
 	  		this.floor = [];
 	  		this.fill = [];
 	  		this.interactive = [];
-	  		this.obstacles = [];
+	  		this.obstacle = [];
 	  		////work after this
 	  		
 	  		
 	  		//pathing
-			var x = 100;
-			for(var i=0; i<30; i++)
+			var x = 0;
+	  		this.checkpoint[0] = CreateCheckpoint(0, 450, true);
+	  		this.checkpoint[1] = CreateCheckpoint(800, 350, true);
+			for(var i=0; i<5; i++)
 			{
 				this.floor[i] = CreateFloorElement(x, 550, 100, 100, "sprites/Wall1.png", 0, true);
 				x += 100;
 			}
-			x=3500;
-			for(var i=30; i<60; i++)
-			{
-				this.floor[i] = CreateFloorElement(x, 550, 100, 100, "sprites/Wall1.png", 0, true);
-				x += 100;
-			}
-			x = 6800;
-			for(var i=60; i<65; i++)
-			{
-				this.floor[i] = CreateFloorElement(x, 550, 100, 100, "sprites/Wall1.png", 0, true);
-				x += 100;
-			}
-			x = 7700;
-			for(var i=65; i<85; i++)
-			{
-				this.floor[i] = CreateFloorElement(x, 550, 100, 100, "sprites/Wall1.png", 0, true);
-				x += 100;
-			}
-			x = 10100;
-			for(var i=85; i<95; i++)
-			{
-				this.floor[i] = CreateFloorElement(x, 550, 100, 100, "sprites/Wall1.png", 0, true);
-				x += 100;
-			}
-			this.obstacles[0] = CreateRunnerElement(10700, 432, 100, 150, "sprites/Obstacle2.png", true, false, 0);
-			x = 11400;
-			for(var i=95; i<110; i++)
-			{
-				this.floor[i] = CreateFloorElement(x, 550, 100, 100, "sprites/Wall1.png", 0, true);
-				x += 100;
-			}
-			this.obstacles[1] = CreateRunnerElement(11900, 432, 100, 150, "sprites/Obstacle2.png", true, false, 0);
-			x=13100;
-			for(var i=110; i<125; i++)
-			{
-				this.floor[i] = CreateFloorElement(x, 550, 100, 100, "sprites/Wall1.png", 0, true);
-				x += 100;
-			}
-			this.obstacles[2] = CreateRunnerElement(13800, 460, 100, 100, "sprites/Obstacle4.png", true, false, 0);
-			x=14800;
-			for(var i=110; i<125; i++)
+			x += 200;
+			for(var i=5; i<15; i++)
 			{
 				this.floor[i] = CreateFloorElement(x, 450, 100, 100, "sprites/Wall1.png", 0, true);
-				this.fill[i] = CreateFloorElement(x, 550, 100, 100, "sprites/Wall1.png", 0, true);
-				this.fill[i] = CreateFloorElement(x, 650, 100, 100, "sprites/Wall1.png", 0, true);
 				x += 100;
 			}
-			this.obstacles[3] = CreateRunnerElement(15400, 360, 100, 100, "sprites/Obstacle4.png", true, false, 0);
-			x=16500;
-			for(var i=125; i<140; i++)
-			{
-				this.floor[i] = CreateFloorElement(x, 300, 100, 100, "sprites/Wall1.png", 0, true);
-				this.fill[i] = CreateFloorElement(x, 400, 100, 100, "sprites/Wall1.png", 0, true);
-				this.fill[i] = CreateFloorElement(x, 500, 100, 100, "sprites/Wall1.png", 0, true);
-				this.fill[i] = CreateFloorElement(x, 600, 100, 100, "sprites/Wall1.png", 0, true);
-				this.fill[i] = CreateFloorElement(x, 700, 100, 100, "sprites/Wall1.png", 0, true);
-				x += 100;
-			}
-			this.obstacles[4] = CreateRunnerElement(17500, 180, 100, 160, "sprites/Obstacle3.png", true, false, 0);
-			x=18600;
-			for(var i=140; i<160; i++)
-			{
-				this.floor[i] = CreateFloorElement(x, 550, 100, 100, "sprites/Wall1.png", 0, true);
-				x += 100;
-			}
-			this.obstacles[5] = CreateRunnerElement(20100, 430, 100, 160, "sprites/Obstacle3.png", true, false, 0);
-			x=20800;
-			for(var i=160; i<170; i++)
-			{
-				this.floor[i] = CreateFloorElement(x, 550, 100, 100, "sprites/Wall1.png", 0, true);
-				x += 100;
-			}
-			x=22000;
-			for(var i=170; i<190; i++)
-			{
-				this.floor[i] = CreateFloorElement(x, 380, 100, 100, "sprites/Wall1.png", 0, true);
-				this.fill[i] = CreateFloorElement(x, 480, 100, 100, "sprites/Wall1.png", 0, true);
-				this.fill[i] = CreateFloorElement(x, 580, 100, 100, "sprites/Wall1.png", 0, true);
-				this.fill[i] = CreateFloorElement(x, 680, 100, 100, "sprites/Wall1.png", 0, true);
-				this.fill[i] = CreateFloorElement(x, 780, 100, 100, "sprites/Wall1.png", 0, true);
-				x += 100;
-			}
-			this.obstacles[6] = CreateRunnerElement(23900, 260, 100, 160, "sprites/Obstacle2.png", true, false, 0);
-			x=24200;
-			for(var i=190; i<210; i++)
-			{
-				this.floor[i] = CreateFloorElement(x, 550, 100, 100, "sprites/Wall1.png", 0, true);
-				x += 100;
-			}
-			this.obstacles[7] = CreateRunnerElement(25700, 460, 100, 100, "sprites/Obstacle4.png", true, false, 0);
-			x=26200;
-			for(var i=210; i<230; i++)
-			{
-				this.floor[i] = CreateFloorElement(x, 550, 100, 100, "sprites/Wall1.png", 0, true);
-				x += 100;
-			}
-			x=28400;
-			for(var i=230; i<260; i++)
-			{
-				this.floor[i] = CreateFloorElement(x, 550, 100, 100, "sprites/Wall1.png", 0, true);
-				x += 100;
-			}
-			//OBJ
-	        door = CreateRunnerElement(400, 454, 80, 100, "sprites/door.png", true, true, 0);
-	        door.action = printWords;//give it a function if the player interacts
-	        this.interactive.push(door);
 	        
 			///////work before this
 			this.width = this.floor[0].width/2 + this.floor[this.floor.length-1].x - this.floor[0].x + this.floor[this.floor.length-1].width/2;
+			this.width += 600;
 	  		this.constructed = true;
+	  		player.checkpoint = this.checkpoint[0];
+	  		var position = player.checkpoint.body.GetPosition();
+	  		player.body.SetTransform(position, 0);
 		};
 		
 		this.Destruct = function() {
 	  		if(!this.constructed) return;
+	  		for(var i = 0; i < this.checkpoint.length; i++) this.checkpoint[i].Destroy();
 	  		for(var i = 0; i < this.fill.length; i++) this.fill[i].Destroy();
 	  		for(var i = 0; i < this.floor.length; i++) this.floor[i].Destroy();
 	  		for(var i = 0; i < this.interactive.length; i++) this.interactive[i].Destroy();
-	  		for(var i = 0; i < this.obstacles.length; i++) this.obstacles[i].Destroy();
+	  		for(var i = 0; i < this.obstacle.length; i++) this.obstacle[i].Destroy();
 	  		this.width = 0;
 	  		this.constructed = false;
 	  	};
@@ -334,8 +260,19 @@ var PLAYER_RUN_SPEED = 4;
 	// Event that triggers when any contact begins
 	//
 	function beginContactListen(contact) {
-		var objectA = contact.GetFixtureA().GetBody().GetUserData();
-		var objectB = contact.GetFixtureB().GetBody().GetUserData();
+		var fixtureA = contact.GetFixtureA();
+		var fixtureB = contact.GetFixtureB();
+		if(fixtureA.IsSensor() && fixtureB.IsSensor()) return;
+		if(fixtureA == player.foot || fixtureB == player.foot) {
+			player.foot.numContacts++;
+			return;
+		}
+		if(fixtureA == player.reach || fixtureB == player.reach) {
+			player.reach.numContacts++;
+			return;
+		}
+		var objectA = fixtureA.GetBody().GetUserData();
+		var objectB = fixtureB.GetBody().GetUserData();
 		if(objectA == player || objectB == player) {
 			var other;
 			if(objectA == player) other = objectB;
@@ -351,23 +288,24 @@ var PLAYER_RUN_SPEED = 4;
 	        	}	
 	        }//checks to see if it is on top of the ground
 	        /////
+	        if(other.type == "checkpoint") player.checkpoint = other;
 	        if(other.fixture.IsSensor()) return;
-         	if(Math.abs(player.x - other.x) < other.width/2 + player.width/2) {
-         		player.onGround = true;
-         	} else if(player.y + player.height/2 > other.y - other.height/2) {
+         	var position = player.body.GetPosition();
+         	var end = new b2.Vec2(position.x, position.y + 5);
+         	var ray = new b2.RayCastCallback();
+			ray.ReportFixture = RayCallback;
+			player.aboveGround = false;
+			physics.RayCast(ray, position, end);
+         	if(player.y > other.y - player.height && player.onGround && player.aboveGround) {
          		var direction = 1;
          		if(player.x < other.x) direction = -1;
 				var deltaVelocity = (direction * player.maxSpeed);
+				position.x += direction * .5;
 				var impulse = new b2.Vec2(player.body.GetMass() * deltaVelocity, player.body.GetMass() * -2);
-				player.body.SetTransform(new b2.Vec2(direction * .1, 0), 0);
 				player.body.SetLinearVelocity(new b2.Vec2(0, 0));
+				player.body.SetTransform(position, 0);
 				player.body.ApplyLinearImpulse(impulse, player.body.GetWorldCenter(), true);
-				player.onGround = false;
-         	}/* else if(player.y - (floor.y + floor.height/2) < 1 && player.y < floor.y) {
-         		var impulse = new b2Vec2(player.body.GetMass() * -1, player.body.GetMass() * -2);
-				player.body.ApplyLinearImpulse(impulse, player.body.GetWorldCenter());
-         		println("CLIMB");
-         	}*/
+         	}
       	}
 	}
 	
@@ -375,8 +313,17 @@ var PLAYER_RUN_SPEED = 4;
 	// Event triggers when any contacts end
 	//
 	function endContactListen(contact) {
-		var objectA = contact.GetFixtureA().GetBody().GetUserData();
-		var objectB = contact.GetFixtureB().GetBody().GetUserData();
+		var fixtureA = contact.GetFixtureA();
+		var fixtureB = contact.GetFixtureB();
+		if(fixtureA.IsSensor() && fixtureB.IsSensor()) return;
+		if(fixtureA == player.foot || fixtureB == player.foot) {
+			player.foot.numContacts--;
+		}
+		if(fixtureA == player.reach || fixtureB == player.reach) {
+			player.reach.numContacts--;
+		}
+		var objectA = fixtureA.GetBody().GetUserData();
+		var objectB = fixtureB.GetBody().GetUserData();
 		if(objectA == player || objectB == player) {
 			var other;
 			if(objectA == player) other = objectB;
@@ -389,6 +336,15 @@ var PLAYER_RUN_SPEED = 4;
 	      	 	}
 	      	}
 		}	
+	}
+	
+	//
+	// Ray cast callback function
+	//
+	function RayCallback(fixture, point, normal, fraction) {
+		if(fixture == player.foot) return -1;
+		player.aboveGround = true;
+		return 0;
 	}
 	
 	//OBJ
@@ -423,25 +379,53 @@ var PLAYER_RUN_SPEED = 4;
 	//
 	function CreatePlayer(x, y) {
 		var player = CreateSprite(x, y, PLAYER_WIDTH_RUNNING, PLAYER_HEIGHT_RUNNING, "sprites/Char.png", -9990);
+		player.offsetY = -player.height;
 		player.onGround = true;
+		player.aboveGround = true;
 		player.near = false;//check for whether or not the player is near an interactable obj
 		
-		var bodyDef = CreateBodyDef(player, b2.Body.b2_dynamicBody);
+		var bodyDef = new b2.BodyDef();
+		bodyDef.type = b2.Body.b2_dynamicBody;
+		bodyDef.position.Set(player.x / PHYSICS_SCALE, (player.y - player.height / 2) / PHYSICS_SCALE);
 		player.body = physics.CreateBody(bodyDef);
+		
+		// Creates the foot sensor
+		var fixDef = CreateFixtureDef(0, 0, 0);
+		fixDef.shape = new b2.PolygonShape();
+		fixDef.shape.SetAsBox(player.width / 2.05 / PHYSICS_SCALE, 10 / PHYSICS_SCALE, new b2.Vec2(0, player.height / 2 / PHYSICS_SCALE), 0);
+		player.foot = player.body.CreateFixture(fixDef);
+		player.foot.SetSensor(true);
+		player.foot.numContacts = 0;
+		
+		// Creates the climb sensor
+		fixDef = CreateFixtureDef(0, 0, 0);
+		fixDef.shape = new b2.PolygonShape();
+		fixDef.shape.SetAsBox(5 / PHYSICS_SCALE, 5 / PHYSICS_SCALE, new b2.Vec2(player.width / 1.8 / PHYSICS_SCALE, -player.height / 1.8 / PHYSICS_SCALE), 0);
+		player.reach = player.body.CreateFixture(fixDef);
+		player.reach.SetSensor(true);
+		player.reach.numContacts = 0;
+		
 		CreateRunningFixture(player);
+		
 		player.body.SetUserData(player);
 		player.body.SetFixedRotation(true);
 		
 		player.state = PLAYER_STATE_NORMAL;
 		player.maxSpeed = PLAYER_WALK_SPEED;
+		player.dashing = false;
 		player.sliding = false;
+		player.cooldown = 0;
 		player.latency = 0;
 		player.update = function(d) {
 			// Move the sprite according to the physics body
 			var pos = this.body.GetPosition();
 			this.x = pos.x * PHYSICS_SCALE;
-			this.y = pos.y * PHYSICS_SCALE;
+			this.y = pos.y * PHYSICS_SCALE + this.height / 2;
 			this.rotation = this.body.GetAngle();
+			if(this.y > VIEWPORT_HEIGHT + this.height / 2) {
+				pos = this.checkpoint.body.GetPosition();
+				this.body.SetTransform(pos, 0);
+			}
 			//OBJ
 			if(this.near && gInput.E && this.latency < 0){
 				this.latency = 15;
@@ -452,6 +436,8 @@ var PLAYER_RUN_SPEED = 4;
 			// Movement code
 			var velocity = this.body.GetLinearVelocity();
 			this.latency--;
+			this.cooldown--;
+			this.onGround = this.foot.numContacts > 0;
 			if(this.state == PLAYER_STATE_NORMAL) {
 				if(gInput.right && this.onGround) {
 					var deltaVelocity = this.maxSpeed - velocity.x;
@@ -468,22 +454,34 @@ var PLAYER_RUN_SPEED = 4;
 					this.maxSpeed = PLAYER_RUN_SPEED;
 				}
 			} else if(this.state == PLAYER_STATE_RUNNER && this.onGround) {
+				this.climbing = this.reach.numContacts > 0;
 				var deltaVelocity = this.maxSpeed - velocity.x;
 				var impulse = new b2.Vec2(this.body.GetMass() * deltaVelocity, 0);
 				this.body.ApplyLinearImpulse(impulse, this.body.GetWorldCenter(), true);
-				if(gInput.right && this.onGround) {
-					var deltaVelocity = this.maxSpeed * 2 - velocity.x;
-					var impulse = new b2.Vec2(this.body.GetMass() * deltaVelocity, 0);
-					this.body.ApplyLinearImpulse(impulse, this.body.GetWorldCenter(), true);
+				if(gInput.right && !this.dashing && this.cooldown < 0) {
+					this.dashing = true;
+					this.maxSpeed = PLAYER_DASH_SPEED;
+					this.cooldown = PLAYER_DASH_DURATION;
 				}
-				if(gInput.down && !this.sliding) {
+				if(this.dashing && this.cooldown < PLAYER_DASH_DURATION / 2) {
+					var deltaMax = PLAYER_RUN_SPEED - this.maxSpeed;
+					this.maxSpeed += deltaMax / PLAYER_DASH_DURATION;
+					if(Math.abs(deltaMax) < .25) {
+						this.maxSpeed = PLAYER_RUN_SPEED;
+						this.dashing = false;
+						this.cooldown = 15;
+					}
+				}
+				if(gInput.down && !this.sliding && this.cooldown < 0) {
 					this.body.DestroyFixture(this.fixture);
 					CreateSlidingFixture(this);
 					this.sliding = true;
-				} else if(!gInput.down && this.sliding) {
+					this.cooldown = PLAYER_SLIDE_DURATION;
+				} else if(!gInput.down && this.sliding || this.cooldown < 0) {
 					this.body.DestroyFixture(this.fixture);
 					CreateRunningFixture(this);
 					this.sliding = false;
+					this.cooldown = 15;
 				}
 			}
 			if(gInput.up && this.onGround && !this.sliding && this.latency < 0) {
@@ -501,6 +499,9 @@ var PLAYER_RUN_SPEED = 4;
 	// CreateRunningFixture - creates the running body for player
 	//
 	function CreateRunningFixture(sprite) {
+		sprite.width = PLAYER_WIDTH_RUNNING;
+		sprite.height = PLAYER_HEIGHT_RUNNING;
+		sprite.offsetY = -sprite.height;
 		var fixDef = CreateFixtureDef(10.0, 1.0, 0);
 		var scaled_width = sprite.width / PHYSICS_SCALE;
 		var scaled_height = sprite.height / PHYSICS_SCALE;
@@ -513,11 +514,14 @@ var PLAYER_RUN_SPEED = 4;
 	// CreateSlidingFixture - creates the sliding body for player
 	//
 	function CreateSlidingFixture(sprite) {
+		sprite.width = PLAYER_WIDTH_SLIDING;
+		sprite.height = PLAYER_HEIGHT_SLIDING;
+		sprite.offsetY = -sprite.height;
 		var fixDef = CreateFixtureDef(10.0, 1.0, 0);
-		var scaled_width = 57 / PHYSICS_SCALE;
-		var scaled_height = 30 / PHYSICS_SCALE;
+		var scaled_width = sprite.width / PHYSICS_SCALE;
+		var scaled_height = sprite.height / PHYSICS_SCALE;
 		fixDef.shape = new b2.PolygonShape();
-		fixDef.shape.SetAsBox(scaled_width / 2, scaled_height / 4);
+		fixDef.shape.SetAsBox(scaled_width / 2, scaled_height / 2);
 		sprite.fixture = sprite.body.CreateFixture(fixDef);
 	}
 	
@@ -598,19 +602,15 @@ var PLAYER_RUN_SPEED = 4;
 				var xpos = this.x + States.current().world.x;
 				if(xpos + this.width/2 < -States.current().level.width / 2) {
 					this.x += States.current().level.width;
-					if(typeof(this.body) !== "undefined") {
-						var pos = this.body.GetPosition();
-						pos.x += States.current().level.width / PHYSICS_SCALE;
-						this.body.SetTransform(pos, 0);
-					}
+					var pos = this.body.GetPosition();
+					pos.x += States.current().level.width / PHYSICS_SCALE;
+					this.body.SetTransform(pos, 0);
 				}
 				if(xpos - this.width/2 > States.current().level.width / 2) {
 					this.x -= States.current().level.width;
-					if(typeof(this.body) !== "undefined") {
-						var pos = this.body.GetPosition();
-						pos.x -= States.current().level.width / PHYSICS_SCALE;
-						this.body.SetTransform(pos, 0);
-					}
+					var pos = this.body.GetPosition();
+					pos.x -= States.current().level.width / PHYSICS_SCALE;
+					this.body.SetTransform(pos, 0);
 				}
 			};
 		}
@@ -619,6 +619,38 @@ var PLAYER_RUN_SPEED = 4;
 			States.current().world.removeChild(this);
 		};
 		return element;
+	}
+	
+	//
+	// CreateCheckpoint - creates a checkpoint to respawn the player
+	//
+	function CreateCheckpoint(x, y, respawn) {
+		var checkpoint = CreateSprite(x, y, 10, 300, "", 9998);
+		ApplyRectBBox(checkpoint, b2.Body.b2_staticBody);
+		checkpoint.fixture.SetSensor(true);
+		checkpoint.type = "checkpoint";
+		if(respawn) {
+			checkpoint.update = function(d) {
+				var xpos = this.x + States.current().world.x;
+				if(xpos + this.width/2 < -States.current().level.width / 2) {
+					this.x += States.current().level.width;
+					var pos = this.body.GetPosition();
+					pos.x += States.current().level.width / PHYSICS_SCALE;
+					this.body.SetTransform(pos, 0);
+				}
+				if(xpos - this.width/2 > States.current().level.width / 2) {
+					this.x -= States.current().level.width;
+					var pos = this.body.GetPosition();
+					pos.x -= States.current().level.width / PHYSICS_SCALE;
+					this.body.SetTransform(pos, 0);
+				}
+			};
+		}
+		checkpoint.Destroy = function() {
+			physics.DestroyBody(this.body);
+			States.current().world.removeChild(this);
+		};
+		return checkpoint;
 	}
 	
 	//
