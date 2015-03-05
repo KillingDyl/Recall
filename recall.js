@@ -69,7 +69,7 @@ var PLAYER_RUN_SPEED = 4;
 	new StoryFour();
 	new LevelThree();
 	new LevelFour();
-	//new LevelFive();
+	new LevelFive();
 	
 	game.init = function() {
 		
@@ -175,13 +175,13 @@ var PLAYER_RUN_SPEED = 4;
 			var background = CreateSprite(250,400,1275,420,"sprites/Labratory.png", 500);
 			var fore_desk = CreateSprite(300,500,442,214,"sprites/Labratory_bottom_desk.png",-9995);
 			var text_image = CreateSprite(675,275, 173,225,"sprites/Right_text.png",100);
-			var text = CreateText(620,255, "Hey Bill");
+			var text = CreateText(620,255, "Hey Bill(FUCK YOU BILL SEEN UR NAME TOO MUCH)");
 			var left_door = CreateSprite(-337, 362, 825, 942, "sprites/Left_door.png", 400);
 			var middle_door = CreateSprite(250 , 362, 925, 1042,"sprites/Middle_door.png", 400);
 			var right_door = CreateWorldElement(828, 370, 825, 942, "sprites/Right_door.png", true, true, 400);
 			right_door.action = function() {
 				States.current().level.Destruct();
-				States.current().level = LevelFour(); ///change back to one after test
+				States.current().level = LevelFive(); ///change back to one after test
 				States.current().level.Construct();
 				States.current().world.removeChild(background);
 				States.current().world.removeChild(fore_desk);
@@ -1909,7 +1909,623 @@ var PLAYER_RUN_SPEED = 4;
 	  	};
 	}
 	
-	
+	function LevelFive() {
+		if (arguments.callee._singletonInstance)
+	    	return arguments.callee._singletonInstance;
+	  	arguments.callee._singletonInstance = this;
+	  	this.constructed = false;
+	  	
+	  	this.Construct = function() {
+	  		if(this.constructed) return;
+	  		this.floor = [];
+	  		this.fill = [];
+	  		this.interactive = [];
+	  		this.obstacles = [];
+	  		////work after this
+	  		var x = 100;
+			var y = 200;
+			var tracker = 0;
+			var buildingLength = tracker;
+			var xobstacle;
+			var obstacleCount = 0;
+			var obstacle1offset = 215;
+			var obstacle2offset = 295;
+			var obstacle3offset = 231;
+			var obstacle4offset = 240;
+			var obstacle5offset = 220;
+	  		
+			
+			//FLOOR 1///////////////////////////////////////////////////////////////////
+	  		//left side
+	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/LeftWall.png", 0, true);
+			x += 183;
+			tracker++;
+			buildingLength = tracker +7;
+			for(var i=tracker; i<buildingLength; i++) //middle
+			{
+				this.floor[i] = CreateFloorElement(x, y, 183, 371, "sprites/MiddleWall.png", 0, true);
+				x += 183;
+				tracker++;
+			}
+			//right side
+			tracker++;
+			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/RightWall.png", 0, true);
+			x += 383;
+			//floor obstacles
+			
+			////////////////////////////////////////////////////////////////////////////
+			
+			
+			//FLOOR 2///////////////////////////////////////////////////////////////////
+	  		//left side
+	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/LeftWall.png", 0, true);
+			x += 183;
+			tracker++;
+			buildingLength = tracker +10;
+			for(var i=tracker; i<buildingLength; i++) //middle
+			{
+				this.floor[i] = CreateFloorElement(x, y, 183, 371, "sprites/MiddleWall.png", 0, true);
+				x += 183;
+				tracker++;
+			}
+			//right side
+			tracker++;
+			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/RightWall.png", 0, true);
+			x += 383;
+			//floor obstacles
+			
+			////////////////////////////////////////////////////////////////////////////
+			
+			
+			//FLOOR 3///////////////////////////////////////////////////////////////////
+	  		//left side
+	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/LeftWall.png", 0, true);
+			x += 183;
+			tracker++;
+			buildingLength = tracker +10;
+			for(var i=tracker; i<buildingLength; i++) //middle
+			{
+				this.floor[i] = CreateFloorElement(x, y, 183, 371, "sprites/MiddleWall.png", 0, true);
+				x += 183;
+				tracker++;
+			}
+			//right side
+			tracker++;
+			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/RightWall.png", 0, true);
+			x += 383;
+			//floor obstacles
+			
+			////////////////////////////////////////////////////////////////////////////
+			
+			
+			//FLOOR 4///////////////////////////////////////////////////////////////////
+	  		//left side
+	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/LeftWall.png", 0, true);
+			x += 183;
+			tracker++;
+			buildingLength = tracker +5;
+			for(var i=tracker; i<buildingLength; i++) //middle
+			{
+				this.floor[i] = CreateFloorElement(x, y, 183, 371, "sprites/MiddleWall.png", 0, true);
+				x += 183;
+				tracker++;
+			}
+			//right side
+			tracker++;
+			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/RightWall.png", 0, true);
+			x += 383;
+			//floor obstacles
+			
+			////////////////////////////////////////////////////////////////////////////
+			
+			
+			//FLOOR 5///////////////////////////////////////////////////////////////////
+	  		//left side
+	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/LeftWall.png", 0, true);
+			x += 183;
+			tracker++;
+			buildingLength = tracker +10;
+			for(var i=tracker; i<buildingLength; i++) //middle
+			{
+				this.floor[i] = CreateFloorElement(x, y, 183, 371, "sprites/MiddleWall.png", 0, true);
+				x += 183;
+				tracker++;
+			}
+			//right side
+			tracker++;
+			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/RightWall.png", 0, true);
+			x += 383;
+			//floor obstacles
+			
+			////////////////////////////////////////////////////////////////////////////
+			
+			
+			//FLOOR 6///////////////////////////////////////////////////////////////////
+	  		//left side
+	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/LeftWall.png", 0, true);
+			x += 183;
+			tracker++;
+			buildingLength = tracker +1;
+			for(var i=tracker; i<buildingLength; i++) //middle
+			{
+				this.floor[i] = CreateFloorElement(x, y, 183, 371, "sprites/MiddleWall.png", 0, true);
+				x += 183;
+				tracker++;
+			}
+			//right side
+			tracker++;
+			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/RightWall.png", 0, true);
+			x += 383;
+			//floor obstacles
+			
+			////////////////////////////////////////////////////////////////////////////
+			
+			
+			//FLOOR 7///////////////////////////////////////////////////////////////////
+	  		//left side
+	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/LeftWall.png", 0, true);
+			x += 183;
+			tracker++;
+			buildingLength = tracker +1;
+			for(var i=tracker; i<buildingLength; i++) //middle
+			{
+				this.floor[i] = CreateFloorElement(x, y, 183, 371, "sprites/MiddleWall.png", 0, true);
+				x += 183;
+				tracker++;
+			}
+			//right side
+			tracker++;
+			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/RightWall.png", 0, true);
+			x += 383;
+			//floor obstacles
+			
+			////////////////////////////////////////////////////////////////////////////
+			
+			
+			//FLOOR 8///////////////////////////////////////////////////////////////////
+	  		//left side
+	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/LeftWall.png", 0, true);
+			x += 183;
+			tracker++;
+			buildingLength = tracker +10;
+			for(var i=tracker; i<buildingLength; i++) //middle
+			{
+				this.floor[i] = CreateFloorElement(x, y, 183, 371, "sprites/MiddleWall.png", 0, true);
+				x += 183;
+				tracker++;
+			}
+			//right side
+			tracker++;
+			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/RightWall.png", 0, true);
+			x += 383;
+			//floor obstacles
+			
+			////////////////////////////////////////////////////////////////////////////
+			
+			
+			//FLOOR 9///////////////////////////////////////////////////////////////////
+	  		//left side
+	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/LeftWall.png", 0, true);
+			x += 183;
+			tracker++;
+			buildingLength = tracker +1;
+			for(var i=tracker; i<buildingLength; i++) //middle
+			{
+				this.floor[i] = CreateFloorElement(x, y, 183, 371, "sprites/MiddleWall.png", 0, true);
+				x += 183;
+				tracker++;
+			}
+			//right side
+			tracker++;
+			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/RightWall.png", 0, true);
+			x += 383;
+			//floor obstacles
+			
+			////////////////////////////////////////////////////////////////////////////
+			
+			
+			//FLOOR 10///////////////////////////////////////////////////////////////////
+	  		//left side
+	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/LeftWall.png", 0, true);
+			x += 183;
+			tracker++;
+			buildingLength = tracker +1;
+			for(var i=tracker; i<buildingLength; i++) //middle
+			{
+				this.floor[i] = CreateFloorElement(x, y, 183, 371, "sprites/MiddleWall.png", 0, true);
+				x += 183;
+				tracker++;
+			}
+			//right side
+			tracker++;
+			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/RightWall.png", 0, true);
+			x += 383;
+			//floor obstacles
+			
+			////////////////////////////////////////////////////////////////////////////
+			
+			
+			//FLOOR 11///////////////////////////////////////////////////////////////////
+	  		//left side
+	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/LeftWall.png", 0, true);
+			x += 183;
+			tracker++;
+			buildingLength = tracker +3;
+			for(var i=tracker; i<buildingLength; i++) //middle
+			{
+				this.floor[i] = CreateFloorElement(x, y, 183, 371, "sprites/MiddleWall.png", 0, true);
+				x += 183;
+				tracker++;
+			}
+			//right side
+			tracker++;
+			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/RightWall.png", 0, true);
+			x += 383;
+			//floor obstacles
+			
+			////////////////////////////////////////////////////////////////////////////
+			
+			
+			//FLOOR 12///////////////////////////////////////////////////////////////////
+	  		//left side
+	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/LeftWall.png", 0, true);
+			x += 183;
+			tracker++;
+			buildingLength = tracker +2;
+			for(var i=tracker; i<buildingLength; i++) //middle
+			{
+				this.floor[i] = CreateFloorElement(x, y, 183, 371, "sprites/MiddleWall.png", 0, true);
+				x += 183;
+				tracker++;
+			}
+			//right side
+			tracker++;
+			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/RightWall.png", 0, true);
+			x += 383;
+			//floor obstacles
+			
+			////////////////////////////////////////////////////////////////////////////
+			
+			
+			//FLOOR 13///////////////////////////////////////////////////////////////////
+	  		//left side
+	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/LeftWall.png", 0, true);
+			x += 183;
+			tracker++;
+			buildingLength = tracker +3;
+			for(var i=tracker; i<buildingLength; i++) //middle
+			{
+				this.floor[i] = CreateFloorElement(x, y, 183, 371, "sprites/MiddleWall.png", 0, true);
+				x += 183;
+				tracker++;
+			}
+			//right side
+			tracker++;
+			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/RightWall.png", 0, true);
+			x += 383;
+			//floor obstacles
+			
+			////////////////////////////////////////////////////////////////////////////
+			
+			
+			//FLOOR 14///////////////////////////////////////////////////////////////////
+	  		//left side
+	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/LeftWall.png", 0, true);
+			x += 183;
+			tracker++;
+			buildingLength = tracker +3;
+			for(var i=tracker; i<buildingLength; i++) //middle
+			{
+				this.floor[i] = CreateFloorElement(x, y, 183, 371, "sprites/MiddleWall.png", 0, true);
+				x += 183;
+				tracker++;
+			}
+			//right side
+			tracker++;
+			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/RightWall.png", 0, true);
+			x += 383;
+			//floor obstacles
+			
+			////////////////////////////////////////////////////////////////////////////
+			
+			
+			//FLOOR 15///////////////////////////////////////////////////////////////////
+	  		//left side
+	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/LeftWall.png", 0, true);
+			x += 183;
+			tracker++;
+			buildingLength = tracker +5;
+			for(var i=tracker; i<buildingLength; i++) //middle
+			{
+				this.floor[i] = CreateFloorElement(x, y, 183, 371, "sprites/MiddleWall.png", 0, true);
+				x += 183;
+				tracker++;
+			}
+			//right side
+			tracker++;
+			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/RightWall.png", 0, true);
+			x += 383;
+			//floor obstacles
+			
+			////////////////////////////////////////////////////////////////////////////
+			
+			
+			//FLOOR 16///////////////////////////////////////////////////////////////////
+	  		//left side
+	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/LeftWall.png", 0, true);
+			x += 183;
+			tracker++;
+			buildingLength = tracker +1;
+			for(var i=tracker; i<buildingLength; i++) //middle
+			{
+				this.floor[i] = CreateFloorElement(x, y, 183, 371, "sprites/MiddleWall.png", 0, true);
+				x += 183;
+				tracker++;
+			}
+			//right side
+			tracker++;
+			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/RightWall.png", 0, true);
+			x += 383;
+			//floor obstacles
+			
+			////////////////////////////////////////////////////////////////////////////
+			
+			
+			//FLOOR 17///////////////////////////////////////////////////////////////////
+	  		//left side
+	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/LeftWall.png", 0, true);
+			x += 183;
+			tracker++;
+			buildingLength = tracker +1;
+			for(var i=tracker; i<buildingLength; i++) //middle
+			{
+				this.floor[i] = CreateFloorElement(x, y, 183, 371, "sprites/MiddleWall.png", 0, true);
+				x += 183;
+				tracker++;
+			}
+			//right side
+			tracker++;
+			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/RightWall.png", 0, true);
+			x += 383;
+			//floor obstacles
+			
+			////////////////////////////////////////////////////////////////////////////
+			
+			
+			//FLOOR 18///////////////////////////////////////////////////////////////////
+	  		//left side
+	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/LeftWall.png", 0, true);
+			x += 183;
+			tracker++;
+			buildingLength = tracker +10;
+			for(var i=tracker; i<buildingLength; i++) //middle
+			{
+				this.floor[i] = CreateFloorElement(x, y, 183, 371, "sprites/MiddleWall.png", 0, true);
+				x += 183;
+				tracker++;
+			}
+			//right side
+			tracker++;
+			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/RightWall.png", 0, true);
+			x += 383;
+			//floor obstacles
+			
+			////////////////////////////////////////////////////////////////////////////
+			
+			
+			//FLOOR 19///////////////////////////////////////////////////////////////////
+	  		//left side
+	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/LeftWall.png", 0, true);
+			x += 183;
+			tracker++;
+			buildingLength = tracker +5;
+			for(var i=tracker; i<buildingLength; i++) //middle
+			{
+				this.floor[i] = CreateFloorElement(x, y, 183, 371, "sprites/MiddleWall.png", 0, true);
+				x += 183;
+				tracker++;
+			}
+			//right side
+			tracker++;
+			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/RightWall.png", 0, true);
+			x += 383;
+			//floor obstacles
+			
+			////////////////////////////////////////////////////////////////////////////
+			
+			
+			//FLOOR 20///////////////////////////////////////////////////////////////////
+	  		//left side
+	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/LeftWall.png", 0, true);
+			x += 183;
+			tracker++;
+			buildingLength = tracker +5;
+			for(var i=tracker; i<buildingLength; i++) //middle
+			{
+				this.floor[i] = CreateFloorElement(x, y, 183, 371, "sprites/MiddleWall.png", 0, true);
+				x += 183;
+				tracker++;
+			}
+			//right side
+			tracker++;
+			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/RightWall.png", 0, true);
+			x += 383;
+			//floor obstacles
+			
+			////////////////////////////////////////////////////////////////////////////
+			
+			
+			//FLOOR 21///////////////////////////////////////////////////////////////////
+	  		//left side
+	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/LeftWall.png", 0, true);
+			x += 183;
+			tracker++;
+			buildingLength = tracker +5;
+			for(var i=tracker; i<buildingLength; i++) //middle
+			{
+				this.floor[i] = CreateFloorElement(x, y, 183, 371, "sprites/MiddleWall.png", 0, true);
+				x += 183;
+				tracker++;
+			}
+			//right side
+			tracker++;
+			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/RightWall.png", 0, true);
+			x += 383;
+			//floor obstacles
+			
+			////////////////////////////////////////////////////////////////////////////
+			
+			
+			//FLOOR 22///////////////////////////////////////////////////////////////////
+	  		//left side
+	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/LeftWall.png", 0, true);
+			x += 183;
+			tracker++;
+			buildingLength = tracker +4;
+			for(var i=tracker; i<buildingLength; i++) //middle
+			{
+				this.floor[i] = CreateFloorElement(x, y, 183, 371, "sprites/MiddleWall.png", 0, true);
+				x += 183;
+				tracker++;
+			}
+			//right side
+			tracker++;
+			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/RightWall.png", 0, true);
+			x += 383;
+			//floor obstacles
+			
+			////////////////////////////////////////////////////////////////////////////
+			
+			
+			//FLOOR 23///////////////////////////////////////////////////////////////////
+	  		//left side
+	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/LeftWall.png", 0, true);
+			x += 183;
+			tracker++;
+			buildingLength = tracker +4;
+			for(var i=tracker; i<buildingLength; i++) //middle
+			{
+				this.floor[i] = CreateFloorElement(x, y, 183, 371, "sprites/MiddleWall.png", 0, true);
+				x += 183;
+				tracker++;
+			}
+			//right side
+			tracker++;
+			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/RightWall.png", 0, true);
+			x += 383;
+			//floor obstacles
+			
+			////////////////////////////////////////////////////////////////////////////
+			
+			
+			//FLOOR 24///////////////////////////////////////////////////////////////////
+	  		//left side
+	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/LeftWall.png", 0, true);
+			x += 183;
+			tracker++;
+			buildingLength = tracker +10;
+			for(var i=tracker; i<buildingLength; i++) //middle
+			{
+				this.floor[i] = CreateFloorElement(x, y, 183, 371, "sprites/MiddleWall.png", 0, true);
+				x += 183;
+				tracker++;
+			}
+			//right side
+			tracker++;
+			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/RightWall.png", 0, true);
+			x += 383;
+			//floor obstacles
+			
+			////////////////////////////////////////////////////////////////////////////
+			
+			
+			//FLOOR 25///////////////////////////////////////////////////////////////////
+	  		//left side
+	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/LeftWall.png", 0, true);
+			x += 183;
+			tracker++;
+			buildingLength = tracker +3;
+			for(var i=tracker; i<buildingLength; i++) //middle
+			{
+				this.floor[i] = CreateFloorElement(x, y, 183, 371, "sprites/MiddleWall.png", 0, true);
+				x += 183;
+				tracker++;
+			}
+			//right side
+			tracker++;
+			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/RightWall.png", 0, true);
+			x += 383;
+			//floor obstacles
+			
+			////////////////////////////////////////////////////////////////////////////
+			
+			
+			//FLOOR 26///////////////////////////////////////////////////////////////////
+	  		//left side
+	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/LeftWall.png", 0, true);
+			x += 183;
+			tracker++;
+			buildingLength = tracker +2;
+			for(var i=tracker; i<buildingLength; i++) //middle
+			{
+				this.floor[i] = CreateFloorElement(x, y, 183, 371, "sprites/MiddleWall.png", 0, true);
+				x += 183;
+				tracker++;
+			}
+			//right side
+			tracker++;
+			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/RightWall.png", 0, true);
+			x += 383;
+			//floor obstacles
+			
+			////////////////////////////////////////////////////////////////////////////
+			
+			
+			//FLOOR 27///////////////////////////////////////////////////////////////////
+	  		//left side
+	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/LeftWall.png", 0, true);
+			x += 183;
+			tracker++;
+			buildingLength = tracker +10;
+			for(var i=tracker; i<buildingLength; i++) //middle
+			{
+				this.floor[i] = CreateFloorElement(x, y, 183, 371, "sprites/MiddleWall.png", 0, true);
+				x += 183;
+				tracker++;
+			}
+			//right side
+			tracker++;
+			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, "sprites/RightWall.png", 0, true);
+			x += 383;
+			//floor obstacles
+			
+			////////////////////////////////////////////////////////////////////////////
+			
+			
+			
+			
+			
+			//OBJ
+	        door = CreateRunnerElement(400, 0, 80, 100, "sprites/door.png", true, true, 0);
+	        door.action = printWords;//give it a function if the player interacts
+	        this.interactive.push(door);
+	        
+			///////work before this
+			this.width = this.floor[0].width/2 + this.floor[this.floor.length-1].x - this.floor[0].x + this.floor[this.floor.length-1].width/2;
+	  		this.constructed = true;
+	  		player.body.SetTransform(new b2.Vec2(400/PHYSICS_SCALE,10/PHYSICS_SCALE), 0);
+		};
+		
+		this.Destruct = function() {
+	  		if(!this.constructed) return;
+	  		for(var i = 0; i < this.fill.length; i++) this.fill[i].Destroy();
+	  		for(var i = 0; i < this.floor.length; i++) this.floor[i].Destroy();
+	  		for(var i = 0; i < this.interactive.length; i++) this.interactive[i].Destroy();
+	  		for(var i = 0; i < this.obstacles.length; i++) this.obstacles[i].Destroy();
+	  		this.width = 0;
+	  		this.constructed = false;
+	  	};
+	}
 	
 	
 	
