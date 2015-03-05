@@ -22,6 +22,7 @@ var PLAYER_WIDTH_SLIDING = 57;
 var PLAYER_HEIGHT_SLIDING = 30;
 var PLAYER_STATE_NORMAL = 0;
 var PLAYER_STATE_RUNNER = 1;
+var PLAYER_STATE_CLIMBING = 2;
 var PLAYER_WALK_SPEED = 1;
 var PLAYER_RUN_SPEED = 4;
 var PLAYER_DASH_SPEED = 10;
@@ -192,7 +193,7 @@ var PLAYER_SLIDE_DURATION = 60;
 			var right_door = CreateWorldElement(828, 370, 825, 942, "sprites/Right_door.png", true, true, 400);
 			right_door.action = function() {
 				States.current().level.Destruct();
-				States.current().level = LevelFive(); ///change back to one after test
+				States.current().level = LevelOne(); ///change back to one after test
 				States.current().level.Construct();
 				States.current().world.removeChild(background);
 				States.current().world.removeChild(fore_desk);
@@ -225,6 +226,7 @@ var PLAYER_SLIDE_DURATION = 60;
 	  	
 	  	this.Construct = function() {
 	  		if(this.constructed) return;
+	  		this.checkpoint = [];
 	  		this.floor = [];
 	  		this.fill = [];
 	  		this.interactive = [];
@@ -241,6 +243,8 @@ var PLAYER_SLIDE_DURATION = 60;
 			var obstacle3offset = 231;
 			var obstacle4offset = 240;
 			var obstacle5offset = 220;
+			
+			this.checkpoint[0] = CreateCheckpoint(x, 200, true);
 			
 			//FLOOR 1///////////////////////////////////////////////////////////////////
 	  		//left side
@@ -538,7 +542,8 @@ var PLAYER_SLIDE_DURATION = 60;
 			///////work before this
 			this.width = this.floor[0].width/2 + this.floor[this.floor.length-1].x - this.floor[0].x + this.floor[this.floor.length-1].width/2;
 	  		this.constructed = true;
-	  		player.body.SetTransform(new b2.Vec2(400/PHYSICS_SCALE,100/PHYSICS_SCALE), 0);
+	  		player.checkpoint = this.checkpoint[0];
+	  		player.body.SetTransform(player.checkpoint.body.GetPosition(), 0);
 		};
 		
 		this.Destruct = function() {
@@ -2562,8 +2567,16 @@ var PLAYER_SLIDE_DURATION = 60;
 			player.foot.numContacts++;
 			return;
 		}
-		if(fixtureA == player.reach || fixtureB == player.reach) {
-			player.reach.numContacts++;
+		if(fixtureA == player.climbUpper || fixtureB == player.climbUpper) {
+			player.climbUpper.numContacts++;
+			return;
+		}
+		if(fixtureA == player.climbMiddle || fixtureB == player.climbMiddle) {
+			player.climbMiddle.numContacts++;
+			return;
+		}
+		if(fixtureA == player.climbLower || fixtureB == player.climbLower) {
+			player.climbLower.numContacts++;
 			return;
 		}
 		var objectA = fixtureA.GetBody().GetUserData();
@@ -2614,8 +2627,14 @@ var PLAYER_SLIDE_DURATION = 60;
 		if(fixtureA == player.foot || fixtureB == player.foot) {
 			player.foot.numContacts--;
 		}
-		if(fixtureA == player.reach || fixtureB == player.reach) {
-			player.reach.numContacts--;
+		if(fixtureA == player.climbUpper|| fixtureB == player.climbUpper) {
+			player.climbUpper.numContacts--;
+		}
+		if(fixtureA == player.climbMiddle|| fixtureB == player.climbMiddle) {
+			player.climbMiddle.numContacts--;
+		}
+		if(fixtureA == player.climbLower || fixtureB == player.climbLower) {
+			player.climbLower.numContacts--;
 		}
 		var objectA = fixtureA.GetBody().GetUserData();
 		var objectB = fixtureB.GetBody().GetUserData();
@@ -2705,13 +2724,21 @@ var PLAYER_SLIDE_DURATION = 60;
 		player.foot.SetSensor(true);
 		player.foot.numContacts = 0;
 		
-		// Creates the climb sensor
-		fixDef = CreateFixtureDef(0, 0, 0);
-		fixDef.shape = new b2.PolygonShape();
-		fixDef.shape.SetAsBox(5 / PHYSICS_SCALE, 5 / PHYSICS_SCALE, new b2.Vec2(player.width / 1.8 / PHYSICS_SCALE, -player.height / 1.8 / PHYSICS_SCALE), 0);
-		player.reach = player.body.CreateFixture(fixDef);
-		player.reach.SetSensor(true);
-		player.reach.numContacts = 0;
+		// Creates the climb sensors
+		fixDef.shape.SetAsBox(5 / PHYSICS_SCALE, 5 / PHYSICS_SCALE, new b2.Vec2(player.width / 1.8 / PHYSICS_SCALE, -player.height / 1.2 / PHYSICS_SCALE), 0);
+		player.climbUpper = player.body.CreateFixture(fixDef);
+		player.climbUpper.SetSensor(true);
+		player.climbUpper.numContacts = 0;
+		
+		fixDef.shape.SetAsBox(5 / PHYSICS_SCALE, 5 / PHYSICS_SCALE, new b2.Vec2(player.width / 1.8 / PHYSICS_SCALE, -player.height / 4 / PHYSICS_SCALE), 0);
+		player.climbMiddle = player.body.CreateFixture(fixDef);
+		player.climbMiddle.SetSensor(true);
+		player.climbMiddle.numContacts = 0;
+		
+		fixDef.shape.SetAsBox(5 / PHYSICS_SCALE, 5 / PHYSICS_SCALE, new b2.Vec2(player.width / 1.8 / PHYSICS_SCALE, player.height / 2 / PHYSICS_SCALE), 0);
+		player.climbLower = player.body.CreateFixture(fixDef);
+		player.climbLower.SetSensor(true);
+		player.climbLower.numContacts = 0;
 		
 		CreateRunningFixture(player);
 		
@@ -2746,51 +2773,68 @@ var PLAYER_SLIDE_DURATION = 60;
 			this.latency--;
 			this.cooldown--;
 			this.onGround = this.foot.numContacts > 0;
-			if(this.state == PLAYER_STATE_NORMAL) {
-				if(gInput.right && this.onGround) {
-					var deltaVelocity = this.maxSpeed - velocity.x;
-					var impulse = new b2.Vec2(this.body.GetMass() * deltaVelocity, 0);
-					this.body.ApplyLinearImpulse(impulse, this.body.GetWorldCenter(), true);
-				}
-				if(gInput.left && this.onGround) {
-					var deltaVelocity = -this.maxSpeed - velocity.x;
-					var impulse = new b2.Vec2(this.body.GetMass() * deltaVelocity, 0);
-					this.body.ApplyLinearImpulse(impulse, this.body.GetWorldCenter(), true);
-				}
-				if(gInput.space) {
-					this.state = PLAYER_STATE_RUNNER;
-					this.maxSpeed = PLAYER_RUN_SPEED;
-				}
-			} else if(this.state == PLAYER_STATE_RUNNER && this.onGround) {
-				this.climbing = this.reach.numContacts > 0;
-				var deltaVelocity = this.maxSpeed - velocity.x;
-				var impulse = new b2.Vec2(this.body.GetMass() * deltaVelocity, 0);
-				this.body.ApplyLinearImpulse(impulse, this.body.GetWorldCenter(), true);
-				if(gInput.right && !this.dashing && this.cooldown < 0) {
-					this.dashing = true;
-					this.maxSpeed = PLAYER_DASH_SPEED;
-					this.cooldown = PLAYER_DASH_DURATION;
-				}
-				if(this.dashing && this.cooldown < PLAYER_DASH_DURATION / 2) {
-					var deltaMax = PLAYER_RUN_SPEED - this.maxSpeed;
-					this.maxSpeed += deltaMax / PLAYER_DASH_DURATION;
-					if(Math.abs(deltaMax) < .25) {
-						this.maxSpeed = PLAYER_RUN_SPEED;
-						this.dashing = false;
-						this.cooldown = 15;
+			this.climbing = !this.climbing && this.climbMiddle.numContacts > 0 && this.climbUpper.numContacts == 0;
+			if(this.climbing) this.state = PLAYER_STATE_CLIMBING;
+			switch(this.state) {
+				case PLAYER_STATE_NORMAL:
+					if(this.onGround) {
+						if(gInput.right) {
+							var deltaVelocity = this.maxSpeed - velocity.x;
+							var impulse = new b2.Vec2(this.body.GetMass() * deltaVelocity, 0);
+							this.body.ApplyLinearImpulse(impulse, this.body.GetWorldCenter(), true);
+						}
+						if(gInput.left) {
+							var deltaVelocity = -this.maxSpeed - velocity.x;
+							var impulse = new b2.Vec2(this.body.GetMass() * deltaVelocity, 0);
+							this.body.ApplyLinearImpulse(impulse, this.body.GetWorldCenter(), true);
+						}
+						if(gInput.space) {
+							this.state = PLAYER_STATE_RUNNER;
+							this.maxSpeed = PLAYER_RUN_SPEED;
+						}
 					}
-				}
-				if(gInput.down && !this.sliding && this.cooldown < 0) {
-					this.body.DestroyFixture(this.fixture);
-					CreateSlidingFixture(this);
-					this.sliding = true;
-					this.cooldown = PLAYER_SLIDE_DURATION;
-				} else if(!gInput.down && this.sliding || this.cooldown < 0) {
-					this.body.DestroyFixture(this.fixture);
-					CreateRunningFixture(this);
-					this.sliding = false;
-					this.cooldown = 15;
-				}
+					break;
+				case PLAYER_STATE_RUNNER:
+					if(this.onGround) {
+						var deltaVelocity = this.maxSpeed - velocity.x;
+						var impulse = new b2.Vec2(this.body.GetMass() * deltaVelocity, 0);
+						this.body.ApplyLinearImpulse(impulse, this.body.GetWorldCenter(), true);
+						if(gInput.right && !this.dashing && this.cooldown < 0) {
+							this.dashing = true;
+							this.maxSpeed = PLAYER_DASH_SPEED;
+							this.cooldown = PLAYER_DASH_DURATION;
+						}
+						if(this.dashing && this.cooldown < PLAYER_DASH_DURATION / 2) {
+							var deltaMax = PLAYER_RUN_SPEED - this.maxSpeed;
+							this.maxSpeed += deltaMax / PLAYER_DASH_DURATION;
+							if(Math.abs(deltaMax) < .25) {
+								this.maxSpeed = PLAYER_RUN_SPEED;
+								this.dashing = false;
+								this.cooldown = 15;
+							}
+						}
+						if(gInput.down && !this.sliding && this.cooldown < 0) {
+							this.body.DestroyFixture(this.fixture);
+							CreateSlidingFixture(this);
+							this.sliding = true;
+							this.cooldown = PLAYER_SLIDE_DURATION;
+						} else if(!gInput.down && this.sliding || this.cooldown < 0) {
+							this.body.DestroyFixture(this.fixture);
+							CreateRunningFixture(this);
+							this.sliding = false;
+							this.cooldown = 15;
+						}
+					}
+					break;
+				case PLAYER_STATE_CLIMBING:
+					var deltaVelocity = -2 - velocity.y;
+					var impulse = new b2.Vec2(this.body.GetMass() * 1, this.body.GetMass() * deltaVelocity);
+					this.body.ApplyLinearImpulse(impulse, this.body.GetWorldCenter(), true);
+					if(this.climbLower.numContacts == 0) {
+						this.state = PLAYER_STATE_RUNNER;
+						this.body.ApplyLinearImpulse(new b2.Vec2(this.body.GetMass() * 1, 0), this.body.GetWorldCenter(), true);
+					}
+					break;
 			}
 			if(gInput.up && this.onGround && !this.sliding && this.latency < 0) {
 				this.onGround = false;
