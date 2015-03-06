@@ -1,7 +1,7 @@
 /**
  * @author Dylan
  */
-var DEBUGMODE = true;
+var DEBUGMODE = false;
 
 // Constant Declarations
 var PHYSICS_SCALE = 100.0;
@@ -64,6 +64,7 @@ var PLAYER_SLIDE_DURATION = 60;
 	chat.alwaysDraw = false;
 	chat.alwaysUpdate = false;
 	
+	
 	// Initiates all levels
 	new StoryOne();
 	new StoryTwo();
@@ -95,7 +96,7 @@ var PLAYER_SLIDE_DURATION = 60;
 		
 		println("World Initialized");
 		
-		player = CreatePlayer(0, 400);
+		player = CreatePlayer(00, 500);//TODO
 		this.level = StoryOne();
 		this.level.Construct();
 	};
@@ -170,8 +171,9 @@ var PLAYER_SLIDE_DURATION = 60;
 	    return arguments.callee._singletonInstance;
 	  	arguments.callee._singletonInstance = this;
 	  	this.constructed = false;
-	  
-	  	this.Construct = function() {//TODO
+	    	   
+	   
+	  	this.Construct = function() {
 	  		if(this.constructed) return;
 	  		this.floor = [];
 	  		this.interactive = [];
@@ -184,10 +186,24 @@ var PLAYER_SLIDE_DURATION = 60;
 				x += 100;
 			}
 			
+			/*var sensor = CreateWorldElement(150, 370, 100, 500,"", true, true, 400);
+	        this.interactive.push(sensor);
+	        sensor.action = function(){
+       	    		States.pop();
+       	    };
+	        sensor.update = function(d){
+	        		console.log(player.near);*/
+       		///SCENE DIALOGUE
+       		///if(player.near){
+       			//var i = 0;
+				///end of chat section
+				//}
+	        //};
+	        
 			var background = CreateSprite(250,400,1275,420,"sprites/Labratory.png", 500);
 			var fore_desk = CreateSprite(300,500,442,214,"sprites/Labratory_bottom_desk.png",-9995);
-			var text_image = CreateSprite(675,275, 173,225,"sprites/Right_text.png",100);
-			var text = CreateText(620,255, "Hey Bill(FUCK YOU BILL SEEN UR NAME TOO MUCH)");
+			//var text_image = CreateSprite(675,275, 173,225,"sprites/Right_text.png",100);
+			//var text = CreateText(620,255, "Hey Bill");
 			var left_door = CreateSprite(-337, 362, 825, 942, "sprites/Left_door.png", 400);
 			var middle_door = CreateSprite(250 , 362, 925, 1042,"sprites/Middle_door.png", 400);
 			var right_door = CreateWorldElement(828, 370, 825, 942, "sprites/Right_door.png", true, true, 400);
@@ -203,7 +219,20 @@ var PLAYER_SLIDE_DURATION = 60;
 				States.current().world.removeChild(middle_door);
 			};
        		this.interactive.push(right_door);
-			
+       		//DIALOGUE
+       		chat.update = function(d) { //TODO, player in the air while chat is up
+       			if(gInput.E){
+       				//console.log(i);
+       				States.pop();
+       			}
+       	    };
+       		States.push(chat);
+       		this.dialogue = [];
+			var text_image = CreateSprite(675,275, 173,225,"sprites/Right_text.png",100);
+			var text = CreateText(620,255, "Hey \n Bill");
+			this.dialogue.push(text);
+			States.current().world.addChild(this.dialogue[0]);
+       	    	
 			this.width = this.floor[0].width/2 + this.floor[this.floor.length-1].x - this.floor[0].x + this.floor[this.floor.length-1].width/2;
 	  		this.constructed = true;
 	  	};
@@ -2697,7 +2726,7 @@ var PLAYER_SLIDE_DURATION = 60;
 		Text.y = y;
 		Text.fontSize = 32;
 		Text.text = text;
-		States.current().world.addChild(Text);
+		//States.current().world.addChild(Text);
 		return Text;
 	}
 	
