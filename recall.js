@@ -835,7 +835,7 @@ var SPRITE_H =
 			var obstacle4offset = 238;
 			var obstacle5offset = 220;
 			
-			//this.checkpoint[0] = CreateCheckpoint(x, 120, true);
+			this.checkpoint[0] = CreateCheckpoint(x, 120, true);
 	  		
 			//Floors
 			//1
@@ -946,7 +946,6 @@ var SPRITE_H =
 			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle1offset, SPRITE_W["AC"], SPRITE_H["AC"], SPRITES["ROOF_AC"], true, false, 0);
 			obstacleCount++;
 			
-			this.checkpoint[0] = CreateCheckpoint(x, 80, true);
 			
 			//9
 			tracker += 12;
