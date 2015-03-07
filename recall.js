@@ -20,20 +20,29 @@ var PLAYER_WIDTH_STANDING = 63;
 var PLAYER_HEIGHT_STANDING = 100;
 var PLAYER_WIDTH_RUNNING = 125;
 var PLAYER_HEIGHT_RUNNING = 100;
-var PLAYER_WIDTH_SLIDING = 100;
-var PLAYER_HEIGHT_SLIDING = 40;
+var PLAYER_WIDTH_JUMPING = 100;
+var PLAYER_HEIGHT_JUMPING = 100;
+var PLAYER_WIDTH_SLIDING = 150;
+var PLAYER_HEIGHT_SLIDING = 60;
+var PLAYER_WIDTH_CLIMBING = 87;
+var PLAYER_HEIGHT_CLIMBING = 175;
 var PLAYER_STATE_NORMAL = 0;
 var PLAYER_STATE_RUNNER = 1;
-var PLAYER_STATE_CLIMBING = 2;
+var PLAYER_STATE_JUMPING = 2;
+var PLAYER_STATE_CLIMBING = 3;
+var PLAYER_STATE_SLIDING = 4;
 var PLAYER_WALK_SPEED = 1;
 var PLAYER_RUN_SPEED = 4;
 var PLAYER_DASH_SPEED = 10;
 var PLAYER_DASH_DURATION = 30;
-var PLAYER_SLIDE_DURATION = 60;
+var PLAYER_SLIDE_DURATION = 120;
 
 var SPRITES = {
 	PLAYER_WALK: "sprites/player_walk_cycle.png",
 	PLAYER_RUN: "sprites/player_run_cycle.png",
+	PLAYER_JUMP: "sprites/player_jump_cycle.png",
+	PLAYER_SLIDE: "sprites/player_slide_cycle.png",
+	PLAYER_CLIMB: "sprites/player_climb_cycle.png",
 	LEFT_WALL: "sprites/roof_left.png",
 	MIDDLE_WALL: "sprites/roof_middle.png",
 	RIGHT_WALL: "sprites/roof_right.png",
@@ -45,6 +54,7 @@ var SPRITES = {
 	ROOF_CONTAINER: "sprites/rooftop_container.png",
 	ROOF_DOOR: "sprites/rooftop_door.png",
 };
+
 //
 // Initialization
 // Set up physics engine and brine engine
@@ -198,12 +208,7 @@ var SPRITES = {
 	  		this.obstacle = [];
 	  		this.scenery = [];
 	  		
-	  		var x = -400;
-	  		for(var i=0; i<15; i++)
-			{
-				this.floor[i] = CreateFloorElement(x, 550, 100, 100, "", 0, false);
-				x += 100;
-			}
+	  		this.floor[0] = CreateFloorElement(250, 550, 1275, 100, "", 0, false);
 			
 			/*var sensor = CreateWorldElement(150, 370, 100, 500,"", true, true, 400);
 	        this.interactive.push(sensor);
@@ -2754,26 +2759,21 @@ var SPRITES = {
 		bodyDef.position.Set(player.x / PHYSICS_SCALE, (player.y - PLAYER_HEIGHT_RUNNING / 2) / PHYSICS_SCALE);
 		player.body = physics.CreateBody(bodyDef);
 		
-		// Creates the foot sensor
 		var fixDef = CreateFixtureDef(0, 0, 0);
 		fixDef.shape = new b2.PolygonShape();
-		fixDef.shape.SetAsBox(PLAYER_WIDTH_RUNNING / 2.1 / PHYSICS_SCALE, 15 / PHYSICS_SCALE, new b2.Vec2(0, PLAYER_HEIGHT_RUNNING / 2 / PHYSICS_SCALE), 0);
-		player.foot = player.body.CreateFixture(fixDef);
-		player.foot.SetSensor(true);
-		player.foot.numContacts = 0;
 		
 		// Creates the climb sensors
-		fixDef.shape.SetAsBox(5 / PHYSICS_SCALE, 5 / PHYSICS_SCALE, new b2.Vec2(PLAYER_WIDTH_RUNNING / 1.8 / PHYSICS_SCALE, -PLAYER_HEIGHT_RUNNING / 1.2 / PHYSICS_SCALE), 0);
+		fixDef.shape.SetAsBox(15 / PHYSICS_SCALE, 5 / PHYSICS_SCALE, new b2.Vec2(PLAYER_WIDTH_RUNNING / 2 / PHYSICS_SCALE, -PLAYER_HEIGHT_RUNNING / 1.2 / PHYSICS_SCALE), 0);
 		player.climbUpper = player.body.CreateFixture(fixDef);
 		player.climbUpper.SetSensor(true);
 		player.climbUpper.numContacts = 0;
 		
-		fixDef.shape.SetAsBox(5 / PHYSICS_SCALE, 5 / PHYSICS_SCALE, new b2.Vec2(PLAYER_WIDTH_RUNNING / 1.8 / PHYSICS_SCALE, -PLAYER_HEIGHT_RUNNING / 4 / PHYSICS_SCALE), 0);
+		fixDef.shape.SetAsBox(15 / PHYSICS_SCALE, 5 / PHYSICS_SCALE, new b2.Vec2(PLAYER_WIDTH_RUNNING / 2 / PHYSICS_SCALE, -PLAYER_HEIGHT_RUNNING / 4 / PHYSICS_SCALE), 0);
 		player.climbMiddle = player.body.CreateFixture(fixDef);
 		player.climbMiddle.SetSensor(true);
 		player.climbMiddle.numContacts = 0;
 		
-		fixDef.shape.SetAsBox(5 / PHYSICS_SCALE, 5 / PHYSICS_SCALE, new b2.Vec2(PLAYER_WIDTH_RUNNING / 1.8 / PHYSICS_SCALE, PLAYER_HEIGHT_RUNNING / 2 / PHYSICS_SCALE), 0);
+		fixDef.shape.SetAsBox(15 / PHYSICS_SCALE, 5 / PHYSICS_SCALE, new b2.Vec2(PLAYER_WIDTH_RUNNING / 2 / PHYSICS_SCALE, PLAYER_HEIGHT_RUNNING / 2 / PHYSICS_SCALE), 0);
 		player.climbLower = player.body.CreateFixture(fixDef);
 		player.climbLower.SetSensor(true);
 		player.climbLower.numContacts = 0;
@@ -2796,7 +2796,6 @@ var SPRITES = {
 			this.y = pos.y * PHYSICS_SCALE + this.height / 2;
 			this.rotation = this.body.GetAngle();
 			if(this.y > VIEWPORT_HEIGHT + this.height / 2) this.Respawn();
-			if(this.climbMiddle.numContacts > 0 && this.onGround) this.Respawn();
 			//OBJ
 			if(this.near && gInput.E && this.latency < 0){
 				this.latency = 15;
@@ -2810,7 +2809,6 @@ var SPRITES = {
 			this.cooldown--;
 			this.onGround = this.foot.numContacts > 0;
 			this.climbing = !this.climbing && this.climbMiddle.numContacts > 0 && this.climbUpper.numContacts == 0;
-			if(this.climbing) this.state = PLAYER_STATE_CLIMBING;
 			switch(this.state) {
 				case PLAYER_STATE_NORMAL:
 					if(this.onGround) {
@@ -2845,6 +2843,7 @@ var SPRITES = {
 					break;
 				case PLAYER_STATE_RUNNER:
 					if(this.onGround) {
+						if(this.climbMiddle.numContacts > 0) this.Respawn();
 						var deltaVelocity = this.maxSpeed - velocity.x;
 						var impulse = new b2.Vec2(this.body.GetMass() * deltaVelocity, 0);
 						this.body.ApplyLinearImpulse(impulse, this.body.GetWorldCenter(), true);
@@ -2871,18 +2870,34 @@ var SPRITES = {
 							var deltaVelocity = velocity.y - 6;
 							var impulse = new b2.Vec2(0, this.body.GetMass() * deltaVelocity);
 							this.body.ApplyLinearImpulse(impulse, this.body.GetWorldCenter(), true);
+							CreateJumpAnimation(this);
+							DestroyCurrentFixtures(this);
+							CreateJumpingFixture(this);
+							this.state = PLAYER_STATE_JUMPING;
 						}
 						if(gInput.down && !this.sliding && this.cooldown < 0) {
-							this.body.DestroyFixture(this.fixture);
+							CreateSlideAnimation(this);
+							DestroyCurrentFixtures(this);
 							CreateSlidingFixture(this);
 							this.sliding = true;
 							this.cooldown = PLAYER_SLIDE_DURATION;
-						} else if(!gInput.down && this.sliding || this.cooldown < 0) {
-							this.body.DestroyFixture(this.fixture);
-							CreateRunningFixture(this);
-							this.sliding = false;
-							this.cooldown = 15;
+							this.state = PLAYER_STATE_SLIDING;
 						}
+						
+					}
+					if(this.climbing) {
+						this.state = PLAYER_STATE_CLIMBING;
+						CreateClimbAnimation(this);
+					}
+					break;
+				case PLAYER_STATE_JUMPING:
+					this.animation = "inair";
+					this.frameRate = 5;
+					if(this.onGround && this.latency < 0) {
+						CreateRunnerAnimation(this);
+						DestroyCurrentFixtures(this);
+						CreateRunningFixture(this);
+						this.state = PLAYER_STATE_RUNNER;
 					}
 					break;
 				case PLAYER_STATE_CLIMBING:
@@ -2892,6 +2907,24 @@ var SPRITES = {
 					if(this.climbLower.numContacts == 0) {
 						this.state = PLAYER_STATE_RUNNER;
 						this.body.ApplyLinearImpulse(new b2.Vec2(this.body.GetMass() * 1, 0), this.body.GetWorldCenter(), true);
+						CreateRunnerAnimation(this);
+					}
+					break;
+				case PLAYER_STATE_SLIDING:
+					this.animation = "slide";
+					this.frameRate = 0;
+					this.height = PLAYER_HEIGHT_SLIDING / this.frameHeight * 45 + PLAYER_HEIGHT_SLIDING;
+					this.offsetY = -this.height;
+					var deltaVelocity = this.maxSpeed - velocity.x;
+					var impulse = new b2.Vec2(this.body.GetMass() * deltaVelocity, 0);
+					this.body.ApplyLinearImpulse(impulse, this.body.GetWorldCenter(), true);
+					if(this.sliding && (!gInput.down || this.cooldown < 0)) {
+						CreateRunnerAnimation(this);
+						DestroyCurrentFixtures(this);
+						CreateRunningFixture(this);
+						this.sliding = false;
+						this.cooldown = 15;
+						this.state = PLAYER_STATE_RUNNER;
 					}
 					break;
 			}
@@ -2906,6 +2939,10 @@ var SPRITES = {
 	
 	function CreateNormalAnimation(sprite) {
 		for(name in sprite.animations) sprite.animations[name] = null;
+		sprite.width = PLAYER_WIDTH_STANDING;
+		sprite.height = PLAYER_HEIGHT_STANDING;
+		sprite.offsetX = -sprite.width / 2;
+		sprite.offsetY = -sprite.height;
 		sprite.image = Textures.load(SPRITES["PLAYER_WALK"]);
 		sprite.frame = 0;
 		sprite.frameHeight = 240;
@@ -2919,6 +2956,10 @@ var SPRITES = {
 	
 	function CreateRunnerAnimation(sprite) {
 		for(name in sprite.animations) sprite.animations[name] = null;
+		sprite.width = PLAYER_WIDTH_RUNNING;
+		sprite.height = PLAYER_HEIGHT_RUNNING;
+		sprite.offsetX = -sprite.width / 2;
+		sprite.offsetY = -sprite.height;
 		sprite.image = Textures.load(SPRITES["PLAYER_RUN"]);
 		sprite.frame = 0;
 		sprite.frameHeight = 220;
@@ -2929,52 +2970,120 @@ var SPRITES = {
 		//sprite.animation = "run";
 	}
 	
+	function CreateJumpAnimation(sprite) {
+		for(name in sprite.animations) sprite.animations[name] = null;
+		sprite.width = PLAYER_WIDTH_JUMPING;
+		sprite.height = PLAYER_HEIGHT_JUMPING;
+		sprite.offsetX = -sprite.width / 2;
+		sprite.offsetY = -sprite.height;
+		sprite.image = Textures.load(SPRITES["PLAYER_JUMP"]);
+		sprite.frame = 0;
+		sprite.frameHeight = 220;
+		sprite.frameWidth = 225;
+		sprite.frameCount = 3;
+		sprite.frameRate = 0;
+		sprite.addAnimation("jump", 0, 1);
+		sprite.addAnimation("inair", 1, 2);
+		sprite.animation = "jump";
+	}
+	
+	function CreateSlideAnimation(sprite) {
+		for(name in sprite.animations) sprite.animations[name] = null;
+		sprite.width = PLAYER_WIDTH_SLIDING;
+		sprite.height = PLAYER_HEIGHT_SLIDING;
+		sprite.offsetX = -sprite.width / 2;
+		sprite.offsetY = -sprite.height;
+		sprite.image = Textures.load(SPRITES["PLAYER_SLIDE"]);
+		sprite.frame = 0;
+		sprite.frameHeight = 162;
+		sprite.frameWidth = 290;
+		sprite.frameCount = 2;
+		sprite.frameRate = 0;
+		sprite.addAnimation("begin", 0, 1);
+		sprite.addAnimation("slide", 1, 1);
+		sprite.animation = "begin";
+	}
+	
+	function CreateClimbAnimation(sprite) {
+		for(name in sprite.animations) sprite.animations[name] = null;
+		sprite.width = PLAYER_WIDTH_CLIMBING;
+		sprite.height = PLAYER_HEIGHT_CLIMBING;
+		sprite.offsetX = -sprite.width / 8;
+		sprite.offsetY = -sprite.height / 2;
+		sprite.image = Textures.load(SPRITES["PLAYER_CLIMB"]);
+		sprite.frame = 0;
+		sprite.frameHeight = 425;
+		sprite.frameWidth = 215;
+		sprite.frameCount = 3;
+		sprite.frameRate = 30;
+		sprite.addAnimation("climb", 0, 2);
+		sprite.animation = "climb";
+	}
+	
 	//
 	// CreateRunningFixture - creates the standing body for player
 	//
 	function CreateStandingFixture(sprite) {
-		sprite.width = PLAYER_WIDTH_STANDING;
-		sprite.height = PLAYER_HEIGHT_STANDING;
-		sprite.offsetX = -sprite.width / 2;
-		sprite.offsetY = -sprite.height;
 		var fixDef = CreateFixtureDef(10.0, 1.0, 0);
 		var scaled_width = sprite.width / PHYSICS_SCALE;
 		var scaled_height = sprite.height / PHYSICS_SCALE;
 		fixDef.shape = new b2.PolygonShape();
 		fixDef.shape.SetAsBox(scaled_width / 2, scaled_height / 2);
 		sprite.fixture = sprite.body.CreateFixture(fixDef);
+		CreateFootFixture(sprite);
 	}
 	
 	//
 	// CreateRunningFixture - creates the running body for player
 	//
 	function CreateRunningFixture(sprite) {
-		sprite.width = PLAYER_WIDTH_RUNNING;
-		sprite.height = PLAYER_HEIGHT_RUNNING;
-		sprite.offsetX = -sprite.width / 2;
-		sprite.offsetY = -sprite.height;
 		var fixDef = CreateFixtureDef(10.0, 1.0, 0);
 		var scaled_width = sprite.width / PHYSICS_SCALE;
 		var scaled_height = sprite.height / PHYSICS_SCALE;
 		fixDef.shape = new b2.PolygonShape();
 		fixDef.shape.SetAsBox(scaled_width / 2, scaled_height / 2);
 		sprite.fixture = sprite.body.CreateFixture(fixDef);
+		CreateFootFixture(sprite);
+	}
+	
+	//
+	// CreateJumpingFixture - creates the running body for player
+	//
+	function CreateJumpingFixture(sprite) {
+		var fixDef = CreateFixtureDef(10.0, 1.0, 0);
+		var scaled_width = sprite.width / PHYSICS_SCALE;
+		var scaled_height = sprite.height / PHYSICS_SCALE;
+		fixDef.shape = new b2.PolygonShape();
+		fixDef.shape.SetAsBox(scaled_width / 2, scaled_height / 2);
+		sprite.fixture = sprite.body.CreateFixture(fixDef);
+		CreateFootFixture(sprite);
 	}
 	
 	//
 	// CreateSlidingFixture - creates the sliding body for player
 	//
 	function CreateSlidingFixture(sprite) {
-		sprite.width = PLAYER_WIDTH_SLIDING;
-		sprite.height = PLAYER_HEIGHT_SLIDING;
-		sprite.offsetX = -sprite.width / 2;
-		sprite.offsetY = -sprite.height;
 		var fixDef = CreateFixtureDef(10.0, 1.0, 0);
 		var scaled_width = sprite.width / PHYSICS_SCALE;
 		var scaled_height = sprite.height / PHYSICS_SCALE;
 		fixDef.shape = new b2.PolygonShape();
 		fixDef.shape.SetAsBox(scaled_width / 2, scaled_height / 2);
 		sprite.fixture = sprite.body.CreateFixture(fixDef);
+		CreateFootFixture(sprite);
+	}
+	
+	function CreateFootFixture(sprite) {
+		var fixDef = CreateFixtureDef(0, 0, 0);
+		fixDef.shape = new b2.PolygonShape();
+		fixDef.shape.SetAsBox(sprite.width / 2.1 / PHYSICS_SCALE, 15 / PHYSICS_SCALE, new b2.Vec2(0, sprite.height / 2 / PHYSICS_SCALE), 0);
+		sprite.foot = sprite.body.CreateFixture(fixDef);
+		sprite.foot.SetSensor(true);
+		sprite.foot.numContacts = 0;
+	}
+	
+	function DestroyCurrentFixtures(sprite) {
+		sprite.body.DestroyFixture(sprite.foot);
+		sprite.body.DestroyFixture(sprite.fixture);
 	}
 	
 	//
