@@ -16,8 +16,8 @@ var VIEWPORT_WIDTH = document.getElementById("recall").width;
 var VIEWPORT_HEIGHT = document.getElementById("recall").height;
 
 // PLAYER CONSTANTS
-var PLAYER_WIDTH_STANDING = 63;
-var PLAYER_HEIGHT_STANDING = 100;
+var PLAYER_WIDTH_STANDING = 126;
+var PLAYER_HEIGHT_STANDING = 200;
 var PLAYER_WIDTH_RUNNING = 125;
 var PLAYER_HEIGHT_RUNNING = 100;
 var PLAYER_WIDTH_JUMPING = 100;
@@ -31,7 +31,7 @@ var PLAYER_STATE_RUNNER = 1;
 var PLAYER_STATE_JUMPING = 2;
 var PLAYER_STATE_CLIMBING = 3;
 var PLAYER_STATE_SLIDING = 4;
-var PLAYER_WALK_SPEED = 1;
+var PLAYER_WALK_SPEED = 2;
 var PLAYER_RUN_SPEED = 4;
 var PLAYER_DASH_SPEED = 10;
 var PLAYER_DASH_DURATION = 30;
@@ -321,16 +321,7 @@ var SPRITE_H =
 			
 			this.checkpoint[0] = CreateCheckpoint(x, 200, true);
 			
-			
-			/*var background = new Sprite();
-				background.x = 0;
-				background.y = 0;
-				background.height  = 514;
-				background.width= 600;
-				background.index = -10;
-				background.image = Textures.load("sprites/Sky.png");
-				world.addChild(background);
-			*/
+			var background = CreateBackground("sprites/Sky.png");
 			
 			//Floors
 			//1
@@ -486,7 +477,6 @@ var SPRITE_H =
 				        
 			///////work before this
 			this.width = this.floor[0].width/2 + this.floor[this.floor.length-1].x - this.floor[0].x + this.floor[this.floor.length-1].width/2;
-			var background = CreateWorldElement(VIEWPORT_WIDTH / 2, VIEWPORT_HEIGHT / 2,this.width,this.width,"sprites/Sky.png", false, false, 1000);
 	  		this.constructed = true;
 	  		player.checkpoint = this.checkpoint[0];
 	  		player.body.SetTransform(player.checkpoint.body.GetPosition(), 0);
@@ -2603,20 +2593,25 @@ var SPRITE_H =
 							this.state = PLAYER_STATE_SLIDING;
 						}
 						
-					}
-					if(this.climbing) {
-						this.state = PLAYER_STATE_CLIMBING;
-						CreateClimbAnimation(this);
+					} else {
+						CreateJumpAnimation(this);
+						DestroyCurrentFixtures(this);
+						CreateJumpingFixture(this);
+						this.state = PLAYER_STATE_JUMPING;
 					}
 					break;
 				case PLAYER_STATE_JUMPING:
 					this.animation = "inair";
-					this.frameRate = 5;
+					this.frameRate = 10;
 					if(this.onGround && this.latency < 0) {
 						CreateRunnerAnimation(this);
 						DestroyCurrentFixtures(this);
 						CreateRunningFixture(this);
 						this.state = PLAYER_STATE_RUNNER;
+					}
+					if(this.climbing) {
+						this.state = PLAYER_STATE_CLIMBING;
+						CreateClimbAnimation(this);
 					}
 					break;
 				case PLAYER_STATE_CLIMBING:
@@ -2656,6 +2651,9 @@ var SPRITE_H =
 		return player;
 	}
 	
+	// Brine quirk: framecount has to be +1
+	// Brine quirk: last animation length has to be +1
+	
 	function CreateNormalAnimation(sprite) {
 		for(name in sprite.animations) sprite.animations[name] = null;
 		sprite.width = PLAYER_WIDTH_STANDING;
@@ -2666,10 +2664,10 @@ var SPRITE_H =
 		sprite.frame = 0;
 		sprite.frameHeight = 240;
 		sprite.frameWidth = 150;
-		sprite.frameCount = 7;
+		sprite.frameCount = 8;
 		sprite.frameRate = 1;
 		sprite.addAnimation("idle", 0, 3);
-		sprite.addAnimation("walk", 3, 4);
+		sprite.addAnimation("walk", 3, 5);
 		sprite.animation = "idle";
 	}
 	
@@ -2683,10 +2681,10 @@ var SPRITE_H =
 		sprite.frame = 0;
 		sprite.frameHeight = 220;
 		sprite.frameWidth = 275;
-		sprite.frameCount = 6;
+		sprite.frameCount = 7;
 		sprite.frameRate = 7.5;
-		//sprite.addAnimation("run", 0, 6);
-		//sprite.animation = "run";
+		sprite.addAnimation("run", 0, 7);
+		sprite.animation = "run";
 	}
 	
 	function CreateJumpAnimation(sprite) {
@@ -2699,10 +2697,10 @@ var SPRITE_H =
 		sprite.frame = 0;
 		sprite.frameHeight = 220;
 		sprite.frameWidth = 225;
-		sprite.frameCount = 3;
+		sprite.frameCount = 4;
 		sprite.frameRate = 0;
 		sprite.addAnimation("jump", 0, 1);
-		sprite.addAnimation("inair", 1, 2);
+		sprite.addAnimation("inair", 1, 3);
 		sprite.animation = "jump";
 	}
 	
@@ -2733,9 +2731,9 @@ var SPRITE_H =
 		sprite.frame = 0;
 		sprite.frameHeight = 425;
 		sprite.frameWidth = 215;
-		sprite.frameCount = 3;
-		sprite.frameRate = 30;
-		sprite.addAnimation("climb", 0, 2);
+		sprite.frameCount = 4;
+		sprite.frameRate = 5;
+		sprite.addAnimation("climb", 0, 4);
 		sprite.animation = "climb";
 	}
 	
@@ -2850,12 +2848,10 @@ var SPRITE_H =
 				}
 			}
 		};
-		if(typeof(this.body) !== "undefined") {
-			element.Destroy = function() {
-				physics.DestroyBody(this.body);
-				States.current().world.removeChild(this);
-			};
-		}
+		element.Destroy = function() {
+			if(typeof(this.body) !== "undefined") physics.DestroyBody(this.body);
+			States.current().world.removeChild(this);
+		};
 		return element;
 	}
 	
@@ -2967,6 +2963,40 @@ var SPRITE_H =
 			States.current().world.removeChild(this);
 		};
 		return checkpoint;
+	}
+	
+	function CreateBackground(image) {
+		var background = [];
+		background[0] = CreateSprite(0, VIEWPORT_HEIGHT / 2, 1200, 1038, image, 1000);
+		background[0].update = function() {
+			var xpos = this.x + States.current().world.x;
+			if(xpos + this.width / 2 < 0) this.x += this.width * 2;
+			if(xpos - this.width / 2 > VIEWPORT_WIDTH) this.x -= this.width * 2;
+		};
+		background[1] = CreateSprite(1200, VIEWPORT_HEIGHT / 2, 1200, 1038, image, 1000);
+		background[1].update = function() {
+			var xpos = this.x + States.current().world.x;
+			if(xpos + this.width / 2 < 0) this.x += this.width * 2;
+			if(xpos - this.width / 2 > VIEWPORT_WIDTH) this.x -= this.width * 2;
+		};
+		background[2] = CreateSprite(0, VIEWPORT_HEIGHT / 2 - 1038, 1200, 1038, image, 1000);
+		background[2].scaleY = -1;
+		background[2].update = function() {
+			var xpos = this.x + States.current().world.x;
+			if(xpos + this.width / 2 < 0) this.x += this.width * 2;
+			if(xpos - this.width / 2 > VIEWPORT_WIDTH) this.x -= this.width * 2;
+		};
+		background[3] = CreateSprite(1200, VIEWPORT_HEIGHT / 2 - 1038, 1200, 1038, image, 1000);
+		background[3].scaleY = -1;
+		background[3].update = function() {
+			var xpos = this.x + States.current().world.x;
+			if(xpos + this.width / 2 < 0) this.x += this.width * 2;
+			if(xpos - this.width / 2 > VIEWPORT_WIDTH) this.x -= this.width * 2;
+		};
+		background.Destroy = function() {
+			States.current().world.removeChild(this[0]);
+		};
+		return background;
 	}
 	
 	//
