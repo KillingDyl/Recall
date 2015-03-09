@@ -259,7 +259,7 @@ var SPRITE_H =
 				};
        	    };
 	    
-	    	//var movetext = CreateText(0,243, 32, "Use arrow keys to move");
+	    	this.movetext = CreateText(0,243, 32, "Use arrow keys to move");
 			var background = CreateWorldElement(250,400,1275,420,"sprites/Labratory.png", false, false, 3);
 			this.scenery.push(background);
 			var fore_desk = CreateWorldElement(300,500,442,214,"sprites/Labratory_bottom_desk.png", false, false,-1);
@@ -270,25 +270,12 @@ var SPRITE_H =
 			this.interactive.push(middle_door);
 			var right_door = CreateDoorElement(827, 370, 72, 280, SPRITES["RIGHT_DOOR"], 2, false);
 			right_door.action = function() {
-				//States.current().world.removeChild(movetext);
+				States.current().world.removeChild(States.current().level.movetext);
 				States.current().level.Destruct();
-				States.current().level = StoryTwo(); ///change back to one after test
+				States.current().level = LevelOne(); ///change back to one after test
 				States.current().level.Construct();
 			};
        		this.interactive.push(right_door);
-       		//DIALOGUE
-       		/*chat.update = function(d) { //TODO, player in the air while chat is up
-       			if(gInput.E){
-       				//console.log(i);
-       				States.pop();
-       			}
-       	    };
-       		States.push(chat);
-       		this.dialogue = [];
-			var text_image = CreateWorldElement(675,275, 173,225,"sprites/Right_text.png", false, false, 1);
-			var text = CreateText(620,255, "Hey \n Bill");
-			this.dialogue.push(text);
-			States.current().world.addChild(this.dialogue[0]);*/
        	    	
 			this.width = this.floor[0].width/2 + this.floor[this.floor.length-1].x - this.floor[0].x + this.floor[this.floor.length-1].width/2;
 	  		this.constructed = true;
@@ -333,6 +320,17 @@ var SPRITE_H =
 			var obstacle5offset = 220;
 			
 			this.checkpoint[0] = CreateCheckpoint(x, 200, true);
+			
+			
+			/*var background = new Sprite();
+				background.x = 0;
+				background.y = 0;
+				background.height  = 514;
+				background.width= 600;
+				background.index = -10;
+				background.image = Textures.load("sprites/Sky.png");
+				world.addChild(background);
+			*/
 			
 			//Floors
 			//1
@@ -488,6 +486,7 @@ var SPRITE_H =
 				        
 			///////work before this
 			this.width = this.floor[0].width/2 + this.floor[this.floor.length-1].x - this.floor[0].x + this.floor[this.floor.length-1].width/2;
+			var background = CreateWorldElement(VIEWPORT_WIDTH / 2, VIEWPORT_HEIGHT / 2,this.width,this.width,"sprites/Sky.png", false, false, 1000);
 	  		this.constructed = true;
 	  		player.checkpoint = this.checkpoint[0];
 	  		player.body.SetTransform(player.checkpoint.body.GetPosition(), 0);
@@ -525,7 +524,7 @@ var SPRITE_H =
 			}
 
 
-			var sensor = CreateWorldElement(350, 370, 100, 500,"", true, true, 400);
+			var sensor = CreateWorldElement(420, 370, 100, 500,"", true, true, 400);
 	        this.interactive.push(sensor);
 	        sensor.Enter = function(){
    	    		States.push(chat2);
@@ -534,34 +533,47 @@ var SPRITE_H =
    	    		world.dialogue[0] = "Silvio is a COOL guy\n";
    	    		world.dialogue[1] = "Just kidding.";
    	    		world.dialogue[2] = "butts";
-				//var text_image = CreateWorldElement(695,275, 173,225,"sprites/Right_text.png", false, false, 1);
+				var text_image = CreateWorldElement(495,275, 173,225,"sprites/Right_text.png", false, false, 1);
 				
-				var text = CreateText(640,223, 16, world.dialogue[0]);
+				
+				var text = CreateText(395,243, 16, world.dialogue[0]);
 					
 				//var text2 = CreateText(640,278,14, "E to intEract.");
 				//this.dialogue.push(text);
 				//this.dialogue.push(text2);
 				var count= 0;
+				var pressed = false;
 				chat2.world.update = function(d) {
 					
-					if(gInput.E ){
-						
+				text.text = world.dialogue[count];
+				if(gInput.E && !pressed){
+					pressed = true;
+				}
+				if (!gInput.E && pressed){
+					count++;
+					pressed = false;
+				}
+					
+					
+					
+					
+					/* if(gInput.E ){	
 						count++;
 						console.log(count);
 						if(count == 50){
-							var text = CreateText(640,243, 16, world.dialogue[1]);
-							if(count == 95)
+							var text = CreateText(395,263, 16, world.dialogue[1]);
+							if(count == 95)//TODO
 								States.current().world.removeChild(text);
 						}
 						
-						if(count == 100){ //TODO
+						if(count == 100){
 								States.current().world.removeChild(text);
-							var text = CreateText(640,263, 16, world.dialogue[2]);
+							var text = CreateText(395,283, 16, world.dialogue[2]);
 						}	
 							
 						if(count == 150){
 								States.current().world.removeChild(text);
-							var text = CreateText(640,283, 16, world.dialogue[1]);
+							var text = CreateText(395,303, 16, world.dialogue[1]);
 						}	
 						
 						if (count == 200){
@@ -572,7 +584,7 @@ var SPRITE_H =
 							
 							
 						}	
-				 	}
+				 	}*/
 				};
        	    };
 			var background = CreateWorldElement(400,400,1055.33,560,"sprites/Office.png", false, false, 3);
@@ -581,7 +593,7 @@ var SPRITE_H =
 		    this.scenery.push(boss);
 		    
 		    this.width = this.floor[0].width/2 + this.floor[this.floor.length-1].x - this.floor[0].x + this.floor[this.floor.length-1].width/2;
-	  	    player.body.SetTransform(new b2.Vec2(300/PHYSICS_SCALE,475/PHYSICS_SCALE), 0);
+	  	    player.body.SetTransform(new b2.Vec2(200/PHYSICS_SCALE,475/PHYSICS_SCALE), 0);
 	  	    this.constructed = true;
 	  	};	
 	  	
@@ -848,7 +860,7 @@ var SPRITE_H =
 	  	arguments.callee._singletonInstance = this;
 	  	this.constructed = false;
 	  
-	  	this.Construct = function() {//TODO
+	  	this.Construct = function() {
 	  		if(this.constructed) return;
 	  		this.floor = [];
 	  		this.interactive = [];
