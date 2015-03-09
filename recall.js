@@ -1,5 +1,5 @@
 /**
- * @author Dylan
+ * @author Ducklyn
  */
 var DEBUGMODE = false;
 
@@ -111,8 +111,11 @@ var SPRITE_H =
 	chat2.alwaysDraw = false;
 	chat2.alwaysUpdate = false;
 	
+	var chat3 = new State();
+	chat3.alwaysDraw = false;
+	chat3.alwaysUpdate = false;
 	
-	// Initiates all levels
+	// Initiates all levels / level order
 	new StoryOne();
 	new StoryTwo();
 	new StoryThree();
@@ -248,8 +251,8 @@ var SPRITE_H =
 	        sensor.Enter = function(){
    	    		States.push(chat);
    	    		this.dialogue = [];
-				var text_image = CreateWorldElement(695,275, 173,225,"sprites/Right_text.png", false, false, 1);
-				var text = CreateText(640,243, 16, "Hey Remy,\ncome over here.\n");
+				var text_image = CreateWorldElement(695,275, 216.25,281.25,"sprites/Right_text.png", false, false, 1);
+				var text = CreateText(640,243, 16, "Remy, over here.");
 				var text2 = CreateText(640,278,14, "E to intEract.");
 				this.dialogue.push(text);
 				this.dialogue.push(text2);
@@ -272,7 +275,7 @@ var SPRITE_H =
 			right_door.action = function() {
 				States.current().world.removeChild(States.current().level.movetext);
 				States.current().level.Destruct();
-				States.current().level = LevelOne(); ///change back to one after test
+				States.current().level = StoryTwo(); ///change back to one after test
 				States.current().level.Construct();
 			};
        		this.interactive.push(right_door);
@@ -514,67 +517,65 @@ var SPRITE_H =
 			}
 
 
-			var sensor = CreateWorldElement(420, 370, 100, 500,"", true, true, 400);
+			var sensor = CreateWorldElement(337.5, 277.5, 100, 500,"", true, true, 400);
 	        this.interactive.push(sensor);
 	        sensor.Enter = function(){
    	    		States.push(chat2);
    	    		//var i = 0;
    	    		world.dialogue = [];
-   	    		world.dialogue[0] = "Silvio is a COOL guy\n";
-   	    		world.dialogue[1] = "Just kidding.";
-   	    		world.dialogue[2] = "butts";
-				var text_image = CreateWorldElement(495,275, 173,225,"sprites/Right_text.png", false, false, 1);
-				
-				
+   	    		world.dialogue[0] = "Sir, what do you want \nto speak to me about?";
+   	  			world.dialogue[1] = "Remy, as you know, the \ncompany has been \nstruggling a bit financially \nin recent months.";
+   	  			world.dialogue[2] = "                Yes.";
+   	   			world.dialogue[3] = "I'm gonna be blunt with \nyou. We can't continue \nto support your research.";
+   	   			world.dialogue[4] = "We haven't seen the \nsignificant advances with \nwe were looking for.";
+   	   			world.dialogue[5] = "But all the time we spent \non it! What will I tell \nthe team?!";
+   	   		 	world.dialogue[6] = "I'm sorry Remy, it was \na corporate decision.\nIt's out of my hands.";
+   	    	
+				var text_image = CreateWorldElement(480,275, 346, 450,"sprites/Left_text.png", false, false, 1);
+
 				var text = CreateText(395,243, 16, world.dialogue[0]);
 					
-				//var text2 = CreateText(640,278,14, "E to intEract.");
-				//this.dialogue.push(text);
-				//this.dialogue.push(text2);
 				var count= 0;
 				var pressed = false;
 				chat2.world.update = function(d) {
-					
-				text.text = world.dialogue[count];
-				if(gInput.E && !pressed){
-					pressed = true;
-				}
-				if (!gInput.E && pressed){
-					count++;
-					pressed = false;
-				}
-					
-					
-					
-					
-					/* if(gInput.E ){	
+					text.text = world.dialogue[count];
+					if(gInput.E && !pressed){
+						pressed = true;
+					}
+					if (!gInput.E && pressed){
 						count++;
-						console.log(count);
-						if(count == 50){
-							var text = CreateText(395,263, 16, world.dialogue[1]);
-							if(count == 95)//TODO
-								States.current().world.removeChild(text);
-						}
+						pressed = false;
+					}	
+					if(count == world.dialogue.length){
+						States.pop();
+						States.current().level.Destruct();
+					    States.current().level = StoryThree(); ///change back to one after test
+					    States.current().level.Construct();
+					}
+					if(count == 1 || count == 3 || count == 6){
+						text_image.image = Textures.load("sprites/Right_text.png");
+						text_image.x = 495;
+						text.x = 410;
 						
-						if(count == 100){
-								States.current().world.removeChild(text);
-							var text = CreateText(395,283, 16, world.dialogue[2]);
-						}	
-							
-						if(count == 150){
-								States.current().world.removeChild(text);
-							var text = CreateText(395,303, 16, world.dialogue[1]);
-						}	
+					}
+					if(count == 2 || count == 5){
+						text_image.image = Textures.load("sprites/Left_text.png");
+						text_image.x = 480;
+						text.x = 395;
 						
-						if (count == 200){
-							States.pop();
-							States.current().level.Destruct();
-							States.current().level = LevelTwo(); ///change back to one after test
-							States.current().level.Construct();
-							
-							
-						}	
-				 	}*/
+					if (count == 1){
+						text.y = 193;
+					}
+					
+					/*if (count == 2){
+						text.y = 253;
+					}
+						
+					if (count == 3){
+						text.y = 233;
+					}*/	
+						
+					}
 				};
        	    };
 			var background = CreateWorldElement(400,400,1055.33,560,"sprites/Office.png", false, false, 3);
@@ -606,6 +607,8 @@ var SPRITE_H =
 	  		if(this.constructed) return;
 	  		this.floor = [];
 	  		this.interactive = [];
+	  		this.scenery = [];
+	  		
 	  		var x = -400;
 	  		for(var i=0; i<15; i++)
 			{
@@ -613,13 +616,50 @@ var SPRITE_H =
 				x += 100;
 			}
 			
-			var background = CreateSprite(250,400,1275,420,"sprites/Labratory.png", 500);
-			var fore_desk = CreateSprite(300,500,442,214,"sprites/Labratory_bottom_desk.png",-9995);
-			var right_door = CreateSprite(828, 370, 825, 942, "sprites/Right_door.png", 400);
-			var left_door = CreateSprite(-337, 362, 825, 942, "sprites/Left_door.png", 400);
-			var middle_door = CreateSprite(250 , 362, 925, 1042,"sprites/Middle_door.png", 400);
-			var female = CreateSprite(100,450,900,582,"sprites/female_teammate.png",400);
-			var male = CreateSprite(400,475,900,582,"sprites/male_teammate.png",400);
+			/*var sensor = CreateWorldElement(450, 370, 100, 500,"", true, true, 400);
+	        this.interactive.push(sensor);
+	        sensor.Enter = function(){
+   	    		States.push(chat2);
+   	    		//var i = 0;
+   	    		world.dialogue = [];
+   	    		world.dialogue[0] = "Silvio is a guiy\n";
+   	    		world.dialogue[1] = "Just kidding.";
+   	    		world.dialogue[2] = "butts";
+				var text_image = CreateWorldElement(495,275, 173,225,"sprites/Right_text.png", false, false, 1);
+				
+				
+				var text = CreateText(395,243, 16, world.dialogue[0]);
+					
+				var count= 0;
+				var pressed = false;
+				chat2.world.update = function(d) {
+					
+				text.text = world.dialogue[count];
+				if(gInput.E && !pressed){
+					pressed = true;
+				}
+				if (!gInput.E && pressed){
+					count++;
+					pressed = false;
+				}	
+				if(count == world.dialogue.length){
+					States.pop();
+					States.current().level.Destruct();
+				    States.current().level = StoryThree(); ///change back to one after test
+				    States.current().level.Construct();
+				}
+				};
+       	    };*/
+		    var background = CreateWorldElement(250,400,1275,420,"sprites/Labratory.png", false, false, 3);
+			this.scenery.push(background);
+			var fore_desk = CreateWorldElement(300,500,442,214,"sprites/Labratory_bottom_desk.png", false, false,-1);
+			this.scenery.push(fore_desk);
+			var middle_door = CreateDoorElement(252 , 360, 146, 210,SPRITES["MIDDLE_DOOR"], 2, true);
+			this.interactive.push(middle_door);
+			var female = CreateWorldElement(100,450,900,582,"sprites/female_teammate.png",false, false, 0);
+			this.interactive.push(female);
+			var male = CreateWorldElement(400,475,900,582,"sprites/male_teammate.png",false, false, 0);
+			this.interactive.push(female);
 		    this.width = this.floor[0].width/2 + this.floor[this.floor.length-1].x - this.floor[0].x + this.floor[this.floor.length-1].width/2;
 	  	    this.constructed = true;
 	  	    player.body.SetTransform(new b2.Vec2(275/PHYSICS_SCALE,475/PHYSICS_SCALE), 0);
@@ -828,6 +868,7 @@ var SPRITE_H =
 	        
 			///////work before this
 			this.width = this.floor[0].width/2 + this.floor[this.floor.length-1].x - this.floor[0].x + this.floor[this.floor.length-1].width/2;
+	  		var background = CreateWorldElement(VIEWPORT_WIDTH / 2, VIEWPORT_HEIGHT / 2,this.width,this.width,"sprites/Sky.png", false, false, 1000);
 	  		this.constructed = true;
 	  		player.checkpoint = this.checkpoint[0];
 	  		player.body.SetTransform(player.checkpoint.body.GetPosition(), 0);
@@ -1140,6 +1181,7 @@ var SPRITE_H =
 	        
 			///////work before this
 			this.width = this.floor[0].width/2 + this.floor[this.floor.length-1].x - this.floor[0].x + this.floor[this.floor.length-1].width/2;
+	  		var background = CreateWorldElement(VIEWPORT_WIDTH / 2, VIEWPORT_HEIGHT / 2,this.width,this.width,"sprites/Sky.png", false, false, 1000);
 	  		this.constructed = true;
 	  		player.checkpoint = this.checkpoint[0];
 	  		player.body.SetTransform(player.checkpoint.body.GetPosition(), 0);
@@ -1676,6 +1718,7 @@ var SPRITE_H =
 	        
 			///////work before this
 			this.width = this.floor[0].width/2 + this.floor[this.floor.length-1].x - this.floor[0].x + this.floor[this.floor.length-1].width/2;
+	  		var background = CreateWorldElement(VIEWPORT_WIDTH / 2, VIEWPORT_HEIGHT / 2,this.width,this.width,"sprites/Sky.png", false, false, 1000);
 	  		this.constructed = true;
 	  		player.body.SetTransform(new b2.Vec2(400/PHYSICS_SCALE,100/PHYSICS_SCALE), 0);
 		};
@@ -2295,6 +2338,7 @@ var SPRITE_H =
 			///////work before this
 			this.width = this.floor[0].width/2 + this.floor[this.floor.length-1].x - this.floor[0].x + this.floor[this.floor.length-1].width/2;
 			this.width += 600;
+	  		var background = CreateWorldElement(VIEWPORT_WIDTH / 2, VIEWPORT_HEIGHT / 2,this.width,this.width,"sprites/Sky.png", false, false, 1000);
 	  		this.constructed = true;
 	  		player.body.SetTransform(new b2.Vec2(400/PHYSICS_SCALE,10/PHYSICS_SCALE), 0);
 		};
