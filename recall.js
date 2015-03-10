@@ -1,7 +1,7 @@
 /**
  * @author Ducklyn
  */
-var DEBUGMODE = false;
+var DEBUGMODE = true;
 
 // Constant Declarations
 var PHYSICS_SCALE = 100.0;
@@ -52,6 +52,8 @@ var SPRITES = {
 	ROOF_AC: "sprites/rooftop_ac.png",
 	ROOF_CHIMNEY: "sprites/rooftop_chimney.png",
 	ROOF_CONTAINER: "sprites/rooftop_container.png",
+	ROOF_CRATE: "sprites/rooftop_crate.png",
+	ROOF_CRATE_DEATH: "sprites/rooftop_crate_death.png",
 	ROOF_DOOR: "sprites/rooftop_door.png",
 	LAB: "sprites/Labratory.png",
 };
@@ -63,6 +65,8 @@ var SPRITE_W =
 	ROOF_CONTAINER: 177,
 	ROOF_AC: 127,
 	ROOF_DOOR: 130,
+	ROOF_CRATE: 213 / 2,
+	ROOF_CRATE_DEATH: 350 / 2,
 	LAB: 5100 / 4,
 	LEFT_DOOR: 72,
 	RIGHT_DOOR: 72,
@@ -76,6 +80,8 @@ var SPRITE_H =
 	ROOF_CONTAINER: 234,
 	ROOF_AC: 48,
 	ROOF_DOOR: 107,
+	ROOF_CRATE: 177 / 2,
+	ROOF_CRATE_DEATH: 280 / 2,
 	LAB: 1680 / 4,
 	LEFT_DOOR: 280,
 	RIGHT_DOOR: 280,
@@ -335,13 +341,9 @@ var SPRITE_H =
 			
 			this.checkpoint[0] = CreateCheckpoint(x, 200, true);
 			
-			/*var sensor = CreateWorldElement(400, 200, 10, 500,"", true, true, 400);
-	        this.interactive.push(sensor);
-	        sensor.Enter = function(){
-   	    		States.current().level.Destruct();
-				States.current().level = StoryTwo();
-				States.current().level.Construct();
-       	    };*/
+			this.obstacles.push(CreateDashElement(800, 220, SPRITE_W["ROOF_CRATE"], SPRITE_H["ROOF_CRATE"], -10));
+			this.obstacles.push(CreateDashElement(907, 220, SPRITE_W["ROOF_CRATE"], SPRITE_H["ROOF_CRATE"], -10));
+			this.obstacles.push(CreateDashElement(853, 130, SPRITE_W["ROOF_CRATE"], SPRITE_H["ROOF_CRATE"], -10));
 			
 			var background = CreateBackground("sprites/Sky.png");
 			
@@ -937,7 +939,6 @@ var SPRITE_H =
 	        
 			///////work before this
 			this.width = this.floor[0].width/2 + this.floor[this.floor.length-1].x - this.floor[0].x + this.floor[this.floor.length-1].width/2;
-	  		var background = CreateWorldElement(VIEWPORT_WIDTH / 2, VIEWPORT_HEIGHT / 2,this.width,this.width,"sprites/Sky.png", false, false, 1000);
 	  		this.constructed = true;
 	  		player.checkpoint = this.checkpoint[0];
 	  		player.body.SetTransform(player.checkpoint.body.GetPosition(), 0);
@@ -1268,7 +1269,6 @@ var SPRITE_H =
 	        
 			///////work before this
 			this.width = this.floor[0].width/2 + this.floor[this.floor.length-1].x - this.floor[0].x + this.floor[this.floor.length-1].width/2;
-	  		var background = CreateWorldElement(VIEWPORT_WIDTH / 2, VIEWPORT_HEIGHT / 2,this.width,this.width,"sprites/Sky.png", false, false, 1000);
 	  		this.constructed = true;
 	  		player.checkpoint = this.checkpoint[0];
 	  		player.body.SetTransform(player.checkpoint.body.GetPosition(), 0);
@@ -1567,7 +1567,6 @@ var SPRITE_H =
 	        
 			///////work before this
 			this.width = this.floor[0].width/2 + this.floor[this.floor.length-1].x - this.floor[0].x + this.floor[this.floor.length-1].width/2;
-	  		var background = CreateWorldElement(VIEWPORT_WIDTH / 2, VIEWPORT_HEIGHT / 2,this.width,this.width,"sprites/Sky.png", false, false, 1000);
 	  		this.constructed = true;
 	  		player.checkpoint = this.checkpoint[0];
 	  		player.body.SetTransform(player.checkpoint.body.GetPosition(), 0);
@@ -2242,7 +2241,6 @@ var SPRITE_H =
 			var other;
 			if(objectA == player) other = objectB;
 			if(objectB == player) other = objectA;
-			//OBJ
 			var interactives = States.current().level.interactive;
 			if(interactives.indexOf(other) != -1) {
 				player.near = true;
@@ -2250,25 +2248,11 @@ var SPRITE_H =
 				println("near");
 				if(other.Enter) other.entered = true;
 			}
-	        /////
 	        if(other.type == "checkpoint") player.checkpoint = other;
 	        if(other.fixture.IsSensor()) return;
-         	var position = player.body.GetPosition();
-         	var end = new b2.Vec2(position.x, position.y + 5);
-         	var ray = new b2.RayCastCallback();
-			ray.ReportFixture = RayCallback;
-			player.aboveGround = false;
-			physics.RayCast(ray, position, end);
-         	if(player.y > other.y - player.height && player.onGround && player.aboveGround) {
-         		/*var direction = 1;
-         		if(player.x < other.x) direction = -1;
-				var deltaVelocity = (direction * player.maxSpeed);
-				position.x += direction * .5;
-				var impulse = new b2.Vec2(player.body.GetMass() * deltaVelocity, player.body.GetMass() * -2);
-				player.body.SetLinearVelocity(new b2.Vec2(0, 0));
-				player.body.SetTransform(position, 0);
-				player.body.ApplyLinearImpulse(impulse, player.body.GetWorldCenter(), true);*/
-         	}
+	        if(other.type == "dash" && !other.broken && player.dashing) {
+	        	other.broken = true;
+	        }
       	}
 	}
 	
@@ -2397,7 +2381,6 @@ var SPRITE_H =
 		player.latency = 0;
 		
 		player.ChangeState = function(newstate) {
-			println(newstate);
 			switch(newstate) {
 				case PLAYER_STATE_NORMAL:
 					this.state = PLAYER_STATE_NORMAL;
@@ -2463,7 +2446,7 @@ var SPRITE_H =
 					break;
 				case PLAYER_STATE_RUNNER:
 					if(this.onGround) {
-						if(this.climbMiddle.numContacts > 0) this.Respawn();
+						if(this.climbMiddle.numContacts > 0 && !this.dashing) this.Respawn();
 						var deltaVelocity = this.maxSpeed - velocity.x;
 						var impulse = new b2.Vec2(this.body.GetMass() * deltaVelocity, 0);
 						this.body.ApplyLinearImpulse(impulse, this.body.GetWorldCenter(), true);
@@ -2536,10 +2519,6 @@ var SPRITE_H =
 					}
 					break;
 				case PLAYER_STATE_SLIDING:
-					this.animation = "slide";
-					this.frameRate = 0;
-					this.height = PLAYER_HEIGHT_SLIDING / this.frameHeight * 45 + PLAYER_HEIGHT_SLIDING;
-					this.offsetY = -this.height;
 					var deltaVelocity = this.maxSpeed - velocity.x;
 					var impulse = new b2.Vec2(this.body.GetMass() * deltaVelocity, 0);
 					this.body.ApplyLinearImpulse(impulse, this.body.GetWorldCenter(), true);
@@ -2623,13 +2602,12 @@ var SPRITE_H =
 		sprite.offsetY = -sprite.height;
 		sprite.image = Textures.load(SPRITES["PLAYER_SLIDE"]);
 		sprite.frame = 0;
-		sprite.frameHeight = 162;
-		sprite.frameWidth = 290;
-		sprite.frameCount = 2;
+		sprite.frameHeight = 117;
+		sprite.frameWidth = 280;
+		sprite.frameCount = 1;
 		sprite.frameRate = 0;
-		sprite.addAnimation("begin", 0, 1);
-		sprite.addAnimation("slide", 1, 1);
-		sprite.animation = "begin";
+		sprite.addAnimation("slide", 0, 1);
+		sprite.animation = "slide";
 	}
 	
 	function CreateClimbAnimation(sprite) {
@@ -2776,6 +2754,62 @@ var SPRITE_H =
 					this.body.SetTransform(pos, 0);
 				}
 			}
+		};
+		return element;
+	}
+	
+	//
+	// CreateDashElement - creates a dash element that will break if the player hits it while dashing
+	//
+	
+	function CreateDashElement(x, y, width, height, index) {
+		var element = CreateWorldElement(x, y, width, height, SPRITES["ROOF_CRATE"], true, false, index);
+		element.type = "dash";
+		element.broken = false;
+		element.respawn = 15;
+		element.update = function(d) {
+			if(this.broken) this.Break();
+			if(Math.floor(this.frame) == this.frameCount - 1) {
+				this.frameRate = 0;
+			}
+			var xpos = this.x + States.current().world.x;
+			if(xpos + this.width/2 < -States.current().level.width / 2) {
+				this.x += States.current().level.width;
+				var pos = this.body.GetPosition();
+				pos.x += States.current().level.width / PHYSICS_SCALE;
+				this.body.SetTransform(pos, 0);
+			}
+			if(xpos - this.width/2 > States.current().level.width / 2) {
+				this.x -= States.current().level.width;
+				var pos = this.body.GetPosition();
+				pos.x -= States.current().level.width / PHYSICS_SCALE;
+				this.body.SetTransform(pos, 0);
+			}
+		};
+		element.Reset = function() {
+			this.body.SetActive(true);
+			this.width = SPRITE_W["ROOF_CRATE"];
+			this.height = SPRITE_H["ROOF_CRATE"];
+			this.offsetX = -SPRITE_W["ROOF_CRATE"] / 2;
+			this.offsetY = -SPRITE_H["ROOF_CRATE"] / 2;
+			this.image = Textures.load(SPRITES["ROOF_CRATE"]);
+			this.frameWidth = 213;
+			this.frameHeight = 177;
+			this.frameCount = 1;
+			this.frame = 0;
+		};
+		element.Break = function() {
+			this.body.SetActive(false);
+			this.width = SPRITE_W["ROOF_CRATE_DEATH"];
+			this.height = SPRITE_H["ROOF_CRATE_DEATH"];
+			this.offsetX = -SPRITE_W["ROOF_CRATE_DEATH"] / 2;
+			this.offsetY = -SPRITE_H["ROOF_CRATE_DEATH"] / 2;
+			this.image = Textures.load(SPRITES["ROOF_CRATE_DEATH"]);
+			this.frameWidth = 350;
+			this.frameHeight = 280;
+			this.frameCount = 5;
+			this.frameRate = 10;
+			this.broken = false;
 		};
 		return element;
 	}
