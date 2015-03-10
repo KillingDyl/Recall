@@ -334,13 +334,6 @@ var SPRITE_H =
 			
 			this.checkpoint[0] = CreateCheckpoint(x, 200, true);
 			
-			var sensor = CreateWorldElement(400, 200, 10, 500,"", true, true, 400);
-	        this.interactive.push(sensor);
-	        sensor.Enter = function(){
-   	    		States.current().level.Destruct();
-				States.current().level = StoryTwo();
-				States.current().level.Construct();
-       	    };
 			
 			var background = CreateBackground("sprites/Sky.png");
 			
@@ -497,6 +490,16 @@ var SPRITE_H =
 			
 				        
 			///////work before this
+			
+			var sensor = CreateWorldElement( 500/*x-5*/, 200, 10, 500,"", true, true, 400);
+	        this.interactive.push(sensor);
+	        sensor.Enter = function(){
+   	    		States.current().level.Destruct();
+				States.current().level = LevelFour/*StoryTwo*/();
+				States.current().level.Construct();
+       	    };
+       	    
+       	    
 			this.width = this.floor[0].width/2 + this.floor[this.floor.length-1].x - this.floor[0].x + this.floor[this.floor.length-1].width/2;
 	  		this.constructed = true;
 	  		player.checkpoint = this.checkpoint[0];
@@ -1226,13 +1229,14 @@ var SPRITE_H =
 	  	
 	  	this.Construct = function() {
 	  		if(this.constructed) return;
+	  		this.checkpoint = [];
 	  		this.floor = [];
 	  		this.fill = [];
 	  		this.interactive = [];
 	  		this.obstacle = [];
 	  		////work after this
 	  		var x = 100;
-			var y = 450;
+			var y = 350;
 			var tracker = 0;
 			var buildingLength = tracker;
 			var xobstacle;
@@ -1243,504 +1247,252 @@ var SPRITE_H =
 			var obstacle4offset = 238;
 			var obstacle5offset = 220;
 			
+			this.checkpoint[0] = CreateCheckpoint(x, -100, true);
 			
-			//FLOOR 1///////////////////////////////////////////////////////////////////
-	  		//left side
-	  		this.floor[tracker] = CreateFloorElement(x-10, y, 210, 371, SPRITES["LEFT_WALL"], 0, true);
-			this.fill[tracker] = CreateFloorElement(x, y+371, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-			x += 183;
-			tracker++;
-			buildingLength = tracker +10;
-			for(var i=tracker; i<buildingLength; i++) //middle
-			{
-				this.floor[i] = CreateFloorElement(x, y, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-				this.fill[i] = CreateFloorElement(x, y+369, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-				x += 183;
-				tracker++;
-			}
-			//right side
-			tracker++;
-			this.floor[tracker] = CreateFloorElement(x+10, y, 210, 371, SPRITES["RIGHT_WALL"], 0, true);
-			this.fill[tracker] = CreateFloorElement(x, y+371, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-			x += 383;
-			//floor obstacles
+			//Floors
+			//1
+			x = 100;
+			y = 350;
+			tracker = 0;
+			xbuild = 10;
+			buildingLength = 10 + tracker;
+			makeBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
 			
-			////////////////////////////////////////////////////////////////////////////
+			//2
+			tracker += 12;
+			x += (183*xbuild) + 500;
+			y = 550;
+			xbuild = 5;
+			buildingLength = 5 + tracker;
+			makeBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			//floor obstacles 2
+			xobstacle = 3000;
+			this.obstacle.push(CreateRunnerElement(xobstacle, y-obstacle4offset, SPRITE_W["ROOF_DOOR"], SPRITE_H["ROOF_DOOR"], SPRITES["ROOF_DOOR"], true, false, 0));
 			
-	  		
-			y= 550; 
-			//FLOOR 2///////////////////////////////////////////////////////////////////
-	  		//left side
-	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["LEFT_WALL"], 0, true);
-			x += 183;
-			tracker++;
-			buildingLength = tracker +5;
-			for(var i=tracker; i<buildingLength; i++) //middle
-			{
-				this.floor[i] = CreateFloorElement(x, y, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-				x += 183;
-				tracker++;
-			}
-			//right side
-			tracker++;
-			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["RIGHT_WALL"], 0, true);
-			x += 383;
-			//floor obstacles
-			xobstacle = 3200;
-			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle4offset, 147, 142, SPRITES["ROOF_DOOR"], true, false, 0);
-			obstacleCount++;
-			////////////////////////////////////////////////////////////////////////////
-			
-			
-			//FLOOR 3///////////////////////////////////////////////////////////////////
-	  		//left side
-	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["LEFT_WALL"], 0, true);
-			x += 183;
-			tracker++;
-			buildingLength = tracker +5;
-			for(var i=tracker; i<buildingLength; i++) //middle
-			{
-				this.floor[i] = CreateFloorElement(x, y, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-				x += 183;
-				tracker++;
-			}
-			//right side
-			tracker++;
-			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["RIGHT_WALL"], 0, true);
-			x += 200;
-			//floor obstacles
+			//3
+			tracker += 12;
+			x += (183*xbuild) + 500;
+			y = 550;
+			xbuild = 5;
+			buildingLength = 5 + tracker;
+			makeBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			//floor obstacles3
 			xobstacle += 1600;
-			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle2offset, 211, 246, SPRITES["ROOF_CONTAINER"], false, false, 0);
-			obstacleCount++;
-			////////////////////////////////////////////////////////////////////////////
+			this.obstacle.push(CreateRunnerElement(xobstacle, y-obstacle2offset, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0));
 			
-			y =600;
-			//FLOOR 4///////////////////////////////////////////////////////////////////
-	  		//left side
-	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["LEFT_WALL"], 0, true);
-			x += 183;
-			tracker++;
-			buildingLength = tracker +3;
-			for(var i=tracker; i<buildingLength; i++) //middle
-			{
-				this.floor[i] = CreateFloorElement(x, y, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-				x += 183;
-				tracker++;
-			}
-			//right side
-			tracker++;
-			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["RIGHT_WALL"], 0, true);
-			x += 383;
-			//floor obstacles
+			//4
+			tracker += 12;
+			x += (183*xbuild) + 180;
+			y = 800;
+			xbuild = 3;
+			buildingLength = 3 + tracker;
+			makeBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
 			
-			////////////////////////////////////////////////////////////////////////////
-			
-			
-			//FLOOR 5///////////////////////////////////////////////////////////////////
-	  		//left side
-	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["LEFT_WALL"], 0, true);
-			x += 183;
-			tracker++;
-			buildingLength = tracker +10;
-			for(var i=tracker; i<buildingLength; i++) //middle
-			{
-				this.floor[i] = CreateFloorElement(x, y, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-				x += 183;
-				tracker++;
-			}
-			//right side
-			tracker++;
-			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["RIGHT_WALL"], 0, true);
-			x += 383;
-			//floor obstacles
+			//5
+			tracker += 12;
+			x += (183*xbuild) + 500;
+			y = 600;
+			xbuild = 10;
+			buildingLength = 10 + tracker;
+			makeBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			//floor obstacles 5
 			xobstacle += 2400;
-			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle4offset, 147, 142, SPRITES["ROOF_DOOR"], true, false, 0);
-			obstacleCount++;
+			this.obstacle.push(CreateRunnerElement(xobstacle, y-obstacle4offset, SPRITE_W["ROOF_DOOR"], SPRITE_H["ROOF_DOOR"], SPRITES["ROOF_DOOR"], true, false, 0));
 			xobstacle += 500;
-			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle2offset, 211, 246, SPRITES["ROOF_CONTAINER"], false, false, 0);
-			obstacleCount++;
-			////////////////////////////////////////////////////////////////////////////
+			this.obstacle.push(CreateRunnerElement(xobstacle, y-obstacle2offset, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0));
 			
+			//6
+			tracker += 12;
+			x += (183*xbuild) + 500;
 			y = 500;
-			//FLOOR 6///////////////////////////////////////////////////////////////////
-	  		//left side
-	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["LEFT_WALL"], 0, true);
-			x += 183;
-			tracker++;
-			buildingLength = tracker +5;
-			for(var i=tracker; i<buildingLength; i++) //middle
-			{
-				this.floor[i] = CreateFloorElement(x, y, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-				x += 183;
-				tracker++;
-			}
-			//right side
-			tracker++;
-			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["RIGHT_WALL"], 0, true);
-			x += 383;
-			//floor obstacles
+			xbuild = 5;
+			buildingLength = 5 + tracker;
+			makeBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
 			
-			////////////////////////////////////////////////////////////////////////////
+			//7
+			tracker += 12;
+			x += (183*xbuild) + 500;
+			y = 500;
+			xbuild = 5;
+			buildingLength = 5 + tracker;
+			makeBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			//floor obstacles7
+			xobstacle += 3115;
+			this.obstacle.push(CreateRunnerElement(xobstacle, y-obstacle5offset, 86, 72, "sprites/rooftop_crate.png", false, false, 0));
 			
-			
-			//FLOOR 7///////////////////////////////////////////////////////////////////
-	  		//left side
-	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["LEFT_WALL"], 0, true);
-			x += 183;
-			tracker++;
-			buildingLength = tracker +5;
-			for(var i=tracker; i<buildingLength; i++) //middle
-			{
-				this.floor[i] = CreateFloorElement(x, y, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-				x += 183;
-				tracker++;
-			}
-			//right side
-			tracker++;
-			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["RIGHT_WALL"], 0, true);
-			x += 383;
-			//floor obstacles
-			xobstacle += 3715;
-			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle5offset, 86, 72, "sprites/rooftop_crate.png", false, false, 0);
-			obstacleCount++;
-			////////////////////////////////////////////////////////////////////////////
-			
+			//8
+			tracker += 12;
+			x += (183*xbuild) + 500;
 			y = 550;
-			//FLOOR 8///////////////////////////////////////////////////////////////////
-	  		//left side
-	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["LEFT_WALL"], 0, true);
-			x += 183;
-			tracker++;
-			buildingLength = tracker +2;
-			for(var i=tracker; i<buildingLength; i++) //middle
-			{
-				this.floor[i] = CreateFloorElement(x, y, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-				x += 183;
-				tracker++;
-			}
-			//right side
-			tracker++;
-			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["RIGHT_WALL"], 0, true);
-			x += 383;
-			//floor obstacles
+			xbuild = 2;
+			buildingLength = 2 + tracker;
+			makeBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
 			
-			////////////////////////////////////////////////////////////////////////////
-			
+			//9
+			tracker += 12;
+			x += (183*xbuild) + 500;
 			y = 600;
-			//FLOOR 9///////////////////////////////////////////////////////////////////
-	  		//left side
-	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["LEFT_WALL"], 0, true);
-			x += 183;
-			tracker++;
-			buildingLength = tracker +5;
-			for(var i=tracker; i<buildingLength; i++) //middle
-			{
-				this.floor[i] = CreateFloorElement(x, y, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-				x += 183;
-				tracker++;
-			}
-			//right side
-			tracker++;
-			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["RIGHT_WALL"], 0, true);
-			x += 383;
-			//floor obstacles
-			xobstacle += 1190;
-			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle3offset, 73, 108, SPRITES["ROOF_CHIMNEY"], true, false, 0);
-			obstacleCount++;
-			xobstacle += 1233;
-			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle3offset, 73, 108, SPRITES["ROOF_CHIMNEY"], true, false, 0);
-			obstacleCount++;
+			xbuild = 5;
+			buildingLength = 5 + tracker;
+			makeBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			//floor obstacles9
+			xobstacle += 1330;
+			this.obstacle.push(CreateRunnerElement(xobstacle, y-obstacle3offset, SPRITE_W["ROOF_CHIMNEY"], SPRITE_H["ROOF_CHIMNEY"], SPRITES["ROOF_CHIMNEY"], true, false, 0));
+			xobstacle += 1030;
+			this.obstacle.push(CreateRunnerElement(xobstacle, y-obstacle3offset, SPRITE_W["ROOF_CHIMNEY"], SPRITE_H["ROOF_CHIMNEY"], SPRITES["ROOF_CHIMNEY"], true, false, 0));
 			
-			////////////////////////////////////////////////////////////////////////////
-			
+			//10
+			tracker += 12;
+			x += (183*xbuild) + 500;
 			y = 650;
-			//FLOOR 10///////////////////////////////////////////////////////////////////
-	  		//left side
-	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["LEFT_WALL"], 0, true);
-			x += 183;
-			tracker++;
-			buildingLength = tracker +4;
-			for(var i=tracker; i<buildingLength; i++) //middle
-			{
-				this.floor[i] = CreateFloorElement(x, y, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-				x += 183;
-				tracker++;
-			}
-			//right side
-			tracker++;
-			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["RIGHT_WALL"], 0, true);
-			x += 383;
-			//floor obstacles
+			xbuild = 4;
+			buildingLength = 4 + tracker;
+			makeBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			//floor obstacles 10
 			xobstacle += 850;
-			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle2offset, 211, 246, SPRITES["ROOF_CONTAINER"], false, false, 0);
-			obstacleCount++;
-			////////////////////////////////////////////////////////////////////////////
+			this.obstacle.push(CreateRunnerElement(xobstacle, y-obstacle2offset, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0));
 			
-			
+			//11
+			tracker += 12;
+			x += (183*xbuild) + 500;
 			y = 700;
-			//FLOOR 11///////////////////////////////////////////////////////////////////
-	  		//left side
-	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["LEFT_WALL"], 0, true);
-			x += 183;
-			tracker++;
-			buildingLength = tracker +6;
-			for(var i=tracker; i<buildingLength; i++) //middle
-			{
-				this.floor[i] = CreateFloorElement(x, y, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-				x += 183;
-				tracker++;
-			}
-			//right side
-			tracker++;
-			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["RIGHT_WALL"], 0, true);
-			x += 383;
-			//floor obstacles
+			xbuild = 6;
+			buildingLength = 6 + tracker;
+			makeBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			//floor obstacles 11
 			xobstacle += 1170;
-			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle2offset, 211, 246, SPRITES["ROOF_CONTAINER"], false, false, 0);
-			obstacleCount++;
+			this.obstacle.push(CreateRunnerElement(xobstacle, y-obstacle2offset, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0));
 			xobstacle += 470;
-			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle4offset, 147, 142, SPRITES["ROOF_DOOR"], true, false, 0);
-			obstacleCount++;
-			////////////////////////////////////////////////////////////////////////////
+			this.obstacle.push(CreateRunnerElement(xobstacle, y-obstacle4offset, SPRITE_W["ROOF_DOOR"], SPRITE_H["ROOF_DOOR"], SPRITES["ROOF_DOOR"], true, false, 0));
 			
+			//12
+			tracker += 12;
+			x += (183*xbuild) + 500;
 			y = 600;
-			//FLOOR 12///////////////////////////////////////////////////////////////////
-	  		//left side
-	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["LEFT_WALL"], 0, true);
-			x += 183;
-			tracker++;
-			buildingLength = tracker +3;
-			for(var i=tracker; i<buildingLength; i++) //middle
-			{
-				this.floor[i] = CreateFloorElement(x, y, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-				x += 183;
-				tracker++;
-			}
-			//right side
-			tracker++;
-			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["RIGHT_WALL"], 0, true);
-			x += 383;
-			//floor obstacles
+			xbuild = 3;
+			buildingLength = 3 + tracker;
+			makeBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
 			
-			////////////////////////////////////////////////////////////////////////////
-			
-			
-			//FLOOR 13///////////////////////////////////////////////////////////////////
-	  		//left side
-	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["LEFT_WALL"], 0, true);
-			x += 183;
-			tracker++;
-			buildingLength = tracker +3;
-			for(var i=tracker; i<buildingLength; i++) //middle
-			{
-				this.floor[i] = CreateFloorElement(x, y, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-				x += 183;
-				tracker++;
-			}
-			//right side
-			tracker++;
-			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["RIGHT_WALL"], 0, true);
-			x += 383;
-			//floor obstacles
+			//13
+			tracker += 12;
+			x += (183*xbuild) + 500;
+			y = 600;
+			xbuild = 3;
+			buildingLength = 3 + tracker;
+			makeBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			//floor obstacles 13
 			xobstacle += 2500;
-			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle2offset, 211, 246, SPRITES["ROOF_CONTAINER"], false, false, 0);
-			obstacleCount++;
-			////////////////////////////////////////////////////////////////////////////
+			this.obstacle.push(CreateRunnerElement(xobstacle-500, y-obstacle2offset, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0));
 			
+			//14
+			tracker += 12;
+			x += (183*xbuild) + 500;
 			y = 500;
-			//FLOOR 14///////////////////////////////////////////////////////////////////
-	  		//left side
-	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["LEFT_WALL"], 0, true);
-			x += 183;
-			tracker++;
-			buildingLength = tracker +7;
-			for(var i=tracker; i<buildingLength; i++) //middle
-			{
-				this.floor[i] = CreateFloorElement(x, y, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-				x += 183;
-				tracker++;
-			}
-			//right side
-			tracker++;
-			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["RIGHT_WALL"], 0, true);
-			x += 383;
-			//floor obstacles
+			xbuild = 7;
+			buildingLength = 7 + tracker;
+			makeBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
 			
-			////////////////////////////////////////////////////////////////////////////
-			
+			//15
+			tracker += 12;
+			x += (183*xbuild) + 500;
 			y = 550;
-			//FLOOR 15///////////////////////////////////////////////////////////////////
-	  		//left side
-	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["LEFT_WALL"], 0, true);
-			x += 183;
-			tracker++;
-			buildingLength = tracker +5;
-			for(var i=tracker; i<buildingLength; i++) //middle
-			{
-				this.floor[i] = CreateFloorElement(x, y, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-				x += 183;
-				tracker++;
-			}
-			//right side
-			tracker++;
-			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["RIGHT_WALL"], 0, true);
-			x += 383;
-			//floor obstacles
+			xbuild = 5;
+			buildingLength = 5 + tracker;
+			makeBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			//floor obstacles 15
 			xobstacle += 2800;
-			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle2offset, 211, 246, SPRITES["ROOF_CONTAINER"], false, false, 0);
-			obstacleCount++;
-			////////////////////////////////////////////////////////////////////////////
+			this.obstacle.push(CreateRunnerElement(xobstacle, y-obstacle2offset, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0));
 			
+			//16
+			tracker += 12;
+			x += (183*xbuild) + 500;
 			y = 600;
-			//FLOOR 16///////////////////////////////////////////////////////////////////
-	  		//left side
-	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["LEFT_WALL"], 0, true);
-			x += 183;
-			tracker++;
-			buildingLength = tracker +5;
-			for(var i=tracker; i<buildingLength; i++) //middle
-			{
-				this.floor[i] = CreateFloorElement(x, y, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-				x += 183;
-				tracker++;
-			}
-			//right side
-			tracker++;
-			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["RIGHT_WALL"], 0, true);
-			x += 383;
-			//floor obstacles
+			xbuild = 5;
+			buildingLength = 5 + tracker;
+			makeBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
 			
-			////////////////////////////////////////////////////////////////////////////
-			
-			y = 650;
-			//FLOOR 17///////////////////////////////////////////////////////////////////
-	  		//left side
-	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["LEFT_WALL"], 0, true);
-			x += 183;
-			tracker++;
-			buildingLength = tracker +4;
-			for(var i=tracker; i<buildingLength; i++) //middle
-			{
-				this.floor[i] = CreateFloorElement(x, y, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-				x += 183;
-				tracker++;
-			}
-			//right side
-			tracker++;
-			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["RIGHT_WALL"], 0, true);
-			x += 200;
-			//floor obstacles
+			//17
+			tracker += 12;
+			x += (183*xbuild) + 500;
+			y = 680;
+			xbuild = 4;
+			buildingLength = 4 + tracker;
+			makeBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			//floor obstacles 17
 			xobstacle += 2925;
-			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle2offset, 211, 246, SPRITES["ROOF_CONTAINER"], false, false, 0);
-			obstacleCount++;
-			////////////////////////////////////////////////////////////////////////////
+			this.obstacle.push(CreateRunnerElement(xobstacle-400, y-obstacle2offset, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0));
 			
-			y = 525;
-			//FLOOR 18///////////////////////////////////////////////////////////////////
-	  		//left side
-	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["LEFT_WALL"], 0, true);
-			x += 183;
-			tracker++;
-			buildingLength = tracker +5;
-			for(var i=tracker; i<buildingLength; i++) //middle
-			{
-				this.floor[i] = CreateFloorElement(x, y, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-				x += 183;
-				tracker++;
-			}
-			//right side
-			tracker++;
-			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["RIGHT_WALL"], 0, true);
-			x += 383;
-			//floor obstacles
-			
-			////////////////////////////////////////////////////////////////////////////
-			
+			//18
+			tracker += 12;
+			x += (183*xbuild) + 180;
 			y = 500;
-			//FLOOR 19///////////////////////////////////////////////////////////////////
-	  		//left side
-	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["LEFT_WALL"], 0, true);
-			x += 183;
-			tracker++;
-			buildingLength = tracker +2;
-			for(var i=tracker; i<buildingLength; i++) //middle
-			{
-				this.floor[i] = CreateFloorElement(x, y, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-				x += 183;
-				tracker++;
-			}
-			//right side
-			tracker++;
-			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["RIGHT_WALL"], 0, true);
-			x += 383;
-			//floor obstacles
+			xbuild = 5;
+			buildingLength = 5 + tracker;
+			makeBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
 			
-			////////////////////////////////////////////////////////////////////////////
+			//19
+			tracker += 12;
+			x += (183*xbuild) + 500;
+			y = 800;
+			xbuild = 2;
+			buildingLength = 2 + tracker;
+			makeBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
 			
-			y = 450;
-			//FLOOR 20///////////////////////////////////////////////////////////////////
-	  		//left side
-	  		this.floor[tracker] = CreateFloorElement(x-10, y, 210, 371, SPRITES["LEFT_WALL"], 0, true);
-			this.fill[tracker] = CreateFloorElement(x, y+371, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-			x += 183;
-			tracker++;
-			buildingLength = tracker +2;
-			for(var i=tracker; i<buildingLength; i++) //middle
-			{
-				this.floor[i] = CreateFloorElement(x, y, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-				this.fill[i] = CreateFloorElement(x, y+369, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-				x += 183;
-				tracker++;
-			}
-			//right side
-			tracker++;
-			this.floor[tracker] = CreateFloorElement(x+10, y, 210, 371, SPRITES["RIGHT_WALL"], 0, true);
-			this.fill[tracker] = CreateFloorElement(x, y+371, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-			x += 383;
-			//floor obstacles
+			//20
+			tracker += 12;
+			x += (183*xbuild) + 500;
+			y = 650;
+			xbuild = 2;
+			buildingLength = 2 + tracker;
+			makeBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
 			
-			////////////////////////////////////////////////////////////////////////////
-			
-			
-			//FLOOR 21///////////////////////////////////////////////////////////////////
-	  		//left side
-	  		this.floor[tracker] = CreateFloorElement(x-10, y, 210, 371, SPRITES["LEFT_WALL"], 0, true);
-			this.fill[tracker] = CreateFloorElement(x, y+371, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-			x += 183;
-			tracker++;
-			buildingLength = tracker +10;
-			for(var i=tracker; i<buildingLength; i++) //middle
-			{
-				this.floor[i] = CreateFloorElement(x, y, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-				this.fill[i] = CreateFloorElement(x, y+369, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-				x += 183;
-				tracker++;
-			}
-			//right side
-			tracker++;
-			this.floor[tracker] = CreateFloorElement(x+10, y, 210, 371, SPRITES["RIGHT_WALL"], 0, true);
-			this.fill[tracker] = CreateFloorElement(x, y+371, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-			x += 383;
-			//floor obstacles
+			//21
+			tracker += 12;
+			x += (183*xbuild) + 500;
+			y = 350;
+			xbuild = 10;
+			buildingLength = 10 + tracker;
+			makeBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			//floor obstacles 21
 			xobstacle += 5500;
-			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle5offset, 86, 72, "sprites/rooftop_crate.png", false, false, 0);
-			obstacleCount++;
-			////////////////////////////////////////////////////////////////////////////
+			this.obstacle.push(CreateRunnerElement(xobstacle-400, y-obstacle5offset, 86, 72, "sprites/rooftop_crate.png", false, false, 0));
 			
 			
 			
 			
 			
 			//OBJ
-	        door = CreateRunnerElement(400, 218, 80, 100, "sprites/door.png", true, true, 0);
-	        door.action = printWords;//give it a function if the player interacts
-	        this.interactive.push(door);
+	        //door = CreateRunnerElement(400, 218, 80, 100, "sprites/door.png", true, true, 0);
+	        //door.action = printWords;//give it a function if the player interacts
+	        //this.interactive.push(door);
 	        
 			///////work before this
 			this.width = this.floor[0].width/2 + this.floor[this.floor.length-1].x - this.floor[0].x + this.floor[this.floor.length-1].width/2;
 	  		var background = CreateWorldElement(VIEWPORT_WIDTH / 2, VIEWPORT_HEIGHT / 2,this.width,this.width,"sprites/Sky.png", false, false, 1000);
 	  		this.constructed = true;
-	  		player.body.SetTransform(new b2.Vec2(400/PHYSICS_SCALE,100/PHYSICS_SCALE), 0);
+	  		player.checkpoint = this.checkpoint[0];
+	  		player.body.SetTransform(player.checkpoint.body.GetPosition(), 0);
 		};
 		
 		this.Destruct = function() {
@@ -3171,7 +2923,7 @@ function fillBuilding(x, y, tracker, buildingLength)
 	  		this.fill.push(CreateFloorElement(x+20, y+371, 183, 371, SPRITES["MIDDLE_WALL"], 0, true));
 			x += 183;
 			tracker++;
-			for(tracker; tracker<buildingLength; tracker++) //middle
+			for(i=0; i<buildingLength; i++) //middle
 			{
 				this.fill.push(CreateFloorElement(x, y+369, 183, 371, SPRITES["MIDDLE_WALL"], 0, true));
 				x += 183;
