@@ -2811,6 +2811,10 @@ var SPRITE_H =
 			this.frameRate = 10;
 			this.broken = false;
 		};
+		element.Destroy = function() {
+			physics.DestroyBody(this.body);
+			States.current().world.removeChild(this);
+		};
 		return element;
 	}
 	
