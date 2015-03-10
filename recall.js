@@ -1,7 +1,7 @@
 /**
  * @author Ducklyn
  */
-var DEBUGMODE = true;
+var DEBUGMODE = false;
 
 // Constant Declarations
 var PHYSICS_SCALE = 100.0;
@@ -267,7 +267,8 @@ var SPRITE_H =
 				};
        	    };
 	    
-	    	this.movetext = CreateText(400,243, 32, "Use arrow keys to move");
+	    	var movetext = CreateText(400,243, 32, "Use arrow keys to move");
+	    	this.scenery.push(movetext);
 			var background = CreateWorldElement(SPRITE_W["LAB"] / 2, 400, SPRITE_W["LAB"], SPRITE_H["LAB"], SPRITES["LAB"], false, false, 3);
 			this.scenery.push(background);
 			var fore_desk = CreateWorldElement(700,500,442,214,"sprites/Labratory_bottom_desk.png", false, false,-1);
@@ -278,7 +279,6 @@ var SPRITE_H =
 			this.interactive.push(middle_door);
 			var right_door = CreateDoorElement(1214, 369, SPRITE_W["RIGHT_DOOR"], SPRITE_H["RIGHT_DOOR"], SPRITES["RIGHT_DOOR"], 2, false);
 			right_door.action = function() {
-				States.current().world.removeChild(States.current().level.movetext);
 				States.current().level.Destruct();
 				States.current().level = LevelOne(); ///change back to one after test
 				States.current().level.Construct();
@@ -288,6 +288,7 @@ var SPRITE_H =
 			//this.width = this.floor[0].width/2 + this.floor[this.floor.length-1].x - this.floor[0].x + this.floor[this.floor.length-1].width/2;
 	  		this.width = SPRITE_W["LAB"];
 	  		this.constructed = true;
+	  		player.ChangeState(PLAYER_STATE_NORMAL);
 	  	};
 	  	
 	  	this.Destruct = function() {
@@ -334,13 +335,13 @@ var SPRITE_H =
 			
 			this.checkpoint[0] = CreateCheckpoint(x, 200, true);
 			
-			var sensor = CreateWorldElement(400, 200, 10, 500,"", true, true, 400);
+			/*var sensor = CreateWorldElement(400, 200, 10, 500,"", true, true, 400);
 	        this.interactive.push(sensor);
 	        sensor.Enter = function(){
    	    		States.current().level.Destruct();
 				States.current().level = StoryTwo();
 				States.current().level.Construct();
-       	    };
+       	    };*/
 			
 			var background = CreateBackground("sprites/Sky.png");
 			
@@ -506,6 +507,7 @@ var SPRITE_H =
 		
 		this.Destruct = function() {
 	  		if(!this.constructed) return;
+	  		for(var i = 0; i < this.checkpoint.length; i++) this.checkpoint[i].Destroy();
 	  		for(var i = 0; i < this.fill.length; i++) this.fill[i].Destroy();
 	  		for(var i = 0; i < this.floor.length; i++) this.floor[i].Destroy();
 	  		for(var i = 0; i < this.interactive.length; i++) this.interactive[i].Destroy();
@@ -2513,6 +2515,9 @@ var SPRITE_H =
 		Text.fontSize = fontSize;
 		Text.text = text;
 		States.current().world.addChild(Text);
+		Text.Destroy = function() {
+			States.current().world.removeChild(this);
+		};
 		return Text;
 	}
 	
