@@ -345,7 +345,7 @@ var SPRITE_H =
 			xbuild = 10;
 			buildingLength = 10 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			fillBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
 			
 			//2
 			tracker += 12;
@@ -354,7 +354,7 @@ var SPRITE_H =
 			xbuild = 8;
 			buildingLength = 8 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			fillBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
 			
 			//3
 			tracker += 10;
@@ -363,7 +363,7 @@ var SPRITE_H =
 			xbuild = 2;
 			buildingLength = 2 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			fillBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
 			
 			//4
 			tracker += 4;			
@@ -372,7 +372,7 @@ var SPRITE_H =
 			xbuild = 20;
 			buildingLength = 20 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			fillBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
 			//floor 4 obstacles
 			xobstacle = 8500;
 			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle2offset, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0);
@@ -388,7 +388,7 @@ var SPRITE_H =
 			xbuild = 6;
 			buildingLength = 6 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			fillBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
 			//floor 5 obstacles
 			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle2offset, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0);
 			obstacleCount++;
@@ -403,7 +403,7 @@ var SPRITE_H =
 			xbuild = 10;
 			buildingLength = 10 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			fillBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
 			//floor 6 obstacles
 			xobstacle += 1300;
 			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle4offset, SPRITE_W["ROOF_DOOR"], SPRITE_H["ROOF_DOOR"], SPRITES["ROOF_DOOR"], true, false, 0);
@@ -416,7 +416,7 @@ var SPRITE_H =
 			xbuild = 6;
 			buildingLength = 6 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			fillBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
 			//floor 7 obstacles
 			xobstacle += 1450;
 			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle4offset, SPRITE_W["ROOF_DOOR"], SPRITE_H["ROOF_DOOR"], SPRITES["ROOF_DOOR"], true, false, 0);
@@ -429,7 +429,7 @@ var SPRITE_H =
 			xbuild = 6;
 			buildingLength = 6 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			fillBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
 			//floor 8 obstacles
 			xobstacle += 1500;
 			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle3offset, SPRITE_W["ROOF_CHIMNEY"], SPRITE_H["ROOF_CHIMNEY"], SPRITES["ROOF_CHIMNEY"], true, false, 0);
@@ -442,7 +442,7 @@ var SPRITE_H =
 			xbuild = 10;
 			buildingLength = 10 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			fillBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
 			//floor 9 obstacle
 			xobstacle += 2500;
 			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle3offset, SPRITE_W["ROOF_CHIMNEY"], SPRITE_H["ROOF_CHIMNEY"], SPRITES["ROOF_CHIMNEY"], true, false, 0);
@@ -455,7 +455,7 @@ var SPRITE_H =
 			xbuild = 5;
 			buildingLength = 5 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			fillBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
 			
 			//11
 			tracker += 7;
@@ -464,7 +464,7 @@ var SPRITE_H =
 			xbuild = 5;
 			buildingLength = 5 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			fillBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
 			//floor 11 obstacles
 			xobstacle += 3300;
 			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle2offset, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0);
@@ -480,7 +480,7 @@ var SPRITE_H =
 			xbuild = 7;
 			buildingLength = 7 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			fillBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
 			//floor 12 obstacles
 			xobstacle += 2100;
 			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle4offset, SPRITE_W["ROOF_DOOR"], SPRITE_H["ROOF_DOOR"], SPRITES["ROOF_DOOR"], true, false, 0);
@@ -493,7 +493,7 @@ var SPRITE_H =
 			xbuild = 10;
 			buildingLength = 10 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			fillBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
 			
 				        
 			///////work before this
@@ -733,7 +733,7 @@ var SPRITE_H =
 			xbuild = 40;
 			buildingLength = 40 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			fillBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
 			//floor 1 obstacles
 			xobstacle = 1800;
 			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle4offset, SPRITE_W["ROOF_DOOR"], SPRITE_H["ROOF_DOOR"], SPRITES["ROOF_DOOR"], true, false, 0);
@@ -760,7 +760,7 @@ var SPRITE_H =
 			xbuild = 15;
 			buildingLength = 15 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			fillBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
 			//floor 2 obstacles
 			xobstacle += 2000;
 			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle4offset, SPRITE_W["ROOF_DOOR"], SPRITE_H["ROOF_DOOR"], SPRITES["ROOF_DOOR"], true, false, 0);
@@ -844,7 +844,7 @@ var SPRITE_H =
 			xbuild = 15;
 			buildingLength = 15 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			fillBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
 			//floor 4 obstacles
 			xobstacle += 915;
 			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle4offset, SPRITE_W["ROOF_DOOR"], SPRITE_H["ROOF_DOOR"], SPRITES["ROOF_DOOR"], true, false, 0);
@@ -861,7 +861,7 @@ var SPRITE_H =
 			xbuild = 5;
 			buildingLength = 5 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			fillBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
 			//floor 5 obstacles
 			xobstacle += 915;
 			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle4offset, SPRITE_W["ROOF_DOOR"], SPRITE_H["ROOF_DOOR"], SPRITES["ROOF_DOOR"], true, false, 0);
@@ -875,7 +875,7 @@ var SPRITE_H =
 			xbuild = 5;
 			buildingLength = 5 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			fillBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
 			
 			//7
 			tracker += 7;
@@ -884,7 +884,7 @@ var SPRITE_H =
 			xbuild = 5;
 			buildingLength = 5 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			fillBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
 			
 			//8
 			tracker += 7;
@@ -893,7 +893,7 @@ var SPRITE_H =
 			xbuild = 20;
 			buildingLength = 20 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			fillBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
 			//floor 8 obstacles
 			xobstacle += 1830;
 			xobstacle += 1830;
@@ -1028,7 +1028,7 @@ var SPRITE_H =
 			xbuild = 15;
 			buildingLength = 15 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			fillBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
 			
 			//2
 			tracker += 17;
@@ -1037,7 +1037,7 @@ var SPRITE_H =
 			xbuild = 10;
 			buildingLength = 10 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			fillBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
 			//floor 2 obstacles
 			xobstacle = 3500;
 			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle4offset, SPRITE_W["ROOF_DOOR"], SPRITE_H["ROOF_DOOR"], SPRITES["ROOF_DOOR"], true, false, 0);
@@ -1053,7 +1053,7 @@ var SPRITE_H =
 			xbuild = 15;
 			buildingLength = 15 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			fillBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
 			//floor 3 obstacles
 			xobstacle += 1500;
 			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle2offset, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0);
@@ -1071,7 +1071,7 @@ var SPRITE_H =
 			xbuild = 5;
 			buildingLength = 5 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			fillBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
 			//floor 4 obstacles
 			xobstacle += 1500;
 			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle4offset, SPRITE_W["ROOF_DOOR"], SPRITE_H["ROOF_DOOR"], SPRITES["ROOF_DOOR"], true, false, 0);
@@ -1084,7 +1084,7 @@ var SPRITE_H =
 			xbuild = 5;
 			buildingLength = 5 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			fillBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
 			//floor 5 obstacles
 			xobstacle += 700;
 			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle-200, y-obstacle5offset, 86, 72, "sprites/rooftop_crate.png", false, false, 0);
@@ -1097,7 +1097,7 @@ var SPRITE_H =
 			xbuild = 7;
 			buildingLength = 7 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			fillBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
 			
 			//7
 			tracker += 9;
@@ -1106,7 +1106,7 @@ var SPRITE_H =
 			xbuild = 15;
 			buildingLength = 15 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			fillBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
 			//floor 7 obstacles
 			xobstacle += 3000;
 			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle-500, y-obstacle4offset, SPRITE_W["ROOF_DOOR"], SPRITE_H["ROOF_DOOR"], SPRITES["ROOF_DOOR"], true, false, 0);
@@ -1127,7 +1127,7 @@ var SPRITE_H =
 			xbuild = 10;
 			buildingLength = 10 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			fillBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
 			//floor 8 obstacles
 			xobstacle += 3000;
 			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle1offset, SPRITE_W["ROOF_AC"], SPRITE_H["ROOF_AC"], SPRITES["ROOF_AC"], true, false, 0);
@@ -1141,7 +1141,7 @@ var SPRITE_H =
 			xbuild = 6;
 			buildingLength = 6 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			fillBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
 			
 			//10
 			tracker += 8;
@@ -1150,7 +1150,7 @@ var SPRITE_H =
 			xbuild = 1;
 			buildingLength = 1 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			fillBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
 			
 			//11
 			tracker += 3;
@@ -1159,7 +1159,7 @@ var SPRITE_H =
 			xbuild = 1;
 			buildingLength = 1 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			fillBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
 			
 			//12
 			tracker += 3;
@@ -1168,7 +1168,7 @@ var SPRITE_H =
 			xbuild = 5;
 			buildingLength = 5 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			fillBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
 			//floor 12 obstacles
 			xobstacle += 5000;
 			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle-2500, y-obstacle2offset, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0);
@@ -1183,7 +1183,7 @@ var SPRITE_H =
 			xbuild = 15;
 			buildingLength = 15 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			fillBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
 			//floor 13 obstacles
 			xobstacle += 950;
 			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle-2000, y-obstacle4offset, SPRITE_W["ROOF_DOOR"], SPRITE_H["ROOF_DOOR"], SPRITES["ROOF_DOOR"], true, false, 0);
@@ -1205,7 +1205,7 @@ var SPRITE_H =
 			xbuild = 10;
 			buildingLength = 10 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			fillBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
 			//floor 14 obstacles
 			xobstacle += 1800;
 			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle-2600, y-obstacle4offset, SPRITE_W["ROOF_DOOR"], SPRITE_H["ROOF_DOOR"], SPRITES["ROOF_DOOR"], true, false, 0);
@@ -1223,7 +1223,7 @@ var SPRITE_H =
 			xbuild = 15;
 			buildingLength = 15 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			fillBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
 			//floor 15 obstacles
 			xobstacle += 1000;
 			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle-2000, y-obstacle5offset, 86, 72, "sprites/rooftop_crate.png", false, false, 0);
@@ -1241,7 +1241,7 @@ var SPRITE_H =
 			xbuild = 15;
 			buildingLength = 15 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			fillBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
 			
 			var sensor = CreateWorldElement(x-50, 200, 10, 500,"", true, true, 400);
 	        this.interactive.push(sensor);
@@ -1312,7 +1312,7 @@ var SPRITE_H =
 			xbuild = 10;
 			buildingLength = 10 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			////fillBuilding.call(this, x, y, tracker, buildingLength);
 			
 			//2
 			tracker += 12;
@@ -1321,7 +1321,7 @@ var SPRITE_H =
 			xbuild = 5;
 			buildingLength = 5 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			////fillBuilding.call(this, x, y, tracker, buildingLength);
 			//floor obstacles 2
 			xobstacle = 3000;
 			this.obstacle.push(CreateRunnerElement(xobstacle, y-obstacle4offset, SPRITE_W["ROOF_DOOR"], SPRITE_H["ROOF_DOOR"], SPRITES["ROOF_DOOR"], true, false, 0));
@@ -1333,7 +1333,7 @@ var SPRITE_H =
 			xbuild = 5;
 			buildingLength = 5 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			////fillBuilding.call(this, x, y, tracker, buildingLength);
 			//floor obstacles3
 			xobstacle += 1600;
 			this.obstacle.push(CreateRunnerElement(xobstacle, y-obstacle2offset, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0));
@@ -1346,7 +1346,7 @@ var SPRITE_H =
 			xbuild = 3;
 			buildingLength = 3 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			////fillBuilding.call(this, x, y, tracker, buildingLength);
 			
 			//5
 			tracker += 12;
@@ -1355,7 +1355,7 @@ var SPRITE_H =
 			xbuild = 10;
 			buildingLength = 10 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			////fillBuilding.call(this, x, y, tracker, buildingLength);
 			//floor obstacles 5
 			xobstacle += 2400;
 			this.obstacle.push(CreateRunnerElement(xobstacle, y-obstacle4offset, SPRITE_W["ROOF_DOOR"], SPRITE_H["ROOF_DOOR"], SPRITES["ROOF_DOOR"], true, false, 0));
@@ -1370,7 +1370,7 @@ var SPRITE_H =
 			xbuild = 5;
 			buildingLength = 5 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			////fillBuilding.call(this, x, y, tracker, buildingLength);
 			
 			//7
 			tracker += 12;
@@ -1379,7 +1379,7 @@ var SPRITE_H =
 			xbuild = 5;
 			buildingLength = 5 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			////fillBuilding.call(this, x, y, tracker, buildingLength);
 			//floor obstacles7
 			xobstacle += 3115;
 			this.obstacle.push(CreateRunnerElement(xobstacle, y-obstacle5offset, 86, 72, "sprites/rooftop_crate.png", false, false, 0));
@@ -1391,7 +1391,7 @@ var SPRITE_H =
 			xbuild = 2;
 			buildingLength = 2 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			////fillBuilding.call(this, x, y, tracker, buildingLength);
 			
 			//9
 			tracker += 12;
@@ -1400,7 +1400,7 @@ var SPRITE_H =
 			xbuild = 5;
 			buildingLength = 5 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			////fillBuilding.call(this, x, y, tracker, buildingLength);
 			//floor obstacles9
 			xobstacle += 1330;
 			this.obstacle.push(CreateRunnerElement(xobstacle, y-obstacle3offset, SPRITE_W["ROOF_CHIMNEY"], SPRITE_H["ROOF_CHIMNEY"], SPRITES["ROOF_CHIMNEY"], true, false, 0));
@@ -1414,7 +1414,7 @@ var SPRITE_H =
 			xbuild = 4;
 			buildingLength = 4 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			////fillBuilding.call(this, x, y, tracker, buildingLength);
 			//floor obstacles 10
 			xobstacle += 850;
 			this.obstacle.push(CreateRunnerElement(xobstacle, y-obstacle2offset, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0));
@@ -1427,7 +1427,7 @@ var SPRITE_H =
 			xbuild = 6;
 			buildingLength = 6 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			////fillBuilding.call(this, x, y, tracker, buildingLength);
 			//floor obstacles 11
 			xobstacle += 1170;
 			this.obstacle.push(CreateRunnerElement(xobstacle, y-obstacle2offset, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0));
@@ -1442,7 +1442,7 @@ var SPRITE_H =
 			xbuild = 3;
 			buildingLength = 3 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			////fillBuilding.call(this, x, y, tracker, buildingLength);
 			
 			//13
 			tracker += 12;
@@ -1451,7 +1451,7 @@ var SPRITE_H =
 			xbuild = 3;
 			buildingLength = 3 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			////fillBuilding.call(this, x, y, tracker, buildingLength);
 			//floor obstacles 13
 			xobstacle += 2500;
 			this.obstacle.push(CreateRunnerElement(xobstacle-400, y-obstacle2offset, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0));
@@ -1463,7 +1463,7 @@ var SPRITE_H =
 			xbuild = 7;
 			buildingLength = 7 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			////fillBuilding.call(this, x, y, tracker, buildingLength);
 			
 			//15
 			tracker += 12;
@@ -1472,7 +1472,7 @@ var SPRITE_H =
 			xbuild = 5;
 			buildingLength = 5 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			////fillBuilding.call(this, x, y, tracker, buildingLength);
 			//floor obstacles 15
 			xobstacle += 2800;
 			this.obstacle.push(CreateRunnerElement(xobstacle, y-obstacle2offset, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0));
@@ -1485,7 +1485,7 @@ var SPRITE_H =
 			xbuild = 5;
 			buildingLength = 5 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			////fillBuilding.call(this, x, y, tracker, buildingLength);
 			
 			//17
 			tracker += 12;
@@ -1494,7 +1494,7 @@ var SPRITE_H =
 			xbuild = 4;
 			buildingLength = 4 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			////fillBuilding.call(this, x, y, tracker, buildingLength);
 			//floor obstacles 17
 			xobstacle += 2925;
 			this.obstacle.push(CreateRunnerElement(xobstacle-400, y-obstacle2offset, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0));
@@ -1507,7 +1507,7 @@ var SPRITE_H =
 			xbuild = 5;
 			buildingLength = 5 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			////fillBuilding.call(this, x, y, tracker, buildingLength);
 			
 			//19
 			tracker += 12;
@@ -1516,7 +1516,7 @@ var SPRITE_H =
 			xbuild = 2;
 			buildingLength = 2 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			////fillBuilding.call(this, x, y, tracker, buildingLength);
 			
 			//20
 			tracker += 12;
@@ -1525,7 +1525,7 @@ var SPRITE_H =
 			xbuild = 2;
 			buildingLength = 2 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			////fillBuilding.call(this, x, y, tracker, buildingLength);
 			
 			//21
 			tracker += 12;
@@ -1534,7 +1534,7 @@ var SPRITE_H =
 			xbuild = 10;
 			buildingLength = 10 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
-			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			////fillBuilding.call(this, x, y, tracker, buildingLength);
 			//floor obstacles 21
 			xobstacle += 5500;
 			this.obstacle.push(CreateRunnerElement(xobstacle-400, y-obstacle5offset, 86, 72, "sprites/rooftop_crate.png", false, false, 0));
