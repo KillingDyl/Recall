@@ -169,7 +169,7 @@ var SPRITE_H =
 			this.x = VIEWPORT_WIDTH / 2 - player.x;
 			if(this.x > 0) this.x = 0;
 			else if(this.x + this.state.level.width - VIEWPORT_WIDTH <= 0) this.x = VIEWPORT_WIDTH - this.state.level.width;
-			this.y = 0
+			this.y = 0;
 		} else {
 			var deltaX = (VIEWPORT_WIDTH / 5 - player.x) - this.x;
 			var deltaY = (VIEWPORT_HEIGHT * 0.75 - player.y) - this.y;
@@ -376,6 +376,8 @@ var SPRITE_H =
 			//floor 4 obstacles
 			xobstacle = 8500;
 			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle2offset, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0);
+			obstacleCount++;
+			this.obstacles.push(CreateRunnerElement(xobstacle, y-obstacle2offset-40, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"]-100, "", true, false, 0));
 			xobstacle += 1400;
 			obstacleCount++;
 			
@@ -389,6 +391,8 @@ var SPRITE_H =
 			fillBuilding.call(this, x, y, tracker, buildingLength);
 			//floor 5 obstacles
 			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle2offset, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0);
+			obstacleCount++;
+			this.obstacles.push(CreateRunnerElement(xobstacle, y-obstacle2offset-40, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"]-100, "", true, false, 0));
 			xobstacle += 1000;
 			obstacleCount++;
 			
@@ -465,6 +469,9 @@ var SPRITE_H =
 			xobstacle += 3300;
 			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle2offset, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0);
 			obstacleCount++;
+			this.obstacles.push(CreateRunnerElement(xobstacle, y-obstacle2offset-40, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"]-100, "", true, false, 0));
+			obstacleCount++;
+			
 			
 			//12
 			tracker += 7;
@@ -491,11 +498,11 @@ var SPRITE_H =
 				        
 			///////work before this
 			
-			var sensor = CreateWorldElement( 500/*x-5*/, 200, 10, 500,"", true, true, 400);
+			var sensor = CreateWorldElement(x-50, 200, 10, 500,"", true, true, 400);
 	        this.interactive.push(sensor);
 	        sensor.Enter = function(){
    	    		States.current().level.Destruct();
-				States.current().level = LevelFour/*StoryTwo*/();
+				States.current().level = LevelTwo/*StoryTwo*/();
 				States.current().level.Construct();
        	    };
        	    
@@ -739,6 +746,8 @@ var SPRITE_H =
 			xobstacle += 1830;
 			obstacleCount++;
 			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle2offset, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0);
+			obstacleCount++;
+			this.obstacles.push(CreateRunnerElement(xobstacle, y-obstacle2offset-40, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"]-100, "", true, false, 0));
 			xobstacle += 915;
 			obstacleCount++;
 			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle4offset, SPRITE_W["ROOF_DOOR"], SPRITE_H["ROOF_DOOR"], SPRITES["ROOF_DOOR"], true, false, 0);
@@ -777,30 +786,48 @@ var SPRITE_H =
 			xobstacle += 915;
 			obstacleCount++;
 			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle2offset, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0);
+			obstacleCount++;
+			this.obstacles.push(CreateRunnerElement(xobstacle, y-obstacle2offset-40, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"]-100, "", true, false, 0));
 			xobstacle += 915;
 			obstacleCount++;
 			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle2offset, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0);
+			obstacleCount++;
+			this.obstacles.push(CreateRunnerElement(xobstacle, y-obstacle2offset-40, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"]-100, "", true, false, 0));
 			xobstacle += 915;
 			obstacleCount++;
 			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle2offset, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0);
+			obstacleCount++;
+			this.obstacles.push(CreateRunnerElement(xobstacle, y-obstacle2offset-40, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"]-100, "", true, false, 0));
 			xobstacle += 915;
 			obstacleCount++;
 			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle2offset, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0);
+			obstacleCount++;
+			this.obstacles.push(CreateRunnerElement(xobstacle, y-obstacle2offset-40, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"]-100, "", true, false, 0));
 			xobstacle += 915;
 			obstacleCount++;
 			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle2offset, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0);
+			obstacleCount++;
+			this.obstacles.push(CreateRunnerElement(xobstacle, y-obstacle2offset-40, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"]-100, "", true, false, 0));
 			xobstacle += 915;
 			obstacleCount++;
 			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle2offset, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0);
+			obstacleCount++;
+			this.obstacles.push(CreateRunnerElement(xobstacle, y-obstacle2offset-40, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"]-100, "", true, false, 0));
 			xobstacle += 915;
 			obstacleCount++;
 			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle2offset, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0);
+			obstacleCount++;
+			this.obstacles.push(CreateRunnerElement(xobstacle, y-obstacle2offset-40, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"]-100, "", true, false, 0));
 			xobstacle += 915;
 			obstacleCount++;
 			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle2offset, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0);
+			obstacleCount++;
+			this.obstacles.push(CreateRunnerElement(xobstacle, y-obstacle2offset-40, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"]-100, "", true, false, 0));
 			xobstacle += 915;
 			obstacleCount++;
 			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle2offset, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0);
+			obstacleCount++;
+			this.obstacles.push(CreateRunnerElement(xobstacle, y-obstacle2offset-40, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"]-100, "", true, false, 0));
 			xobstacle += 915;
 			obstacleCount++;
 			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle4offset, SPRITE_W["ROOF_DOOR"], SPRITE_H["ROOF_DOOR"], SPRITES["ROOF_DOOR"], true, false, 0);
@@ -874,6 +901,8 @@ var SPRITE_H =
 			xobstacle += 915;
 			obstacleCount++;
 			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle2offset, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0);
+			obstacleCount++;
+			this.obstacles.push(CreateRunnerElement(xobstacle, y-obstacle2offset-40, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"]-100, "", true, false, 0));
 			xobstacle += 915;
 			obstacleCount++;
 			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle3offset, SPRITE_W["ROOF_CHIMNEY"], SPRITE_H["ROOF_CHIMNEY"], SPRITES["ROOF_CHIMNEY"], true, false, 0);
@@ -882,6 +911,14 @@ var SPRITE_H =
 			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle1offset, SPRITE_W["ROOF_AC"], SPRITE_H["ROOF_AC"], SPRITES["ROOF_AC"], true, false, 0);
 			xobstacle += 915;
 			obstacleCount++;
+			
+			var sensor = CreateWorldElement(x-50, 200, 10, 500,"", true, true, 400);
+	        this.interactive.push(sensor);
+	        sensor.Enter = function(){
+   	    		States.current().level.Destruct();
+				States.current().level = LevelThree/*StoryTwo*/();
+				States.current().level.Construct();
+       	    };
 			
 			
 			//OBJ
@@ -1021,6 +1058,8 @@ var SPRITE_H =
 			xobstacle += 1500;
 			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle, y-obstacle2offset, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0);
 			obstacleCount++;
+			this.obstacles.push(CreateRunnerElement(xobstacle, y-obstacle2offset-40, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"]-100, "", true, false, 0));
+			obstacleCount++;
 			xobstacle += 2550;
 			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle-300, y-obstacle4offset, SPRITE_W["ROOF_DOOR"], SPRITE_H["ROOF_DOOR"], SPRITES["ROOF_DOOR"], true, false, 0);
 			obstacleCount++;
@@ -1074,6 +1113,8 @@ var SPRITE_H =
 			obstacleCount++;
 			xobstacle += 800;
 			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle-500, y-obstacle2offset, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0);
+			obstacleCount++;
+			this.obstacles.push(CreateRunnerElement(xobstacle-500, y-obstacle2offset-40, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"]-100, "", true, false, 0));
 			obstacleCount++;
 			xobstacle += 900;
 			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle-800, y-obstacle5offset, 86, 72, "sprites/rooftop_crate.png", false, false, 0);
@@ -1132,6 +1173,8 @@ var SPRITE_H =
 			xobstacle += 5000;
 			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle-2500, y-obstacle2offset, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0);
 			obstacleCount++;
+			this.obstacles.push(CreateRunnerElement(xobstacle-2500, y-obstacle2offset-40, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"]-100, "", true, false, 0));
+			obstacleCount++;
 			
 			//13
 			tracker += 7;
@@ -1170,6 +1213,8 @@ var SPRITE_H =
 			xobstacle += 700;
 			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle-2600, y-obstacle2offset, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0);
 			obstacleCount++;
+			this.obstacles.push(CreateRunnerElement(xobstacle-2600, y-obstacle2offset-40, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"]-100, "", true, false, 0));
+			obstacleCount++;
 			
 			//15
 			tracker += 12;
@@ -1186,6 +1231,8 @@ var SPRITE_H =
 			xobstacle += 1000;
 			this.obstacles[obstacleCount] = CreateRunnerElement(xobstacle-2000, y-obstacle2offset, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0);
 			obstacleCount++;
+			this.obstacles.push(CreateRunnerElement(xobstacle-2000, y-obstacle2offset-40, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"]-100, "", true, false, 0));
+			obstacleCount++;
 			
 			//16
 			tracker += 17;
@@ -1195,6 +1242,14 @@ var SPRITE_H =
 			buildingLength = 15 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
 			fillBuilding.call(this, x, y, tracker, buildingLength);
+			
+			var sensor = CreateWorldElement(x-50, 200, 10, 500,"", true, true, 400);
+	        this.interactive.push(sensor);
+	        sensor.Enter = function(){
+   	    		States.current().level.Destruct();
+				States.current().level = LevelFour/*StoryTwo*/();
+				States.current().level.Construct();
+       	    };
 			
 			
 			//OBJ
@@ -1282,6 +1337,7 @@ var SPRITE_H =
 			//floor obstacles3
 			xobstacle += 1600;
 			this.obstacle.push(CreateRunnerElement(xobstacle, y-obstacle2offset, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0));
+			this.obstacle.push(CreateRunnerElement(xobstacle, y-obstacle2offset-30, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"]-100, "", true, false, 0));
 			
 			//4
 			tracker += 12;
@@ -1305,6 +1361,7 @@ var SPRITE_H =
 			this.obstacle.push(CreateRunnerElement(xobstacle, y-obstacle4offset, SPRITE_W["ROOF_DOOR"], SPRITE_H["ROOF_DOOR"], SPRITES["ROOF_DOOR"], true, false, 0));
 			xobstacle += 500;
 			this.obstacle.push(CreateRunnerElement(xobstacle, y-obstacle2offset, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0));
+			this.obstacle.push(CreateRunnerElement(xobstacle, y-obstacle2offset-40, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"]-100, "", true, false, 0));
 			
 			//6
 			tracker += 12;
@@ -1361,6 +1418,7 @@ var SPRITE_H =
 			//floor obstacles 10
 			xobstacle += 850;
 			this.obstacle.push(CreateRunnerElement(xobstacle, y-obstacle2offset, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0));
+			this.obstacle.push(CreateRunnerElement(xobstacle, y-obstacle2offset-40, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"]-100, "", true, false, 0));
 			
 			//11
 			tracker += 12;
@@ -1373,6 +1431,7 @@ var SPRITE_H =
 			//floor obstacles 11
 			xobstacle += 1170;
 			this.obstacle.push(CreateRunnerElement(xobstacle, y-obstacle2offset, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0));
+			this.obstacle.push(CreateRunnerElement(xobstacle, y-obstacle2offset-40, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"]-100, "", true, false, 0));
 			xobstacle += 470;
 			this.obstacle.push(CreateRunnerElement(xobstacle, y-obstacle4offset, SPRITE_W["ROOF_DOOR"], SPRITE_H["ROOF_DOOR"], SPRITES["ROOF_DOOR"], true, false, 0));
 			
@@ -1395,8 +1454,8 @@ var SPRITE_H =
 			//fillBuilding.call(this, x, y, tracker, buildingLength);
 			//floor obstacles 13
 			xobstacle += 2500;
-			this.obstacle.push(CreateRunnerElement(xobstacle-500, y-obstacle2offset, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0));
-			
+			this.obstacle.push(CreateRunnerElement(xobstacle-400, y-obstacle2offset, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0));
+			this.obstacle.push(CreateRunnerElement(xobstacle-400, y-obstacle2offset-40, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"]-100, "", true, false, 0));
 			//14
 			tracker += 12;
 			x += (183*xbuild) + 500;
@@ -1417,6 +1476,7 @@ var SPRITE_H =
 			//floor obstacles 15
 			xobstacle += 2800;
 			this.obstacle.push(CreateRunnerElement(xobstacle, y-obstacle2offset, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0));
+			this.obstacle.push(CreateRunnerElement(xobstacle, y-obstacle2offset-40, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"]-100, "", true, false, 0));
 			
 			//16
 			tracker += 12;
@@ -1438,6 +1498,7 @@ var SPRITE_H =
 			//floor obstacles 17
 			xobstacle += 2925;
 			this.obstacle.push(CreateRunnerElement(xobstacle-400, y-obstacle2offset, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0));
+			this.obstacle.push(CreateRunnerElement(xobstacle-400, y-obstacle2offset-40, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"]-100, "", true, false, 0));
 			
 			//18
 			tracker += 12;
@@ -1451,7 +1512,7 @@ var SPRITE_H =
 			//19
 			tracker += 12;
 			x += (183*xbuild) + 500;
-			y = 800;
+			y = 700;
 			xbuild = 2;
 			buildingLength = 2 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
@@ -1460,7 +1521,7 @@ var SPRITE_H =
 			//20
 			tracker += 12;
 			x += (183*xbuild) + 500;
-			y = 650;
+			y = 550;
 			xbuild = 2;
 			buildingLength = 2 + tracker;
 			makeBuilding.call(this, x, y, tracker, buildingLength);
@@ -1477,6 +1538,14 @@ var SPRITE_H =
 			//floor obstacles 21
 			xobstacle += 5500;
 			this.obstacle.push(CreateRunnerElement(xobstacle-400, y-obstacle5offset, 86, 72, "sprites/rooftop_crate.png", false, false, 0));
+			
+			var sensor = CreateWorldElement(x-50, 200, 10, 500,"", true, true, 400);
+	        this.interactive.push(sensor);
+	        sensor.Enter = function(){
+   	    		States.current().level.Destruct();
+				States.current().level = LevelFive/*StoryTwo*/();
+				States.current().level.Construct();
+       	    };
 			
 			
 			
@@ -1500,7 +1569,7 @@ var SPRITE_H =
 	  		for(var i = 0; i < this.fill.length; i++) this.fill[i].Destroy();
 	  		for(var i = 0; i < this.floor.length; i++) this.floor[i].Destroy();
 	  		for(var i = 0; i < this.interactive.length; i++) this.interactive[i].Destroy();
-	  		for(var i = 0; i < this.obstacles.length; i++) this.obstacles[i].Destroy();
+	  		for(var i = 0; i < this.obstacle.length; i++) this.obstacles[i].Destroy();
 	  		this.width = 0;
 	  		this.constructed = false;
 	  	};
