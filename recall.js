@@ -2292,15 +2292,6 @@ var SPRITE_H =
 	}
 	
 	//
-	// Ray cast callback function
-	//
-	function RayCallback(fixture, point, normal, fraction) {
-		if(fixture == player.foot) return -1;
-		player.aboveGround = true;
-		return 0;
-	}
-	
-	//
 	// CreateSprite - function to create a basic sprite to be displayed
 	//
 	function CreateSprite(x, y, width, height, image, index) {
@@ -2341,7 +2332,6 @@ var SPRITE_H =
 		CreateNormalAnimation(player);
 		player.offsetY = -player.height;
 		player.onGround = true;
-		player.aboveGround = true;
 		player.near = false;//check for whether or not the player is near an interactable obj
 		
 		var bodyDef = new b2.BodyDef();
@@ -2358,7 +2348,7 @@ var SPRITE_H =
 		player.climbUpper.SetSensor(true);
 		player.climbUpper.numContacts = 0;
 		
-		fixDef.shape.SetAsBox(15 / PHYSICS_SCALE, 5 / PHYSICS_SCALE, new b2.Vec2(PLAYER_WIDTH_RUNNING / 2 / PHYSICS_SCALE, -PLAYER_HEIGHT_RUNNING / 4 / PHYSICS_SCALE), 0);
+		fixDef.shape.SetAsBox(15 / PHYSICS_SCALE, 5 / PHYSICS_SCALE, new b2.Vec2(PLAYER_WIDTH_RUNNING / 2 / PHYSICS_SCALE, -PLAYER_HEIGHT_RUNNING / 3 / PHYSICS_SCALE), 0);
 		player.climbMiddle = player.body.CreateFixture(fixDef);
 		player.climbMiddle.SetSensor(true);
 		player.climbMiddle.numContacts = 0;
@@ -2400,12 +2390,6 @@ var SPRITE_H =
 		};
 		
 		player.update = function(d) { 
-			// Move the sprite according to the physics body
-			var pos = this.body.GetPosition();
-			this.x = pos.x * PHYSICS_SCALE;
-			this.y = pos.y * PHYSICS_SCALE + this.height / 2;
-			this.rotation = this.body.GetAngle();
-			if(this.y > VIEWPORT_HEIGHT + this.height / 2) this.Respawn();
 			//OBJ
 			if(this.near && gInput.E && this.latency < 0){
 				this.latency = 15;
@@ -2415,8 +2399,8 @@ var SPRITE_H =
 			//
 			// Movement code
 			var velocity = this.body.GetLinearVelocity();
-			this.latency--;
-			this.cooldown--;
+			this.latency -= d;
+			this.cooldown -= d;
 			this.onGround = this.foot.numContacts > 0;
 			this.climbing = !this.climbing && this.climbMiddle.numContacts > 0 && this.climbUpper.numContacts == 0;
 			switch(this.state) {
@@ -2506,15 +2490,18 @@ var SPRITE_H =
 					if(this.climbing) {
 						this.state = PLAYER_STATE_CLIMBING;
 						CreateClimbAnimation(this);
+						var pos = this.body.GetPosition();
+						this.climbpos = new b2.Vec2(pos.x, pos.y);
+						
 					}
 					break;
 				case PLAYER_STATE_CLIMBING:
-					var deltaVelocity = -2 - velocity.y;
-					var impulse = new b2.Vec2(this.body.GetMass() * 1, this.body.GetMass() * deltaVelocity);
-					this.body.ApplyLinearImpulse(impulse, this.body.GetWorldCenter(), true);
-					if(this.climbLower.numContacts == 0) {
+					this.body.SetTransform(this.climbpos, 0);
+					if(Math.floor(this.frame) == this.frameCount - 1) {
 						this.state = PLAYER_STATE_RUNNER;
-						this.body.ApplyLinearImpulse(new b2.Vec2(this.body.GetMass() * 1, 0), this.body.GetWorldCenter(), true);
+						this.climbpos.x += .25;
+						this.climbpos.y -= 2.25;
+						this.body.SetTransform(this.climbpos, 0);
 						CreateRunnerAnimation(this);
 					}
 					break;
@@ -2532,6 +2519,12 @@ var SPRITE_H =
 					}
 					break;
 			}
+			// Move the sprite according to the physics body
+			var pos = this.body.GetPosition();
+			this.x = pos.x * PHYSICS_SCALE;
+			this.y = pos.y * PHYSICS_SCALE + this.height / 2;
+			this.rotation = this.body.GetAngle();
+			if(this.y > VIEWPORT_HEIGHT + this.height / 2) this.Respawn();
 		};
 		
 		player.Respawn = function() {
@@ -2615,13 +2608,13 @@ var SPRITE_H =
 		sprite.width = PLAYER_WIDTH_CLIMBING;
 		sprite.height = PLAYER_HEIGHT_CLIMBING;
 		sprite.offsetX = -sprite.width / 8;
-		sprite.offsetY = -sprite.height / 2;
+		sprite.offsetY = -sprite.height * .75;
 		sprite.image = Textures.load(SPRITES["PLAYER_CLIMB"]);
 		sprite.frame = 0;
 		sprite.frameHeight = 425;
 		sprite.frameWidth = 215;
-		sprite.frameCount = 4;
-		sprite.frameRate = 5;
+		sprite.frameCount = 3;
+		sprite.frameRate = 2.5;
 		sprite.addAnimation("climb", 0, 4);
 		sprite.animation = "climb";
 	}
