@@ -1,0 +1,13 @@
+body {
+	background: #000;
+}
+
+#recall {
+	border: 1px solid black;
+	margin: auto;
+}
+
+#wrapper {
+	width: 902px;
+	margin: auto;
+}
