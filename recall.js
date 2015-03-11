@@ -286,7 +286,7 @@ var SPRITE_H =
 			var right_door = CreateDoorElement(1214, 369, SPRITE_W["RIGHT_DOOR"], SPRITE_H["RIGHT_DOOR"], SPRITES["RIGHT_DOOR"], 2, false);
 			right_door.action = function() {
 				States.current().level.Destruct();
-				States.current().level = LevelOne(); ///change back to one after test
+				States.current().level = LevelFive(); ///change back to one after test
 				States.current().level.Construct();
 			};
        		this.interactive.push(right_door);
@@ -1591,605 +1591,288 @@ var SPRITE_H =
 	  	
 	  	this.Construct = function() {
 	  		if(this.constructed) return;
+	  		this.checkpoint = [];
 	  		this.floor = [];
 	  		this.fill = [];
 	  		this.interactive = [];
 	  		this.obstacles = [];
 	  		////work after this
 	  		var x = 100;
-			var y = 200;
+			var y = 50;
 			var tracker = 0;
-			var buildingLength = tracker;
-			var xobstacle;
+			var buildingLength = 0;
+			var xbuild = 0;
+			var xobstacle = 0;
 			var obstacleCount = 0;
 			var obstacle1offset = 210;
 			var obstacle2offset = 300;
 			var obstacle3offset = 230;
 			var obstacle4offset = 238;
 			var obstacle5offset = 220;
+			
+			this.checkpoint[0] = CreateCheckpoint(x, -200, true);
+			
+			player.ChangeState(PLAYER_STATE_RUNNER);
 	  		
 			
-			//FLOOR 1///////////////////////////////////////////////////////////////////
-	  		//left side
-	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["LEFT_WALL"], 0, true);
-			x += 183;
-			tracker++;
-			buildingLength = tracker +7;
-			for(var i=tracker; i<buildingLength; i++) //middle
-			{
-				this.floor[i] = CreateFloorElement(x, y, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-				x += 183;
-				tracker++;
-			}
-			//right side
-			tracker++;
-			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["RIGHT_WALL"], 0, true);
-			x += 383;
-			//floor obstacles
-			
-			////////////////////////////////////////////////////////////////////////////
-			
-			
-			//FLOOR 2///////////////////////////////////////////////////////////////////
-	  		//left side
-	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["LEFT_WALL"], 0, true);
-			x += 183;
-			tracker++;
-			buildingLength = tracker +10;
-			for(var i=tracker; i<buildingLength; i++) //middle
-			{
-				this.floor[i] = CreateFloorElement(x, y, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-				x += 183;
-				tracker++;
-			}
-			//right side
-			tracker++;
-			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["RIGHT_WALL"], 0, true);
-			x += 383;
-			//floor obstacles
-			
-			////////////////////////////////////////////////////////////////////////////
-			
-			
-			//FLOOR 3///////////////////////////////////////////////////////////////////
-	  		//left side
-	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["LEFT_WALL"], 0, true);
-			x += 183;
-			tracker++;
-			buildingLength = tracker +10;
-			for(var i=tracker; i<buildingLength; i++) //middle
-			{
-				this.floor[i] = CreateFloorElement(x, y, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-				x += 183;
-				tracker++;
-			}
-			//right side
-			tracker++;
-			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["RIGHT_WALL"], 0, true);
-			x += 383;
-			//floor obstacles
-			
-			////////////////////////////////////////////////////////////////////////////
-			
-			
-			//FLOOR 4///////////////////////////////////////////////////////////////////
-	  		//left side
-	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["LEFT_WALL"], 0, true);
-			x += 183;
-			tracker++;
-			buildingLength = tracker +5;
-			for(var i=tracker; i<buildingLength; i++) //middle
-			{
-				this.floor[i] = CreateFloorElement(x, y, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-				x += 183;
-				tracker++;
-			}
-			//right side
-			tracker++;
-			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["RIGHT_WALL"], 0, true);
-			x += 383;
-			//floor obstacles
-			
-			////////////////////////////////////////////////////////////////////////////
-			
-			
-			//FLOOR 5///////////////////////////////////////////////////////////////////
-	  		//left side
-	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["LEFT_WALL"], 0, true);
-			x += 183;
-			tracker++;
-			buildingLength = tracker +10;
-			for(var i=tracker; i<buildingLength; i++) //middle
-			{
-				this.floor[i] = CreateFloorElement(x, y, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-				x += 183;
-				tracker++;
-			}
-			//right side
-			tracker++;
-			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["RIGHT_WALL"], 0, true);
-			x += 383;
-			//floor obstacles
-			
-			////////////////////////////////////////////////////////////////////////////
-			
-			
-			//FLOOR 6///////////////////////////////////////////////////////////////////
-	  		//left side
-	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["LEFT_WALL"], 0, true);
-			x += 183;
-			tracker++;
-			buildingLength = tracker +1;
-			for(var i=tracker; i<buildingLength; i++) //middle
-			{
-				this.floor[i] = CreateFloorElement(x, y, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-				x += 183;
-				tracker++;
-			}
-			//right side
-			tracker++;
-			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["RIGHT_WALL"], 0, true);
-			x += 383;
-			//floor obstacles
-			
-			////////////////////////////////////////////////////////////////////////////
-			
-			
-			//FLOOR 7///////////////////////////////////////////////////////////////////
-	  		//left side
-	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["LEFT_WALL"], 0, true);
-			x += 183;
-			tracker++;
-			buildingLength = tracker +1;
-			for(var i=tracker; i<buildingLength; i++) //middle
-			{
-				this.floor[i] = CreateFloorElement(x, y, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-				x += 183;
-				tracker++;
-			}
-			//right side
-			tracker++;
-			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["RIGHT_WALL"], 0, true);
-			x += 383;
-			//floor obstacles
-			
-			////////////////////////////////////////////////////////////////////////////
-			
-			
-			//FLOOR 8///////////////////////////////////////////////////////////////////
-	  		//left side
-	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["LEFT_WALL"], 0, true);
-			x += 183;
-			tracker++;
-			buildingLength = tracker +10;
-			for(var i=tracker; i<buildingLength; i++) //middle
-			{
-				this.floor[i] = CreateFloorElement(x, y, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-				x += 183;
-				tracker++;
-			}
-			//right side
-			tracker++;
-			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["RIGHT_WALL"], 0, true);
-			x += 383;
-			//floor obstacles
-			
-			////////////////////////////////////////////////////////////////////////////
-			
-			
-			//FLOOR 9///////////////////////////////////////////////////////////////////
-	  		//left side
-	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["LEFT_WALL"], 0, true);
-			x += 183;
-			tracker++;
-			buildingLength = tracker +1;
-			for(var i=tracker; i<buildingLength; i++) //middle
-			{
-				this.floor[i] = CreateFloorElement(x, y, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-				x += 183;
-				tracker++;
-			}
-			//right side
-			tracker++;
-			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["RIGHT_WALL"], 0, true);
-			x += 383;
-			//floor obstacles
-			
-			////////////////////////////////////////////////////////////////////////////
-			
-			
-			//FLOOR 10///////////////////////////////////////////////////////////////////
-	  		//left side
-	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["LEFT_WALL"], 0, true);
-			x += 183;
-			tracker++;
-			buildingLength = tracker +1;
-			for(var i=tracker; i<buildingLength; i++) //middle
-			{
-				this.floor[i] = CreateFloorElement(x, y, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-				x += 183;
-				tracker++;
-			}
-			//right side
-			tracker++;
-			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["RIGHT_WALL"], 0, true);
-			x += 383;
-			//floor obstacles
-			
-			////////////////////////////////////////////////////////////////////////////
-			
-			
-			//FLOOR 11///////////////////////////////////////////////////////////////////
-	  		//left side
-	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["LEFT_WALL"], 0, true);
-			x += 183;
-			tracker++;
-			buildingLength = tracker +3;
-			for(var i=tracker; i<buildingLength; i++) //middle
-			{
-				this.floor[i] = CreateFloorElement(x, y, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-				x += 183;
-				tracker++;
-			}
-			//right side
-			tracker++;
-			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["RIGHT_WALL"], 0, true);
-			x += 383;
-			//floor obstacles
-			
-			////////////////////////////////////////////////////////////////////////////
-			
-			
-			//FLOOR 12///////////////////////////////////////////////////////////////////
-	  		//left side
-	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["LEFT_WALL"], 0, true);
-			x += 183;
-			tracker++;
-			buildingLength = tracker +2;
-			for(var i=tracker; i<buildingLength; i++) //middle
-			{
-				this.floor[i] = CreateFloorElement(x, y, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-				x += 183;
-				tracker++;
-			}
-			//right side
-			tracker++;
-			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["RIGHT_WALL"], 0, true);
-			x += 383;
-			//floor obstacles
-			
-			////////////////////////////////////////////////////////////////////////////
-			
-			
-			//FLOOR 13///////////////////////////////////////////////////////////////////
-	  		//left side
-	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["LEFT_WALL"], 0, true);
-			x += 183;
-			tracker++;
-			buildingLength = tracker +3;
-			for(var i=tracker; i<buildingLength; i++) //middle
-			{
-				this.floor[i] = CreateFloorElement(x, y, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-				x += 183;
-				tracker++;
-			}
-			//right side
-			tracker++;
-			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["RIGHT_WALL"], 0, true);
-			x += 383;
-			//floor obstacles
-			
-			////////////////////////////////////////////////////////////////////////////
-			
-			
-			//FLOOR 14///////////////////////////////////////////////////////////////////
-	  		//left side
-	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["LEFT_WALL"], 0, true);
-			x += 183;
-			tracker++;
-			buildingLength = tracker +3;
-			for(var i=tracker; i<buildingLength; i++) //middle
-			{
-				this.floor[i] = CreateFloorElement(x, y, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-				x += 183;
-				tracker++;
-			}
-			//right side
-			tracker++;
-			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["RIGHT_WALL"], 0, true);
-			x += 383;
-			//floor obstacles
-			
-			////////////////////////////////////////////////////////////////////////////
-			
-			
-			//FLOOR 15///////////////////////////////////////////////////////////////////
-	  		//left side
-	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["LEFT_WALL"], 0, true);
-			x += 183;
-			tracker++;
-			buildingLength = tracker +5;
-			for(var i=tracker; i<buildingLength; i++) //middle
-			{
-				this.floor[i] = CreateFloorElement(x, y, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-				x += 183;
-				tracker++;
-			}
-			//right side
-			tracker++;
-			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["RIGHT_WALL"], 0, true);
-			x += 383;
-			//floor obstacles
-			
-			////////////////////////////////////////////////////////////////////////////
-			
-			
-			//FLOOR 16///////////////////////////////////////////////////////////////////
-	  		//left side
-	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["LEFT_WALL"], 0, true);
-			x += 183;
-			tracker++;
-			buildingLength = tracker +1;
-			for(var i=tracker; i<buildingLength; i++) //middle
-			{
-				this.floor[i] = CreateFloorElement(x, y, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-				x += 183;
-				tracker++;
-			}
-			//right side
-			tracker++;
-			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["RIGHT_WALL"], 0, true);
-			x += 383;
-			//floor obstacles
-			
-			////////////////////////////////////////////////////////////////////////////
-			
-			
-			//FLOOR 17///////////////////////////////////////////////////////////////////
-	  		//left side
-	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["LEFT_WALL"], 0, true);
-			x += 183;
-			tracker++;
-			buildingLength = tracker +1;
-			for(var i=tracker; i<buildingLength; i++) //middle
-			{
-				this.floor[i] = CreateFloorElement(x, y, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-				x += 183;
-				tracker++;
-			}
-			//right side
-			tracker++;
-			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["RIGHT_WALL"], 0, true);
-			x += 383;
-			//floor obstacles
-			
-			////////////////////////////////////////////////////////////////////////////
-			
-			
-			//FLOOR 18///////////////////////////////////////////////////////////////////
-	  		//left side
-	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["LEFT_WALL"], 0, true);
-			x += 183;
-			tracker++;
-			buildingLength = tracker +10;
-			for(var i=tracker; i<buildingLength; i++) //middle
-			{
-				this.floor[i] = CreateFloorElement(x, y, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-				x += 183;
-				tracker++;
-			}
-			//right side
-			tracker++;
-			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["RIGHT_WALL"], 0, true);
-			x += 383;
-			//floor obstacles
-			
-			////////////////////////////////////////////////////////////////////////////
-			
-			
-			//FLOOR 19///////////////////////////////////////////////////////////////////
-	  		//left side
-	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["LEFT_WALL"], 0, true);
-			x += 183;
-			tracker++;
-			buildingLength = tracker +5;
-			for(var i=tracker; i<buildingLength; i++) //middle
-			{
-				this.floor[i] = CreateFloorElement(x, y, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-				x += 183;
-				tracker++;
-			}
-			//right side
-			tracker++;
-			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["RIGHT_WALL"], 0, true);
-			x += 383;
-			//floor obstacles
-			
-			////////////////////////////////////////////////////////////////////////////
-			
-			
-			//FLOOR 20///////////////////////////////////////////////////////////////////
-	  		//left side
-	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["LEFT_WALL"], 0, true);
-			x += 183;
-			tracker++;
-			buildingLength = tracker +5;
-			for(var i=tracker; i<buildingLength; i++) //middle
-			{
-				this.floor[i] = CreateFloorElement(x, y, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-				x += 183;
-				tracker++;
-			}
-			//right side
-			tracker++;
-			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["RIGHT_WALL"], 0, true);
-			x += 383;
-			//floor obstacles
-			
-			////////////////////////////////////////////////////////////////////////////
-			
-			
-			//FLOOR 21///////////////////////////////////////////////////////////////////
-	  		//left side
-	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["LEFT_WALL"], 0, true);
-			x += 183;
-			tracker++;
-			buildingLength = tracker +5;
-			for(var i=tracker; i<buildingLength; i++) //middle
-			{
-				this.floor[i] = CreateFloorElement(x, y, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-				x += 183;
-				tracker++;
-			}
-			//right side
-			tracker++;
-			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["RIGHT_WALL"], 0, true);
-			x += 383;
-			//floor obstacles
-			
-			////////////////////////////////////////////////////////////////////////////
-			
-			
-			//FLOOR 22///////////////////////////////////////////////////////////////////
-	  		//left side
-	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["LEFT_WALL"], 0, true);
-			x += 183;
-			tracker++;
-			buildingLength = tracker +4;
-			for(var i=tracker; i<buildingLength; i++) //middle
-			{
-				this.floor[i] = CreateFloorElement(x, y, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-				x += 183;
-				tracker++;
-			}
-			//right side
-			tracker++;
-			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["RIGHT_WALL"], 0, true);
-			x += 383;
-			//floor obstacles
-			
-			////////////////////////////////////////////////////////////////////////////
-			
-			
-			//FLOOR 23///////////////////////////////////////////////////////////////////
-	  		//left side
-	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["LEFT_WALL"], 0, true);
-			x += 183;
-			tracker++;
-			buildingLength = tracker +4;
-			for(var i=tracker; i<buildingLength; i++) //middle
-			{
-				this.floor[i] = CreateFloorElement(x, y, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-				x += 183;
-				tracker++;
-			}
-			//right side
-			tracker++;
-			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["RIGHT_WALL"], 0, true);
-			x += 383;
-			//floor obstacles
-			
-			////////////////////////////////////////////////////////////////////////////
-			
-			
-			//FLOOR 24///////////////////////////////////////////////////////////////////
-	  		//left side
-	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["LEFT_WALL"], 0, true);
-			x += 183;
-			tracker++;
-			buildingLength = tracker +10;
-			for(var i=tracker; i<buildingLength; i++) //middle
-			{
-				this.floor[i] = CreateFloorElement(x, y, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-				x += 183;
-				tracker++;
-			}
-			//right side
-			tracker++;
-			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["RIGHT_WALL"], 0, true);
-			x += 383;
-			//floor obstacles
-			
-			////////////////////////////////////////////////////////////////////////////
-			
-			
-			//FLOOR 25///////////////////////////////////////////////////////////////////
-	  		//left side
-	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["LEFT_WALL"], 0, true);
-			x += 183;
-			tracker++;
-			buildingLength = tracker +3;
-			for(var i=tracker; i<buildingLength; i++) //middle
-			{
-				this.floor[i] = CreateFloorElement(x, y, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-				x += 183;
-				tracker++;
-			}
-			//right side
-			tracker++;
-			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["RIGHT_WALL"], 0, true);
-			x += 383;
-			//floor obstacles
-			
-			////////////////////////////////////////////////////////////////////////////
-			
-			
-			//FLOOR 26///////////////////////////////////////////////////////////////////
-	  		//left side
-	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["LEFT_WALL"], 0, true);
-			x += 183;
-			tracker++;
-			buildingLength = tracker +2;
-			for(var i=tracker; i<buildingLength; i++) //middle
-			{
-				this.floor[i] = CreateFloorElement(x, y, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-				x += 183;
-				tracker++;
-			}
-			//right side
-			tracker++;
-			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["RIGHT_WALL"], 0, true);
-			x += 383;
-			//floor obstacles
-			
-			////////////////////////////////////////////////////////////////////////////
-			
-			
-			//FLOOR 27///////////////////////////////////////////////////////////////////
-	  		//left side
-	  		this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["LEFT_WALL"], 0, true);
-			x += 183;
-			tracker++;
-			buildingLength = tracker +10;
-			for(var i=tracker; i<buildingLength; i++) //middle
-			{
-				this.floor[i] = CreateFloorElement(x, y, 183, 371, SPRITES["MIDDLE_WALL"], 0, true);
-				x += 183;
-				tracker++;
-			}
-			//right side
-			tracker++;
-			this.floor[tracker] = CreateFloorElement(x, y, 183, 371, SPRITES["RIGHT_WALL"], 0, true);
-			x += 383;
-			//floor obstacles
-			
-			////////////////////////////////////////////////////////////////////////////
-			
-			
+			//Floors
+			//1
+			x = 100;
+			y = 50;
+			tracker = 0;
+			xbuild = 7;
+			buildingLength = 7;
+			makeBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			
+			//2
+			tracker += 12;
+			x += (183*xbuild) + 700;
+			y = 700;
+			xbuild = 10;
+			buildingLength = 10;
+			makeBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			
+			//3
+			tracker += 12;
+			x += (183*xbuild) + 700;
+			y = 500;
+			xbuild = 10;
+			buildingLength = 10;
+			makeBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			
+			//4
+			tracker += 12;
+			x += (183*xbuild) + 700;
+			y = 400;
+			xbuild = 5;
+			buildingLength = 5;
+			makeBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			
+			//5
+			tracker += 12;
+			x += (183*xbuild) + 700;
+			y = 400;
+			xbuild = 10;
+			buildingLength = 10;
+			makeBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			
+			//6
+			tracker += 12;
+			x += (183*xbuild) + 700;
+			y = 300;
+			xbuild = 1;
+			buildingLength = 1;
+			makeBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			
+			//7
+			tracker += 12;
+			x += (183*xbuild) + 700;
+			y = 400;
+			xbuild = 1;
+			buildingLength = 1;
+			makeBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			
+			//8
+			tracker += 12;
+			x += (183*xbuild) + 700;
+			y = 500;
+			xbuild = 10;
+			buildingLength = 10;
+			makeBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			
+			//9
+			tracker += 12;
+			x += (183*xbuild) + 700;
+			y = 400;
+			xbuild = 1;
+			buildingLength = 1;
+			makeBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			
+			//10
+			tracker += 12;
+			x += (183*xbuild) + 700;
+			y = 600;
+			xbuild = 1;
+			buildingLength = 1;
+			makeBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			
+			//11
+			tracker += 12;
+			x += (183*xbuild) + 700;
+			y = 500;
+			xbuild = 3;
+			buildingLength = 3;
+			makeBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			
+			//12
+			tracker += 12;
+			x += (183*xbuild) + 700;
+			y = 600;
+			xbuild = 2;
+			buildingLength = 2;
+			makeBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			
+			//13
+			tracker += 12;
+			x += (183*xbuild) + 700;
+			y = 550;
+			xbuild = 3;
+			buildingLength = 3;
+			makeBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			
+			//14
+			tracker += 12;
+			x += (183*xbuild) + 700;
+			y = 700;
+			xbuild = 3;
+			buildingLength = 3;
+			makeBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			
+			//15
+			tracker += 12;
+			x += (183*xbuild) + 700;
+			y = 550;
+			xbuild = 5;
+			buildingLength = 5;
+			makeBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			
+			//16
+			tracker += 12;
+			x += (183*xbuild) + 700;
+			y = 550;
+			xbuild = 1;
+			buildingLength = 1;
+			makeBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			
+			//17
+			tracker += 12;
+			x += (183*xbuild) + 700;
+			y = 550;
+			xbuild = 1;
+			buildingLength = 1;
+			makeBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			
+			//18
+			tracker += 12;
+			x += (183*xbuild) + 700;
+			y = 550;
+			xbuild = 10;
+			buildingLength = 10;
+			makeBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			
+			//19
+			tracker += 12;
+			x += (183*xbuild) + 700;
+			y = 700;
+			xbuild = 5;
+			buildingLength = 5;
+			makeBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			
+			//20
+			tracker += 12;
+			x += (183*xbuild) + 700;
+			y = 800;
+			xbuild = 5;
+			buildingLength = 5;
+			makeBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			
+			//21
+			tracker += 12;
+			x += (183*xbuild) + 700;
+			y = 900;
+			xbuild = 5;
+			buildingLength = 5;
+			makeBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			
+			//22
+			tracker += 12;
+			x += (183*xbuild) + 700;
+			y = 700;//works?
+			xbuild = 4;
+			buildingLength = 4;
+			makeBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			
+			//23
+			tracker += 12;
+			x += (183*xbuild) + 700;
+			y = 500;
+			xbuild = 4;
+			buildingLength = 4;
+			makeBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			
+			//24
+			tracker += 12;
+			x += (183*xbuild) + 700;
+			y = 1000;
+			xbuild = 10;
+			buildingLength = 10;
+			makeBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			
+			//25
+			tracker += 12;
+			x += (183*xbuild) + 700;
+			y = 800;
+			xbuild = 3;
+			buildingLength = 3;
+			makeBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			
+			//26
+			tracker += 12;
+			x += (183*xbuild) + 700;
+			y = 600;
+			xbuild = 2;
+			buildingLength = 2;
+			makeBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
+			
+			//27
+			tracker += 12;
+			x += (183*xbuild) + 700;
+			y = 550;
+			xbuild = 1000;
+			buildingLength = 10;
+			makeBuilding.call(this, x, y, tracker, buildingLength);
+			//fillBuilding.call(this, x, y, tracker, buildingLength);
 			
 			
 			
 			//OBJ
-	        door = CreateRunnerElement(400, 0, 80, 100, "sprites/door.png", true, true, 0);
-	        door.action = printWords;//give it a function if the player interacts
-	        this.interactive.push(door);
+	        //door = CreateRunnerElement(400, 0, 80, 100, "sprites/door.png", true, true, 0);
+	        //door.action = printWords;//give it a function if the player interacts
+	       // this.interactive.push(door);
 	        
 			///////work before this
 			this.width = this.floor[0].width/2 + this.floor[this.floor.length-1].x - this.floor[0].x + this.floor[this.floor.length-1].width/2;
 			this.width += 600;
 	  		var background = CreateWorldElement(VIEWPORT_WIDTH / 2, VIEWPORT_HEIGHT / 2,this.width,this.width,"sprites/Sky.png", false, false, 1000);
 	  		this.constructed = true;
-	  		player.body.SetTransform(new b2.Vec2(400/PHYSICS_SCALE,10/PHYSICS_SCALE), 0);
+	  		player.checkpoint = this.checkpoint[0];
+	  		player.body.SetTransform(player.checkpoint.body.GetPosition(), 0);
 		};
 		
 		this.Destruct = function() {
@@ -2203,7 +1886,6 @@ var SPRITE_H =
 	  		this.constructed = false;
 	  	};
 	}
-	
 	
 	
 	
@@ -2524,7 +2206,7 @@ var SPRITE_H =
 			this.x = pos.x * PHYSICS_SCALE;
 			this.y = pos.y * PHYSICS_SCALE + this.height / 2;
 			this.rotation = this.body.GetAngle();
-			if(this.y > VIEWPORT_HEIGHT + this.height / 2) this.Respawn();
+			if(this.y > VIEWPORT_HEIGHT*2 + this.height / 2) this.Respawn();
 		};
 		
 		player.Respawn = function() {
@@ -3020,7 +2702,7 @@ function makeBuilding(x, y, tracker, buildingLength)
 	  		this.floor.push(CreateFloorElement(x, y, 183, 371, SPRITES["LEFT_WALL"], 0, true));
 			x += 183;
 			tracker++;
-			for(tracker; tracker<buildingLength; tracker++) //middle
+			for(i=0; i<buildingLength; i++) //middle
 			{
 				this.floor.push(CreateFloorElement(x, y, 183, 371, SPRITES["MIDDLE_WALL"], 0, true));
 				x += 183;
