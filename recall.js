@@ -296,11 +296,7 @@ var SPRITE_H =
 			var right_door = CreateDoorElement(1214, 369, SPRITE_W["RIGHT_DOOR"], SPRITE_H["RIGHT_DOOR"], SPRITES["RIGHT_DOOR"], 2, false);
 			right_door.action = function() {
 				States.current().level.Destruct();
-<<<<<<< HEAD
-				States.current().level = LevelThree(); ///change back to one after test
-=======
 				States.current().level = StoryTwo(); ///change back to one after test
->>>>>>> cddb2b200d5c7e8e08b7362fffdcc7b083e2e8c6
 				States.current().level.Construct();
 			};
        		this.interactive.push(right_door);
