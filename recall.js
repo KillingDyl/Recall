@@ -169,6 +169,7 @@ var SPRITE_OFFSET =
 	new LevelThree();
 	new LevelFour();
 	new LevelFive();
+	new Title();
 	
 	game.init = function() {
 		
@@ -1915,6 +1916,9 @@ var SPRITE_OFFSET =
 	  	};
 	}
 	
+	function Title()
+	{
+		var background = new 
 	
 	//////////////////////////////////////
 	// Function definitions
