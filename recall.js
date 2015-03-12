@@ -192,10 +192,10 @@ var SPRITE_OFFSET =
 		println("World Initialized");
 		
 		player = CreatePlayer(400, 500);//TODO
-		//this.level = Lab();
-		//this.level.ConstructStory();
-		this.level = LevelThree();
-		this.level.Construct();
+		this.level = Lab();
+		this.level.ConstructStory();
+		//this.level = new RandomLevel();
+		//this.level.Construct();
 	};
 	
 	game.world.update = function(d) {
@@ -1092,6 +1092,7 @@ var SPRITE_OFFSET =
 			x = fillBuilding.call(this, x, y, 5);
 			//floor 5 obstacles
 			this.obstacle.push(CreateDashElement(x - 200, y - SPRITE_OFFSET["ROOF_CRATE"], -10));
+			this.obstacle.push(CreateDashElement(x - 200, y-SPRITE_OFFSET["ROOF_CRATE"] - SPRITE_H["ROOF_CRATE"], -10));
 			
 			//6
 			x += 400;
@@ -1109,6 +1110,7 @@ var SPRITE_OFFSET =
 			this.obstacle.push(CreateRunnerElement(x - 1000, y-SPRITE_OFFSET["ROOF_CONTAINER"], SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0));
 			this.obstacle.push(CreateRunnerElement(x - 1000, y-SPRITE_OFFSET["ROOF_CONTAINER"]-40, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"]-100, "", true, false, 0));
 			this.obstacle.push(CreateDashElement(x - 100, y - SPRITE_OFFSET["ROOF_CRATE"], -10));
+			this.obstacle.push(CreateDashElement(x - 100, y-SPRITE_OFFSET["ROOF_CRATE"] - SPRITE_H["ROOF_CRATE"], -10));
 			
 			//8
 			x += 600;
@@ -1152,6 +1154,7 @@ var SPRITE_OFFSET =
 			//floor 13 obstacles
 			this.obstacle.push(CreateRunnerElement(x - 3200, y-SPRITE_OFFSET["ROOF_DOOR"], SPRITE_W["ROOF_DOOR"], SPRITE_H["ROOF_DOOR"], SPRITES["ROOF_DOOR"], true, false, 0));
 			this.obstacle.push(CreateDashElement(x - 2400, y - SPRITE_OFFSET["ROOF_CRATE"], -10));
+			this.obstacle.push(CreateDashElement(x - 2400, y-SPRITE_OFFSET["ROOF_CRATE"] - SPRITE_H["ROOF_CRATE"], -10));
 			this.obstacle.push(CreateRunnerElement(x - 1200, y-SPRITE_OFFSET["ROOF_AC"], SPRITE_W["ROOF_AC"], SPRITE_H["ROOF_AC"], SPRITES["ROOF_AC"], true, false, 0));
 			this.obstacle.push(CreateRunnerElement(x - 600, y-SPRITE_OFFSET["ROOF_DOOR"], SPRITE_W["ROOF_DOOR"], SPRITE_H["ROOF_DOOR"], SPRITES["ROOF_DOOR"], true, false, 0));
 			
@@ -1172,6 +1175,7 @@ var SPRITE_OFFSET =
 			x = fillBuilding.call(this, x, y, 15);
 			//floor 15 obstacles
 			this.obstacle.push(CreateDashElement(x - 2000, y - SPRITE_OFFSET["ROOF_CRATE"], -10));
+			this.obstacle.push(CreateDashElement(x - 2000, y-SPRITE_OFFSET["ROOF_CRATE"] - SPRITE_H["ROOF_CRATE"], -10));
 			this.obstacle.push(CreateRunnerElement(x - 1000, y-SPRITE_OFFSET["ROOF_CONTAINER"], SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0));
 			this.obstacle.push(CreateRunnerElement(x - 1000, y-SPRITE_OFFSET["ROOF_CONTAINER"]-40, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"]-100, "", true, false, 0));
 			
@@ -1823,7 +1827,93 @@ var SPRITE_OFFSET =
 	  	};
 	}
 	
-	
+	function RandomLevel() {
+		if (arguments.callee._singletonInstance)
+	    	return arguments.callee._singletonInstance;
+	  	arguments.callee._singletonInstance = this;
+	  	this.constructed = false;
+	  	this.checkpoint = [];
+  		this.floor = [];
+  		this.fill = [];
+  		this.interactive = [];
+  		this.obstacle = [];
+  		this.scenery = [];
+	  	
+	  	this.Construct = function() {
+	  		if(this.constructed) return;
+	  		var x = 100;
+			var y = 350;
+			this.checkpoint[0] = CreateCheckpoint(x, 120, true);
+			this.scenery.push(CreateBackground("sprites/Sky.png"));
+			
+			var length = Math.floor(Math.random() * 41) + 10;
+			for(var i = 0; i < length; i++) {
+				var building = Math.floor(Math.random() * 21);
+				makeBuilding.call(this, x, y, building);
+				x = fillBuilding.call(this, x, y, building);
+				if(i > 0) {
+					for(var j = building - 1; j >= 0; j--) {
+						switch(Math.floor(Math.random() * 6)) {
+							case 1:
+								this.obstacle.push(CreateRunnerElement(x - j * 200, y-SPRITE_OFFSET["ROOF_DOOR"], SPRITE_W["ROOF_DOOR"], SPRITE_H["ROOF_DOOR"], SPRITES["ROOF_DOOR"], true, false, 0));
+								j -= 2;
+								break;
+							case 2:
+								this.obstacle.push(CreateRunnerElement(x - j * 200, y-SPRITE_OFFSET["ROOF_CHIMNEY"], SPRITE_W["ROOF_CHIMNEY"], SPRITE_H["ROOF_CHIMNEY"], SPRITES["ROOF_CHIMNEY"], true, false, 0));
+								j -= 2;
+								break;
+							case 3:
+								this.obstacle.push(CreateRunnerElement(x - j * 200, y-SPRITE_OFFSET["ROOF_AC"], SPRITE_W["ROOF_AC"], SPRITE_H["ROOF_AC"], SPRITES["ROOF_AC"], true, false, 0));
+								j -= 2;
+								break;
+							case 4:
+								this.obstacle.push(CreateSlideElement(x - j * 200, y-SPRITE_OFFSET["ROOF_CONTAINER"], -10));
+								j -= 2;
+								break;
+							case 5:
+								this.obstacle.push(CreateDashElement(x - j * 200, y-SPRITE_OFFSET["ROOF_CRATE"], -10));
+								this.obstacle.push(CreateDashElement(x - j * 200, y-SPRITE_OFFSET["ROOF_CRATE"] - SPRITE_H["ROOF_CRATE"], -10));
+								j -= 4;
+								break;
+							default:
+								j -= 2;
+								break;
+						}
+					}
+				}
+				x += (Math.floor(Math.random() * 5) + 2) * 100;
+				y += (Math.floor(Math.random() * 5) - 2) * 100;
+			}
+	  		
+	  		this.width = this.floor[0].width/2 + this.floor[this.floor.length-1].x - this.floor[0].x + this.floor[this.floor.length-1].width/2;
+	  		this.constructed = true;
+	  		player.checkpoint = this.checkpoint[0];
+	  		player.body.SetTransform(player.checkpoint.body.GetPosition(), 0);
+			player.ChangeState(PLAYER_STATE_RUNNER);
+	  	};
+	  	
+	  	this.Reset = function() {
+	  		for(var i = 0; i < this.obstacle.length; i++) if(this.obstacle[i].Reset) this.obstacle[i].Reset();
+		};
+		
+		this.Destruct = function() {
+	  		if(!this.constructed) return;
+	  		for(var i = 0; i < this.checkpoint.length; i++) this.checkpoint[i].Destroy();
+	  		for(var i = 0; i < this.fill.length; i++) this.fill[i].Destroy();
+	  		for(var i = 0; i < this.floor.length; i++) this.floor[i].Destroy();
+	  		for(var i = 0; i < this.interactive.length; i++) this.interactive[i].Destroy();
+	  		for(var i = 0; i < this.obstacle.length; i++) this.obstacle[i].Destroy();
+	  		for(var i = 0; i < this.scenery.length; i++) this.scenery[i].Destroy();
+	  		this.checkpoint = [];
+	  		this.floor = [];
+	  		this.fill = [];
+	  		this.interactive = [];
+	  		this.obstacle = [];
+	  		this.scenery = [];
+	  		this.width = 0;
+	  		this.constructed = false;
+	  	};
+	}
 	
 	
 	//////////////////////////////////////
@@ -1870,6 +1960,11 @@ var SPRITE_OFFSET =
 	        if(other.fixture.IsSensor()) return;
 	        if(other.type == "dash" && !other.broken && player.dashing) {
 	        	other.broken = true;
+	        } else if(other.type != "floor") {
+	        	player.maxSpeed = PLAYER_RUN_SPEED;
+				player.dashing = false;
+				player.cooldown = 5;
+				player.frameRate = 7.5;
 	        }
       	}
 	}
@@ -1967,7 +2062,7 @@ var SPRITE_OFFSET =
 		player.climbUpper.SetSensor(true);
 		player.climbUpper.numContacts = 0;
 		
-		fixDef.shape.SetAsBox(15 / PHYSICS_SCALE, 5 / PHYSICS_SCALE, new b2.Vec2(PLAYER_WIDTH_RUNNING / 2 / PHYSICS_SCALE, -PLAYER_HEIGHT_RUNNING / 3 / PHYSICS_SCALE), 0);
+		fixDef.shape.SetAsBox(45 / PHYSICS_SCALE, 5 / PHYSICS_SCALE, new b2.Vec2(PLAYER_WIDTH_RUNNING / 4 / PHYSICS_SCALE, -PLAYER_HEIGHT_RUNNING / 3 / PHYSICS_SCALE), 0);
 		player.climbMiddle = player.body.CreateFixture(fixDef);
 		player.climbMiddle.SetSensor(true);
 		player.climbMiddle.numContacts = 0;
@@ -2012,7 +2107,7 @@ var SPRITE_OFFSET =
 		player.update = function(d) { 
 			//OBJ
 			if(this.near && gInput.E && this.latency < 0){
-				this.latency = 10;
+				this.latency = 5;
 				if(this.interact.action) this.interact.action();
 				//println("E");
 			} 
@@ -2067,14 +2162,14 @@ var SPRITE_OFFSET =
 							if(Math.abs(deltaMax) < .25) {
 								this.maxSpeed = PLAYER_RUN_SPEED;
 								this.dashing = false;
-								this.cooldown = 10;
+								this.cooldown = 5;
 								this.frameRate = 7.5;
 							}
 						}
 						if(gInput.up && !this.sliding && this.latency < 0) {
 							this.onGround = false;
-							this.latency = 10;
-							var deltaVelocity = velocity.y - 6;
+							this.latency = 5;
+							var deltaVelocity = velocity.y - 6.25;
 							var impulse = new b2.Vec2(0, this.body.GetMass() * deltaVelocity);
 							this.body.ApplyLinearImpulse(impulse, this.body.GetWorldCenter(), true);
 							CreateJumpAnimation(this);
@@ -2126,6 +2221,7 @@ var SPRITE_OFFSET =
 					}
 					break;
 				case PLAYER_STATE_SLIDING:
+					if(this.climbMiddle.numContacts > 0 && !this.dashing) this.Respawn();
 					var deltaVelocity = this.maxSpeed - velocity.x;
 					var impulse = new b2.Vec2(this.body.GetMass() * deltaVelocity, 0);
 					this.body.ApplyLinearImpulse(impulse, this.body.GetWorldCenter(), true);
@@ -2228,7 +2324,7 @@ var SPRITE_OFFSET =
 		for(name in sprite.animations) sprite.animations[name] = null;
 		sprite.width = PLAYER_WIDTH_CLIMBING;
 		sprite.height = PLAYER_HEIGHT_CLIMBING;
-		sprite.offsetX = -sprite.width / 8;
+		sprite.offsetX = -sprite.width / 6;
 		sprite.offsetY = -sprite.height * .75;
 		sprite.image = Textures.load(SPRITES["PLAYER_CLIMB"]);
 		sprite.frame = 0;
@@ -2442,10 +2538,10 @@ var SPRITE_OFFSET =
 		fixDef.shape = new b2.PolygonShape();
 		var vertices = [];
 		vertices.push(new b2.Vec2(0, -scaled_height / 2));
-		vertices.push(new b2.Vec2(scaled_width / 2, -scaled_height / 3));
-		vertices.push(new b2.Vec2(scaled_width / 2, scaled_height / 4));
-		vertices.push(new b2.Vec2(-scaled_width / 2, scaled_height / 4));
-		vertices.push(new b2.Vec2(-scaled_width / 2, -scaled_height / 3));
+		vertices.push(new b2.Vec2(scaled_width / 2, -scaled_height / 3)); //TR
+		vertices.push(new b2.Vec2(scaled_width / 2, scaled_height / 5)); //BR
+		vertices.push(new b2.Vec2(-scaled_width / 2, scaled_height / 5)); //BL
+		vertices.push(new b2.Vec2(-scaled_width / 2, -scaled_height / 3)); //TL
 		fixDef.shape.Set(vertices, 5);
 		ApplyBBox(element, b2.Body.b2_staticBody, fixDef);
 		element.update = function(d) {
@@ -2488,6 +2584,7 @@ var SPRITE_OFFSET =
 		vertices.push(new b2.Vec2(-scaled_width / 2, scaled_height / 2));
 		fixDef.shape.CreateLoop(vertices, 4);
 		ApplyBBox(element, b2.Body.b2_staticBody, fixDef);
+		element.type = "floor";
 		if(respawn) {
 			element.update = function(d) {
 				var xpos = this.x + States.current().world.x;
