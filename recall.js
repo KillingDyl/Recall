@@ -191,10 +191,11 @@ var SPRITE_OFFSET =
 		this.world.state = this;
 		println("World Initialized");
 		
-		player = CreatePlayer(400, 500);//TODO
+		player = CreatePlayer(0, 0);//TODO
 		this.level = Lab();
 		this.level.ConstructStory();
-		//this.level = new RandomLevel();
+		//this.level.Construct(new b2.Vec2(4, 5));
+		//this.level = LevelFour();
 		//this.level.Construct();
 	};
 	
@@ -284,8 +285,7 @@ var SPRITE_OFFSET =
 	    	this.scenery.push(CreateWorldElement(1500, 1500, 3000, 3000, "sprites/black.png", false, false, 100));
 			this.scenery.push(CreateWorldElement(SPRITE_W["LAB"] / 2, 400, SPRITE_W["LAB"], SPRITE_H["LAB"], SPRITES["LAB"], false, false, 3));
 			this.scenery.push(CreateWorldElement(700,500,442,214,"sprites/Labratory_bottom_desk.png", false, false,-1));
-       	    	
-			//this.width = this.floor[0].width/2 + this.floor[this.floor.length-1].x - this.floor[0].x + this.floor[this.floor.length-1].width/2;
+       	   	
 	  		this.width = SPRITE_W["LAB"];
 	  	};
 	  	
@@ -353,6 +353,7 @@ var SPRITE_OFFSET =
 	  	};
 	  	
 	  	this.Destruct = function() {
+	  		if(!this.constructed) return;
 	  		for(var i = 0; i < this.floor.length; i++) this.floor[i].Destroy();
 	  		for(var i = 0; i < this.interactive.length; i++) this.interactive[i].Destroy();
 	  		for(var i = 0; i < this.scenery.length; i++) this.scenery[i].Destroy();
@@ -375,11 +376,10 @@ var SPRITE_OFFSET =
   		this.scenery = [];
 	  
 	  	this.ConstructBase = function() {
-	  		this.floor.push(CreateFloorElement(10, VIEWPORT_HEIGHT / 2, 100, VIEWPORT_HEIGHT, "", 0, false));
-	  		this.floor.push(CreateFloorElement(890, VIEWPORT_HEIGHT / 2, 100, VIEWPORT_HEIGHT, "", 0, false));
+	  		this.floor.push(CreateFloorElement(VIEWPORT_WIDTH / 2 - SPRITE_W["OFFICE"] / 2 - 50, VIEWPORT_HEIGHT / 2, 100, VIEWPORT_HEIGHT, "", 0, false));
+	  		this.floor.push(CreateFloorElement(VIEWPORT_WIDTH / 2 + SPRITE_W["OFFICE"] / 2 + 50, VIEWPORT_HEIGHT / 2, 100, VIEWPORT_HEIGHT, "", 0, false));
 	  		this.floor.push(CreateFloorElement(VIEWPORT_WIDTH / 2, 580, SPRITE_W["OFFICE"], 100, "", 0, false));
 	  		
-			
 			// Background
 	    	this.scenery.push(CreateWorldElement(1500, 1500, 3000, 3000, "sprites/black.png", false, false, 100));
 			this.scenery.push(CreateWorldElement(VIEWPORT_WIDTH / 2, 400, SPRITE_W["OFFICE"], SPRITE_H["OFFICE"], SPRITES["OFFICE"], false, false, 3));
@@ -391,15 +391,15 @@ var SPRITE_OFFSET =
 	  		if(this.constructed) return;
 	  		this.ConstructBase();
 	  		
-	  		this.scenery.push(CreateText(400, 240, 32, "E in the Center to return"));
-	  		var middle_door = CreateDoorElement(450 , 400, SPRITE_W["MIDDLE_DOOR"], SPRITE_H["MIDDLE_DOOR"], "", 2, false);
+	  		this.scenery.push(CreateText(VIEWPORT_WIDTH / 2, 240, 32, "E in the Center to return"));
+	  		var middle_door = CreateDoorElement(VIEWPORT_WIDTH / 2 , 400, SPRITE_W["MIDDLE_DOOR"], SPRITE_H["MIDDLE_DOOR"], "", 2, false);
 			middle_door.action = function() {
 				States.current().level.Destruct();
 				States.current().level = Lab(); 
 				States.current().level.Construct(new b2.Vec2(639 / PHYSICS_SCALE, 500 / PHYSICS_SCALE));
 			};
 			this.interactive.push(middle_door);
-			player.body.SetTransform(new b2.Vec2(200/PHYSICS_SCALE,505/PHYSICS_SCALE), 0);
+			player.body.SetTransform(new b2.Vec2(400/PHYSICS_SCALE,505/PHYSICS_SCALE), 0);
 	  	    this.constructed = true;
 	  	    player.ChangeState(PLAYER_STATE_NORMAL);
 	  	};
@@ -460,7 +460,7 @@ var SPRITE_OFFSET =
        	    this.interactive.push(sensor);
        	    this.scenery.push(CreateWorldElement(550,440,675,436.5,"sprites/boss.png",false, false, -1));
        	    
-       	    player.body.SetTransform(new b2.Vec2(200/PHYSICS_SCALE,505/PHYSICS_SCALE), 0);
+       	    player.body.SetTransform(new b2.Vec2(400/PHYSICS_SCALE,505/PHYSICS_SCALE), 0);
 	  	    this.constructed = true;
 	  	    player.ChangeState(PLAYER_STATE_NORMAL);
 	  	};
@@ -990,7 +990,7 @@ var SPRITE_OFFSET =
 			this.obstacle.push(CreateRunnerElement(x - 2000, y-SPRITE_OFFSET["ROOF_CHIMNEY"], SPRITE_W["ROOF_CHIMNEY"], SPRITE_H["ROOF_CHIMNEY"], SPRITES["ROOF_CHIMNEY"], true, false, 0));
 			this.obstacle.push(CreateRunnerElement(x - 1000, y-SPRITE_OFFSET["ROOF_AC"], SPRITE_W["ROOF_AC"], SPRITE_H["ROOF_AC"], SPRITES["ROOF_AC"], true, false, 0));
 			
-			var sensor = CreateWorldElement(x, 200, 10, 500,"", true, true, 400);
+			var sensor = CreateRunnerElement(x, 200, 10, 500,"", true, true, 400);
 	        this.interactive.push(sensor);
 	        sensor.Enter = function(){
    	    		States.current().level.Destruct();
@@ -1074,8 +1074,7 @@ var SPRITE_OFFSET =
 			makeBuilding.call(this, x, y, 15);
 			x = fillBuilding.call(this, x, y, 15);
 			//floor 3 obstacles
-			this.obstacle.push(CreateRunnerElement(x - 2500, y-SPRITE_OFFSET["ROOF_CONTAINER"], SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0));
-			this.obstacle.push(CreateRunnerElement(x - 2500, y-SPRITE_OFFSET["ROOF_CONTAINER"]-40, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"]-100, "", true, false, 0));
+			this.obstacle.push(CreateSlideElement(x - 2500, y - SPRITE_OFFSET["ROOF_CONTAINER"], -5));
 			this.obstacle.push(CreateRunnerElement(x, y-SPRITE_OFFSET["ROOF_DOOR"], SPRITE_W["ROOF_DOOR"], SPRITE_H["ROOF_DOOR"], SPRITES["ROOF_DOOR"], true, false, 0));
 			
 			//4
@@ -1107,8 +1106,7 @@ var SPRITE_OFFSET =
 			x = fillBuilding.call(this, x, y, 15);
 			//floor 7 obstacles
 			this.obstacle.push(CreateRunnerElement(x - 1800, y-SPRITE_OFFSET["ROOF_DOOR"], SPRITE_W["ROOF_DOOR"], SPRITE_H["ROOF_DOOR"], SPRITES["ROOF_DOOR"], true, false, 0));
-			this.obstacle.push(CreateRunnerElement(x - 1000, y-SPRITE_OFFSET["ROOF_CONTAINER"], SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0));
-			this.obstacle.push(CreateRunnerElement(x - 1000, y-SPRITE_OFFSET["ROOF_CONTAINER"]-40, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"]-100, "", true, false, 0));
+			this.obstacle.push(CreateSlideElement(x - 1000, y - SPRITE_OFFSET["ROOF_CONTAINER"], -5));
 			this.obstacle.push(CreateDashElement(x - 100, y - SPRITE_OFFSET["ROOF_CRATE"], -10));
 			this.obstacle.push(CreateDashElement(x - 100, y-SPRITE_OFFSET["ROOF_CRATE"] - SPRITE_H["ROOF_CRATE"], -10));
 			
@@ -1143,8 +1141,7 @@ var SPRITE_OFFSET =
 			makeBuilding.call(this, x, y, 5);
 			x = fillBuilding.call(this, x, y, 5);
 			//floor 12 obstacles
-			this.obstacle.push(CreateRunnerElement(x, y-SPRITE_OFFSET["ROOF_CONTAINER"], SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0));
-			this.obstacle.push(CreateRunnerElement(x, y-SPRITE_OFFSET["ROOF_CONTAINER"]-40, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"]-100, "", true, false, 0));
+			this.obstacle.push(CreateSlideElement(x, y - SPRITE_OFFSET["ROOF_CONTAINER"], -5));
 			
 			//13
 			x += 350;
@@ -1165,8 +1162,7 @@ var SPRITE_OFFSET =
 			x = fillBuilding.call(this, x, y, 10);
 			//floor 14 obstacles
 			this.obstacle.push(CreateRunnerElement(x - 1200, y-SPRITE_OFFSET["ROOF_DOOR"], SPRITE_W["ROOF_DOOR"], SPRITE_H["ROOF_DOOR"], SPRITES["ROOF_DOOR"], true, false, 0));
-			this.obstacle.push(CreateRunnerElement(x - 400, y-SPRITE_OFFSET["ROOF_CONTAINER"], SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0));
-			this.obstacle.push(CreateRunnerElement(x - 400, y-SPRITE_OFFSET["ROOF_CONTAINER"]-40, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"]-100, "", true, false, 0));
+			this.obstacle.push(CreateSlideElement(x - 400, y - SPRITE_OFFSET["ROOF_CONTAINER"], -5));
 			
 			//15
 			x += 650;
@@ -1176,8 +1172,7 @@ var SPRITE_OFFSET =
 			//floor 15 obstacles
 			this.obstacle.push(CreateDashElement(x - 2000, y - SPRITE_OFFSET["ROOF_CRATE"], -10));
 			this.obstacle.push(CreateDashElement(x - 2000, y-SPRITE_OFFSET["ROOF_CRATE"] - SPRITE_H["ROOF_CRATE"], -10));
-			this.obstacle.push(CreateRunnerElement(x - 1000, y-SPRITE_OFFSET["ROOF_CONTAINER"], SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0));
-			this.obstacle.push(CreateRunnerElement(x - 1000, y-SPRITE_OFFSET["ROOF_CONTAINER"]-40, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"]-100, "", true, false, 0));
+			this.obstacle.push(CreateSlideElement(x - 1000, y - SPRITE_OFFSET["ROOF_CONTAINER"], -5));
 			
 			//16
 			x += 500;
@@ -1185,7 +1180,7 @@ var SPRITE_OFFSET =
 			makeBuilding.call(this, x, y, 15);
 			x = fillBuilding.call(this, x, y, 15);
 			
-			var sensor = CreateWorldElement(x, 200, 10, 500,"", true, true, 400);
+			var sensor = CreateRunnerElement(x, 200, 10, 500,"", true, true, 400);
 	        this.interactive.push(sensor);
 	        sensor.Enter = function(){
    	    		States.current().level.Destruct();
@@ -1243,14 +1238,16 @@ var SPRITE_OFFSET =
 			var y = 350;
 			var obstacle5offset = 220;
 			
-			this.checkpoint[0] = CreateCheckpoint(x, -100, true);
+			this.checkpoint[0] = CreateCheckpoint(x, y - 200, true);
+			
+			this.scenery.push(CreateBackground("sprites/Sky.png"));
 			
 			//Floors
 			//1
 			x = 100;
 			y = 350;
-			makeBuilding.call(this, x, y, 10);
-			x = fillBuilding.call(this, x, y, 10);
+			makeBuilding.call(this, x, y, 5);
+			x = fillBuilding.call(this, x, y, 5);
 			
 			//2
 			x += 500;
@@ -1266,8 +1263,7 @@ var SPRITE_OFFSET =
 			makeBuilding.call(this, x, y, 5);
 			x = fillBuilding.call(this, x, y, 5);
 			//floor obstacles3
-			this.obstacle.push(CreateRunnerElement(x, y-SPRITE_OFFSET["ROOF_CONTAINER"], SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0));
-			this.obstacle.push(CreateRunnerElement(x, y-SPRITE_OFFSET["ROOF_CONTAINER"]-30, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"]-100, "", true, false, 0));
+			this.obstacle.push(CreateSlideElement(x, y - SPRITE_OFFSET["ROOF_CONTAINER"], -5));
 			
 			//4
 			x += 180;
@@ -1276,32 +1272,36 @@ var SPRITE_OFFSET =
 			x = fillBuilding.call(this, x, y, 3);
 			
 			//5
-			x += 500;
-			y = 600;
-			makeBuilding.call(this, x, y, 10);
-			x = fillBuilding.call(this, x, y, 10);
+			x += 550;
+			y = 800;
+			makeBuilding.call(this, x, y, 8);
+			x = fillBuilding.call(this, x, y, 8);
 			//floor obstacles 5
-			this.obstacle.push(CreateRunnerElement(x - 1200, y-SPRITE_OFFSET["ROOF_DOOR"], SPRITE_W["ROOF_DOOR"], SPRITE_H["ROOF_DOOR"], SPRITES["ROOF_DOOR"], true, false, 0));
-			this.obstacle.push(CreateRunnerElement(x - 1000, y-SPRITE_OFFSET["ROOF_CONTAINER"], SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0));
-			this.obstacle.push(CreateRunnerElement(x - 1000, y-SPRITE_OFFSET["ROOF_CONTAINER"]-40, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"]-100, "", true, false, 0));
+			this.obstacle.push(CreateRunnerElement(x - 800, y-SPRITE_OFFSET["ROOF_DOOR"], SPRITE_W["ROOF_DOOR"], SPRITE_H["ROOF_DOOR"], SPRITES["ROOF_DOOR"], true, false, 0));
+			this.obstacle.push(CreateSlideElement(x - 200, y - SPRITE_OFFSET["ROOF_CONTAINER"], -5));
 			
 			//6
 			x += 500;
 			y = 500;
-			makeBuilding.call(this, x, y, 5);
-			x = fillBuilding.call(this, x, y, 5);
+			makeBuilding.call(this, x, y, 1);
+			x = fillBuilding.call(this, x, y, 1);
 			
 			//7
 			x += 500;
 			y = 500;
-			makeBuilding.call(this, x, y, 5);
-			x = fillBuilding.call(this, x, y, 5);
+			makeBuilding.call(this, x, y, 3);
+			x = fillBuilding.call(this, x, y, 3);
 			//floor obstacles7
-			this.obstacle.push(CreateRunnerElement(x - 100, y-obstacle5offset, 86, 72, "sprites/rooftop_crate.png", false, false, 0));
+			this.obstacle.push(CreateDashElement(x - 100, y-SPRITE_OFFSET["ROOF_CRATE"], -10));
+			this.obstacle.push(CreateDashElement(x - 100, y-SPRITE_OFFSET["ROOF_CRATE"] - SPRITE_H["ROOF_CRATE"], -10));
+			this.obstacle.push(CreateDashElement(x - 100, y-SPRITE_OFFSET["ROOF_CRATE"] - 2 * SPRITE_H["ROOF_CRATE"], -10));
+			this.obstacle.push(CreateDashElement(x - 200, y-SPRITE_OFFSET["ROOF_CRATE"], -10));
+			this.obstacle.push(CreateDashElement(x - 200, y-SPRITE_OFFSET["ROOF_CRATE"] - SPRITE_H["ROOF_CRATE"], -10));
+			this.obstacle.push(CreateDashElement(x - 200, y-SPRITE_OFFSET["ROOF_CRATE"] - 2 * SPRITE_H["ROOF_CRATE"], -10));
 			
 			//8
 			x += 500;
-			y = 550;
+			y = 600;
 			makeBuilding.call(this, x, y, 2);
 			x = fillBuilding.call(this, x, y, 2);
 			
@@ -1311,26 +1311,26 @@ var SPRITE_OFFSET =
 			makeBuilding.call(this, x, y, 5);
 			x = fillBuilding.call(this, x, y, 5);
 			//floor obstacles9
-			this.obstacle.push(CreateRunnerElement(x - 1280, y-SPRITE_OFFSET["ROOF_CHIMNEY"], SPRITE_W["ROOF_CHIMNEY"], SPRITE_H["ROOF_CHIMNEY"], SPRITES["ROOF_CHIMNEY"], true, false, 0));
-			this.obstacle.push(CreateRunnerElement(x + 80, y-SPRITE_OFFSET["ROOF_CHIMNEY"], SPRITE_W["ROOF_CHIMNEY"], SPRITE_H["ROOF_CHIMNEY"], SPRITES["ROOF_CHIMNEY"], true, false, 0));
+			this.obstacle.push(CreateDashElement(x - 1250, y-SPRITE_OFFSET["ROOF_CRATE"], -10));
+			this.obstacle.push(CreateDashElement(x - 1250, y-SPRITE_OFFSET["ROOF_CRATE"] - SPRITE_H["ROOF_CRATE"], -10));
+			this.obstacle.push(CreateDashElement(x + 50, y-SPRITE_OFFSET["ROOF_CRATE"], -10));
+			this.obstacle.push(CreateDashElement(x + 50, y-SPRITE_OFFSET["ROOF_CRATE"] - SPRITE_H["ROOF_CRATE"], -10));
 			
 			//10
 			x += 500;
 			y = 650;
-			makeBuilding.call(this, x, y, 4);
-			x = fillBuilding.call(this, x, y, 4);
+			makeBuilding.call(this, x, y, 2);
+			x = fillBuilding.call(this, x, y, 2);
 			//floor obstacles 10
-			this.obstacle.push(CreateRunnerElement(x - 200, y-SPRITE_OFFSET["ROOF_CONTAINER"], SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0));
-			this.obstacle.push(CreateRunnerElement(x - 200, y-SPRITE_OFFSET["ROOF_CONTAINER"]-40, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"]-100, "", true, false, 0));
+			this.obstacle.push(CreateSlideElement(x, y - SPRITE_OFFSET["ROOF_CONTAINER"], -5));
 			
 			//11
 			x += 500;
-			y = 700;
+			y = 750;
 			makeBuilding.call(this, x, y, 6);
 			x = fillBuilding.call(this, x, y, 6);
 			//floor obstacles 11
-			this.obstacle.push(CreateRunnerElement(x - 1200, y-SPRITE_OFFSET["ROOF_CONTAINER"], SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0));
-			this.obstacle.push(CreateRunnerElement(x - 1200, y-SPRITE_OFFSET["ROOF_CONTAINER"]-40, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"]-100, "", true, false, 0));
+			this.obstacle.push(CreateSlideElement(x - 1200, y - SPRITE_OFFSET["ROOF_CONTAINER"], -5));
 			this.obstacle.push(CreateRunnerElement(x, y-SPRITE_OFFSET["ROOF_DOOR"], SPRITE_W["ROOF_DOOR"], SPRITE_H["ROOF_DOOR"], SPRITES["ROOF_DOOR"], true, false, 0));
 			
 			//12
@@ -1345,8 +1345,7 @@ var SPRITE_OFFSET =
 			makeBuilding.call(this, x, y, 3);
 			x = fillBuilding.call(this, x, y, 3);
 			//floor obstacles 13
-			this.obstacle.push(CreateRunnerElement(x, y-SPRITE_OFFSET["ROOF_CONTAINER"], SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0));
-			this.obstacle.push(CreateRunnerElement(x, y-SPRITE_OFFSET["ROOF_CONTAINER"]-40, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"]-100, "", true, false, 0));
+			this.obstacle.push(CreateSlideElement(x, y - SPRITE_OFFSET["ROOF_CONTAINER"], -5));
 			
 			//14
 			x += 500;
@@ -1360,12 +1359,11 @@ var SPRITE_OFFSET =
 			makeBuilding.call(this, x, y, 5);
 			x = fillBuilding.call(this, x, y, 5);
 			//floor obstacles 15
-			this.obstacle.push(CreateRunnerElement(x - 200, y-SPRITE_OFFSET["ROOF_CONTAINER"], SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0));
-			this.obstacle.push(CreateRunnerElement(x - 200, y-SPRITE_OFFSET["ROOF_CONTAINER"]-40, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"]-100, "", true, false, 0));
+			this.obstacle.push(CreateSlideElement(x - 100, y - SPRITE_OFFSET["ROOF_CONTAINER"], -5));
 			
 			//16
-			x += 500;
-			y = 600;
+			x += 300;
+			y = 700;
 			makeBuilding.call(this, x, y, 5);
 			x = fillBuilding.call(this, x, y, 5);
 			
@@ -1375,8 +1373,7 @@ var SPRITE_OFFSET =
 			makeBuilding.call(this, x, y, 4);
 			x = fillBuilding.call(this, x, y, 4);
 			//floor obstacles 17
-			this.obstacle.push(CreateRunnerElement(x - 1000, y-SPRITE_OFFSET["ROOF_CONTAINER"], SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"], SPRITES["ROOF_CONTAINER"], false, false, 0));
-			this.obstacle.push(CreateRunnerElement(x - 1000, y-SPRITE_OFFSET["ROOF_CONTAINER"]-40, SPRITE_W["ROOF_CONTAINER"], SPRITE_H["ROOF_CONTAINER"]-100, "", true, false, 0));
+			this.obstacle.push(CreateSlideElement(x - 1000, y - SPRITE_OFFSET["ROOF_CONTAINER"], -5));
 			
 			//18
 			x += 200;
@@ -1402,15 +1399,16 @@ var SPRITE_OFFSET =
 			makeBuilding.call(this, x, y, 5);
 			x = fillBuilding.call(this, x, y, 5);
 			//floor obstacles 21
-			this.obstacle.push(CreateRunnerElement(x - 400, y-obstacle5offset, 86, 72, "sprites/rooftop_crate.png", false, false, 0));
+			this.obstacle.push(CreateDashElement(x - 400, y-SPRITE_OFFSET["ROOF_CRATE"], -10));
+			this.obstacle.push(CreateDashElement(x - 400, y-SPRITE_OFFSET["ROOF_CRATE"] - SPRITE_H["ROOF_CRATE"], -10));
 			
-			var sensor = CreateWorldElement(x, 200, 10, 500,"", true, true, 400);
+			/*var sensor = CreateRunnerElement(x, 200, 10, 500,"", true, true, 400);
 	        this.interactive.push(sensor);
 	        sensor.Enter = function(){
    	    		States.current().level.Destruct();
-				States.current().level = LevelFive/*StoryTwo*/();
+				States.current().level = LevelFive();
 				States.current().level.Construct();
-       	    };
+       	    };*/
 			
 			///////work before this
 			this.width = this.floor[0].width/2 + this.floor[this.floor.length-1].x - this.floor[0].x + this.floor[this.floor.length-1].width/2;
@@ -1931,16 +1929,16 @@ var SPRITE_OFFSET =
 			player.foot.numContacts++;
 			return;
 		}
+		if(fixtureA == player.killSensor || fixtureB == player.killSensor) {
+			player.killSensor.numContacts++;
+			return;
+		}
 		if(fixtureA == player.climbUpper || fixtureB == player.climbUpper) {
 			player.climbUpper.numContacts++;
 			return;
 		}
 		if(fixtureA == player.climbMiddle || fixtureB == player.climbMiddle) {
 			player.climbMiddle.numContacts++;
-			return;
-		}
-		if(fixtureA == player.climbLower || fixtureB == player.climbLower) {
-			player.climbLower.numContacts++;
 			return;
 		}
 		var objectA = fixtureA.GetBody().GetUserData();
@@ -1960,7 +1958,7 @@ var SPRITE_OFFSET =
 	        if(other.fixture.IsSensor()) return;
 	        if(other.type == "dash" && !other.broken && player.dashing) {
 	        	other.broken = true;
-	        } else if(other.type != "floor") {
+	        } else if(other.type != "floor" && !player.sliding) {
 	        	player.maxSpeed = PLAYER_RUN_SPEED;
 				player.dashing = false;
 				player.cooldown = 5;
@@ -1979,14 +1977,14 @@ var SPRITE_OFFSET =
 		if(fixtureA == player.foot || fixtureB == player.foot) {
 			player.foot.numContacts--;
 		}
+		if(fixtureA == player.killSensor || fixtureB == player.killSensor) {
+			player.killSensor.numContacts--;
+		}
 		if(fixtureA == player.climbUpper|| fixtureB == player.climbUpper) {
 			player.climbUpper.numContacts--;
 		}
 		if(fixtureA == player.climbMiddle|| fixtureB == player.climbMiddle) {
 			player.climbMiddle.numContacts--;
-		}
-		if(fixtureA == player.climbLower || fixtureB == player.climbLower) {
-			player.climbLower.numContacts--;
 		}
 		var objectA = fixtureA.GetBody().GetUserData();
 		var objectB = fixtureB.GetBody().GetUserData();
@@ -2056,21 +2054,22 @@ var SPRITE_OFFSET =
 		var fixDef = CreateFixtureDef(0, 0, 0);
 		fixDef.shape = new b2.PolygonShape();
 		
+		// Kill sensor
+		fixDef.shape.SetAsBox(55 / PHYSICS_SCALE, 5 / PHYSICS_SCALE, new b2.Vec2(PLAYER_WIDTH_RUNNING / 6 / PHYSICS_SCALE, -PLAYER_HEIGHT_RUNNING / 5 / PHYSICS_SCALE), 0);
+		player.killSensor = player.body.CreateFixture(fixDef);
+		player.killSensor.SetSensor(true);
+		player.killSensor.numContacts = 0;
+		
 		// Creates the climb sensors
 		fixDef.shape.SetAsBox(15 / PHYSICS_SCALE, 5 / PHYSICS_SCALE, new b2.Vec2(PLAYER_WIDTH_RUNNING / 2 / PHYSICS_SCALE, -PLAYER_HEIGHT_RUNNING / 1.2 / PHYSICS_SCALE), 0);
 		player.climbUpper = player.body.CreateFixture(fixDef);
 		player.climbUpper.SetSensor(true);
 		player.climbUpper.numContacts = 0;
 		
-		fixDef.shape.SetAsBox(45 / PHYSICS_SCALE, 5 / PHYSICS_SCALE, new b2.Vec2(PLAYER_WIDTH_RUNNING / 4 / PHYSICS_SCALE, -PLAYER_HEIGHT_RUNNING / 3 / PHYSICS_SCALE), 0);
+		fixDef.shape.SetAsBox(15 / PHYSICS_SCALE, 5 / PHYSICS_SCALE, new b2.Vec2(PLAYER_WIDTH_RUNNING / 2 / PHYSICS_SCALE, -PLAYER_HEIGHT_RUNNING / 3 / PHYSICS_SCALE), 0);
 		player.climbMiddle = player.body.CreateFixture(fixDef);
 		player.climbMiddle.SetSensor(true);
 		player.climbMiddle.numContacts = 0;
-		
-		fixDef.shape.SetAsBox(15 / PHYSICS_SCALE, 5 / PHYSICS_SCALE, new b2.Vec2(PLAYER_WIDTH_RUNNING / 2 / PHYSICS_SCALE, PLAYER_HEIGHT_RUNNING / 2 / PHYSICS_SCALE), 0);
-		player.climbLower = player.body.CreateFixture(fixDef);
-		player.climbLower.SetSensor(true);
-		player.climbLower.numContacts = 0;
 		
 		CreateStandingFixture(player);
 		
@@ -2104,14 +2103,14 @@ var SPRITE_OFFSET =
 			}
 		};
 		
+		var pressed = false;
+		
 		player.update = function(d) { 
-			//OBJ
-			if(this.near && gInput.E && this.latency < 0){
-				this.latency = 5;
+			if(this.near && gInput.E && !pressed){
+				pressed = true;
 				if(this.interact.action) this.interact.action();
-				//println("E");
-			} 
-			//
+			}
+			if(!gInput.E && pressed) pressed = false;
 			// Movement code
 			var velocity = this.body.GetLinearVelocity();
 			this.latency -= d;
@@ -2145,7 +2144,7 @@ var SPRITE_OFFSET =
 					break;
 				case PLAYER_STATE_RUNNER:
 					if(this.onGround) {
-						if(this.climbMiddle.numContacts > 0 && !this.dashing) this.Respawn();
+						if(this.killSensor.numContacts > 0 && !this.dashing) this.Respawn();
 						var deltaVelocity = this.maxSpeed - velocity.x;
 						var impulse = new b2.Vec2(this.body.GetMass() * deltaVelocity, 0);
 						this.body.ApplyLinearImpulse(impulse, this.body.GetWorldCenter(), true);
@@ -2185,7 +2184,6 @@ var SPRITE_OFFSET =
 							this.cooldown = PLAYER_SLIDE_DURATION;
 							this.state = PLAYER_STATE_SLIDING;
 						}
-						
 					} else {
 						CreateJumpAnimation(this);
 						DestroyCurrentFixtures(this);
@@ -2537,12 +2535,12 @@ var SPRITE_OFFSET =
 		var scaled_height = SPRITE_H["ROOF_CONTAINER"] / PHYSICS_SCALE;
 		fixDef.shape = new b2.PolygonShape();
 		var vertices = [];
-		vertices.push(new b2.Vec2(0, -scaled_height / 2));
+		//vertices.push(new b2.Vec2(0, -scaled_height / 2));
 		vertices.push(new b2.Vec2(scaled_width / 2, -scaled_height / 3)); //TR
 		vertices.push(new b2.Vec2(scaled_width / 2, scaled_height / 5)); //BR
 		vertices.push(new b2.Vec2(-scaled_width / 2, scaled_height / 5)); //BL
 		vertices.push(new b2.Vec2(-scaled_width / 2, -scaled_height / 3)); //TL
-		fixDef.shape.Set(vertices, 5);
+		fixDef.shape.Set(vertices, 4);
 		ApplyBBox(element, b2.Body.b2_staticBody, fixDef);
 		element.update = function(d) {
 			var xpos = this.x + States.current().world.x;
@@ -2568,7 +2566,7 @@ var SPRITE_OFFSET =
 	
 	//
 	// CreateFloorElement - creates a world element, if respawn is true, when it goes offscreen, it will be moved
-	//						to create and infinite level
+	//						to create an infinite level
 	// 						NOTE: Defines a different type of shape for floor tiles
 	//
 	function CreateFloorElement(x, y, width, height, image, index, respawn) {
