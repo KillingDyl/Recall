@@ -15,8 +15,6 @@ var KEY_ESC = 27;
 var VIEWPORT_WIDTH = document.getElementById("recall").width;
 var VIEWPORT_HEIGHT = document.getElementById("recall").height;
 var MUSIC = [];
-MUSIC.push(new Audio('songs/creed.mp3'));
-MUSIC.push(new Audio('songs/test.mp3'));
 
 
 // PLAYER CONSTANTS
