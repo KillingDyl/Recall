@@ -170,6 +170,8 @@ var SPRITE_OFFSET =
 	new LevelFour();
 	new LevelFive();
 	new Title();
+	new Credits();
+	new Story();
 	
 	game.init = function() {
 		
@@ -193,7 +195,7 @@ var SPRITE_OFFSET =
 		println("World Initialized");
 		
 		player = CreatePlayer(0, 0);//TODO
-		this.level = Lab();
+		this.level = Title();
 		this.level.ConstructStory();
 		//this.level.Construct(new b2.Vec2(4, 5));
 		//this.level = LevelFour();
@@ -303,7 +305,7 @@ var SPRITE_OFFSET =
 			var middle_door = CreateDoorElement(639 , 360, SPRITE_W["MIDDLE_DOOR"], SPRITE_H["MIDDLE_DOOR"], SPRITES["MIDDLE_DOOR"], 2, false);
 			middle_door.action = function() {
 				States.current().level.Destruct();
-				States.current().level = Office(); 
+				States.current().level = Title(); 
 				States.current().level.Construct();
 			};
 			this.interactive.push(middle_door);
@@ -1914,9 +1916,219 @@ var SPRITE_OFFSET =
 	  	};
 	}
 	
-	function Title()
-	{
-		var background = new 
+	function Title() {
+		if (arguments.callee._singletonInstance)
+	    return arguments.callee._singletonInstance;
+	  	arguments.callee._singletonInstance = this;
+	  	this.constructed = false;
+	  	this.floor = [];
+  		this.interactive = [];
+  		this.scenery = [];
+	   
+	  	this.ConstructBase = function() {
+	  		this.floor.push(CreateFloorElement(0, VIEWPORT_HEIGHT / 2, 100, VIEWPORT_HEIGHT, "", 0, false));
+	  		this.floor.push(CreateFloorElement(1300, VIEWPORT_HEIGHT / 2, 100, VIEWPORT_HEIGHT, "", 0, false));
+	  		this.floor.push(CreateFloorElement(SPRITE_W["LAB"] / 2, 650, SPRITE_W["LAB"], 100, "", 0, false));
+	  	
+	    	this.scenery.push(CreateWorldElement(600, 300, 1350, 600, "sprites/Blue.png", false, false, 100));
+       	   	
+	  		this.width = SPRITE_W["LAB"];
+	  	};
+	  	
+	  	this.Construct = function(spawn) {
+	  		if(this.constructed) return;
+	  		this.ConstructBase();
+       		player.body.SetTransform(spawn, 0);
+	  		this.constructed = true;
+	  		player.ChangeState(PLAYER_STATE_NORMAL);
+	  	};
+	  	
+	  	this.ConstructStory = function() {
+	  		if(this.constructed) return;
+	  		this.ConstructBase();
+	    	
+	    	var background = CreateWorldElement(600, 170, 768.25, 402, "sprites/Recall_Title.png", true, false, 0);
+	    	this.scenery.push(background);
+	    	this.scenery.push(CreateText(325,360, 32, "Credits"));
+	    	this.scenery[2].color = "cyan";
+	    	this.scenery.push(CreateText(1125,360, 32, "Story"));
+	    	this.scenery[3].color = "cyan";
+	    	
+			var numeroUno = CreateDoorElement(325, 480, SPRITE_W["MIDDLE_DOOR"], SPRITE_H["MIDDLE_DOOR"], SPRITES["MIDDLE_DOOR"], 2, false);
+			var numeroDos = CreateDoorElement(725, 480, SPRITE_W["MIDDLE_DOOR"], SPRITE_H["MIDDLE_DOOR"], SPRITES["MIDDLE_DOOR"], 2, false);
+			var numeroTres = CreateDoorElement(1125, 480, SPRITE_W["MIDDLE_DOOR"], SPRITE_H["MIDDLE_DOOR"], SPRITES["MIDDLE_DOOR"], 2, false);
+			this.interactive.push(numeroUno);
+			this.interactive.push(numeroDos);
+			this.interactive.push(numeroTres);
+			
+			numeroUno.action = function()
+			{
+				States.current().level.Destruct();
+				States.current().level = Credits(); ///change back to one after test
+				States.current().level.ConstructStory();
+			};
+			
+			numeroDos.action = function()
+			{
+				States.current().level.Destruct();
+				States.current().level = Lab(); ///change back to one after test
+				States.current().level.ConstructStory();
+			};
+			
+			numeroTres.action = function()
+			{
+				States.current().level.Destruct();
+				States.current().level = Story(); ///change back to one after test
+				States.current().level.ConstructStory();
+			};
+	    	
+	    	player.body.SetTransform(new b2.Vec2(50/PHYSICS_SCALE,450/PHYSICS_SCALE), 0);
+	  		this.constructed = true;
+	  		player.ChangeState(PLAYER_STATE_NORMAL);
+	  	};
+	  	
+	  	this.Destruct = function() { //TODO
+	  		if(!this.constructed) return;
+	  		for(var i = 0; i < this.floor.length; i++) this.floor[i].Destroy();
+	  		for(var i = 0; i < this.interactive.length; i++) this.interactive[i].Destroy();
+	  		for(var i = 0; i < this.scenery.length; i++) this.scenery[i].Destroy();
+	  		this.floor = [];
+	  		this.interactive = [];
+	  		this.scenery = [];
+	  		this.width = 0;
+	  		this.constructed = false;
+	  	};
+	}
+	
+	function Credits() { //TODO
+		if (arguments.callee._singletonInstance)
+	    return arguments.callee._singletonInstance;
+	  	arguments.callee._singletonInstance = this;
+	  	this.constructed = false;
+	  	this.floor = [];
+  		this.interactive = [];
+  		this.scenery = [];
+	   
+	  	this.ConstructBase = function() {
+	  		this.floor.push(CreateFloorElement(0, VIEWPORT_HEIGHT / 2, 100, VIEWPORT_HEIGHT, "", 0, false));
+	  		this.floor.push(CreateFloorElement(1300, VIEWPORT_HEIGHT / 2, 100, VIEWPORT_HEIGHT, "", 0, false));
+	  		this.floor.push(CreateFloorElement(SPRITE_W["LAB"] / 2, 650, SPRITE_W["LAB"], 100, "", 0, false));
+	  		
+	    	this.scenery.push(CreateWorldElement(600, 300, 1350, 600, "sprites/Blue.png", false, false, 100));
+       	   	
+	  		this.width = SPRITE_W["LAB"];
+	  	};
+	  	
+	  	this.Construct = function(spawn) {
+	  		if(this.constructed) return;
+	  		this.ConstructBase();
+       		player.body.SetTransform(spawn, 0);
+	  		this.constructed = true;
+	  		player.ChangeState(PLAYER_STATE_NORMAL);
+	  	};
+	  	
+	  	this.ConstructStory = function() {
+	  		if(this.constructed) return;
+	  		this.ConstructBase();
+	  		
+	  		var numeroUno = CreateDoorElement(1125, 480, SPRITE_W["MIDDLE_DOOR"], SPRITE_H["MIDDLE_DOOR"], SPRITES["MIDDLE_DOOR"], 2, false);
+	    	this.interactive.push(numeroUno);
+	    	
+	    	var Box1 = CreateText(600, 275, 40, "Credits: \n\n Ben Filstrup - Audio files and coded story \n\n Sam Filstrup - Created all game art \n\n Sterling Salvaterra - Coded parts of engine\n              and story \n\n Rahil Shah - Implemented runner levels \n          and created menue \n\n Dylan Tran - Engine maker and debugger");
+	    	this.scenery.push(Box1);
+	    	this.scenery[1].color = "cyan";
+	    	
+	    	numeroUno.action = function()
+			{
+				States.current().level.Destruct();
+				States.current().level = Title(); ///change back to one after test
+				States.current().level.ConstructStory();
+			};
+	    	
+	    	player.body.SetTransform(new b2.Vec2(50/PHYSICS_SCALE,450/PHYSICS_SCALE), 0);
+
+	  		this.constructed = true;
+	  		player.ChangeState(PLAYER_STATE_NORMAL);
+	  	};
+	  	
+	  	this.Destruct = function() { //TODO
+	  		if(!this.constructed) return;
+	  		for(var i = 0; i < this.floor.length; i++) this.floor[i].Destroy();
+	  		for(var i = 0; i < this.interactive.length; i++) this.interactive[i].Destroy();
+	  		for(var i = 0; i < this.scenery.length; i++) this.scenery[i].Destroy();
+	  		this.floor = [];
+	  		this.interactive = [];
+	  		this.scenery = [];
+	  		this.width = 0;
+	  		this.constructed = false;
+	  	};
+	}
+	
+	
+	function Story() { //TODO
+		if (arguments.callee._singletonInstance)
+	    return arguments.callee._singletonInstance;
+	  	arguments.callee._singletonInstance = this;
+	  	this.constructed = false;
+	  	this.floor = [];
+  		this.interactive = [];
+  		this.scenery = [];
+	   
+	  	this.ConstructBase = function() {
+	  		this.floor.push(CreateFloorElement(0, VIEWPORT_HEIGHT / 2, 100, VIEWPORT_HEIGHT, "", 0, false));
+	  		this.floor.push(CreateFloorElement(1300, VIEWPORT_HEIGHT / 2, 100, VIEWPORT_HEIGHT, "", 0, false));
+	  		this.floor.push(CreateFloorElement(SPRITE_W["LAB"] / 2, 650, SPRITE_W["LAB"], 100, "", 0, false));
+	  		
+	    	this.scenery.push(CreateWorldElement(600, 300, 1350, 600, "sprites/Blue.png", false, false, 100));
+       	   	
+	  		this.width = SPRITE_W["LAB"];
+	  	};
+	  	
+	  	this.Construct = function(spawn) {
+	  		if(this.constructed) return;
+	  		this.ConstructBase();
+       		player.body.SetTransform(spawn, 0);
+	  		this.constructed = true;
+	  		player.ChangeState(PLAYER_STATE_NORMAL);
+	  	};
+	  	
+	  	this.ConstructStory = function() {
+	  		if(this.constructed) return;
+	  		this.ConstructBase();
+	  		
+	  		var numeroUno = CreateDoorElement(1125, 480, SPRITE_W["MIDDLE_DOOR"], SPRITE_H["MIDDLE_DOOR"], SPRITES["MIDDLE_DOOR"], 2, false);
+	    	this.interactive.push(numeroUno);
+	    	
+	    	var Box1 = CreateText(600, 225, 40, "Story:\n\n You play as Remy, a scientist that works on memory \nalteration. Successful tests on mice have yielded positive \nresults, but not enough to impress your superiors. As a result, \nyour funding gets cut, leaving your research and efforts wasted. \nIn a final desperate attempt, you experiment on yourself, \ncausing your reality and perception to collapse. Now, it's \nyour job to figure out who you are, where you \nare, and if the things you see are real.");
+	    	this.scenery.push(Box1);
+	    	this.scenery[1].color = "cyan";
+	    	
+	    	numeroUno.action = function()
+			{
+				States.current().level.Destruct();
+				States.current().level = Title(); ///change back to one after test
+				States.current().level.ConstructStory();
+			};
+	    	
+	    	player.body.SetTransform(new b2.Vec2(50/PHYSICS_SCALE,450/PHYSICS_SCALE), 0);
+
+	  		this.constructed = true;
+	  		player.ChangeState(PLAYER_STATE_NORMAL);
+	  	};
+	  	
+	  	this.Destruct = function() { //TODO
+	  		if(!this.constructed) return;
+	  		for(var i = 0; i < this.floor.length; i++) this.floor[i].Destroy();
+	  		for(var i = 0; i < this.interactive.length; i++) this.interactive[i].Destroy();
+	  		for(var i = 0; i < this.scenery.length; i++) this.scenery[i].Destroy();
+	  		this.floor = [];
+	  		this.interactive = [];
+	  		this.scenery = [];
+	  		this.width = 0;
+	  		this.constructed = false;
+	  	};
+	}
+	
 	
 	//////////////////////////////////////
 	// Function definitions
