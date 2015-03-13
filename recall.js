@@ -14,6 +14,10 @@ var KEY_SPACE = 32;
 var KEY_ESC = 27;
 var VIEWPORT_WIDTH = document.getElementById("recall").width;
 var VIEWPORT_HEIGHT = document.getElementById("recall").height;
+var MUSIC = [];
+MUSIC.push(new Audio('songs/creed.mp3'));
+MUSIC.push(new Audio('songs/test.mp3'));
+
 
 // PLAYER CONSTANTS
 var PLAYER_WIDTH_STANDING = 126;
@@ -200,7 +204,7 @@ var SPRITE_OFFSET =
 		this.level = Title();
 		this.level.ConstructStory();
 		//this.level.Construct(new b2.Vec2(4, 5));
-		this.level = LevelFive();
+		this.level = Title();
 		this.level.Construct();
 	};
 	
@@ -736,6 +740,9 @@ var SPRITE_OFFSET =
 	}
 	
 	function LevelOne() {
+		
+		nextTrack(MUSIC[0], MUSIC[1]);
+		
 		if (arguments.callee._singletonInstance)
 	    	return arguments.callee._singletonInstance;
 	  	arguments.callee._singletonInstance = this;
@@ -892,6 +899,7 @@ var SPRITE_OFFSET =
 	}
 	
 	function LevelTwo() {
+		nextTrack(MUSIC[1], MUSIC[0]);
 		if (arguments.callee._singletonInstance)
 	    	return arguments.callee._singletonInstance;
 	  	arguments.callee._singletonInstance = this;
@@ -1187,8 +1195,8 @@ var SPRITE_OFFSET =
 	        this.interactive.push(sensor);
 	        sensor.Enter = function(){
    	    		States.current().level.Destruct();
-				States.current().level = Lab();
-				States.current().level.Construct();
+				States.current().level = Hallway();
+				States.current().level.ConstructStory();
        	    };
 	        
 			///////work before this
@@ -1774,6 +1782,8 @@ var SPRITE_OFFSET =
 	}
 	
 	function Title() {
+		nextTrack(MUSIC[1], MUSIC[0]);
+
 		if (arguments.callee._singletonInstance)
 	    return arguments.callee._singletonInstance;
 	  	arguments.callee._singletonInstance = this;
@@ -1891,7 +1901,7 @@ var SPRITE_OFFSET =
 	  		var numeroUno = CreateDoorElement(1125, 480, SPRITE_W["MIDDLE_DOOR"], SPRITE_H["MIDDLE_DOOR"], SPRITES["MIDDLE_DOOR"], 2, false);
 	    	this.interactive.push(numeroUno);
 	    	
-	    	var Box1 = CreateText(600, 275, 40, "Credits: \n\n Ben Filstrup - Audio files and coded story \n\n Sam Filstrup - Created all game art \n\n Sterling Salvaterra - Coded parts of engine\n              and story \n\n Rahil Shah - Implemented runner levels \n          and created menue \n\n Dylan Tran - Engine maker and debugger");
+	    	var Box1 = CreateText(600, 275, 40, "Credits: \n\n Ben Filstrup - Audio files and coded story \n\n Sam Filstrup - Created all game art \n\n Sterling Salvaterra - Coded parts of engine\n              and story \n\n Rahil Shah - Implemented runner levels \n          and created menu \n\n Dylan Tran - Engine maker and debugger");
 	    	this.scenery.push(Box1);
 	    	this.scenery[1].color = "cyan";
 	    	
@@ -2872,4 +2882,13 @@ var SPRITE_OFFSET =
 		this.fill.push(CreateFloorElement(x - SPRITE_OFFSET["WALL_FILL_W"], y + SPRITE_OFFSET["WALL_FILL_H"], SPRITE_W["WALL_SIDE_FILL"], SPRITE_H["WALL_SIDE_FILL"], SPRITES["RIGHT_WALL_FILL"], 0, true));
 		return x;
 	}
+	
+	function nextTrack(audio1, audio2)
+	{
+		audio1.pause();
+		audio2.play();
+		
+	}
+	
+	
 }());
