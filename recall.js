@@ -201,11 +201,9 @@ var SPRITE_OFFSET =
 		println("World Initialized");
 		
 		player = CreatePlayer(0, 0);//TODO
-		this.level = Title();
-		this.level.ConstructStory();
-		//this.level.Construct(new b2.Vec2(4, 5));
-		this.level = Title();
+		this.level = LevelFive();
 		this.level.Construct();
+		//this.level.Construct(new b2.Vec2(4, 5));
 	};
 	
 	game.world.update = function(d) {
@@ -311,7 +309,7 @@ var SPRITE_OFFSET =
 			var middle_door = CreateDoorElement(639 , 360, SPRITE_W["MIDDLE_DOOR"], SPRITE_H["MIDDLE_DOOR"], SPRITES["MIDDLE_DOOR"], 2, false);
 			middle_door.action = function() {
 				States.current().level.Destruct();
-				States.current().level = Title(); 
+				States.current().level = Office(); 
 				States.current().level.Construct();
 			};
 			this.interactive.push(middle_door);
@@ -688,8 +686,8 @@ var SPRITE_OFFSET =
 				if(count == world.dialogue.length){ //TODO Need to make it allow me to break from chat loop so I can interact with door
 						States.pop();
 						States.current().level.Destruct();
-					    States.current().level = LevelThree();
-					    States.current().level.Construct();
+					    States.current().level = LevelTwo();
+					    States.current().level.ConstructLoop();
 					}
 				
 				if(count == 1 || count == 3 || count == 4){ // Remy
@@ -739,6 +737,7 @@ var SPRITE_OFFSET =
 	  	};
 	}
 	
+	// Tutorial - Contains Construct
 	function LevelOne() {
 		
 		nextTrack(MUSIC[0], MUSIC[1]);
@@ -747,15 +746,15 @@ var SPRITE_OFFSET =
 	    	return arguments.callee._singletonInstance;
 	  	arguments.callee._singletonInstance = this;
 	  	this.constructed = false;
+	  	this.checkpoint = [];
+  		this.floor = [];
+  		this.fill = [];
+  		this.interactive = [];
+  		this.obstacle = [];
+  		this.scenery = [];
 	  	
 	  	this.Construct = function() {
 	  		if(this.constructed) return;
-	  		this.checkpoint = [];
-	  		this.floor = [];
-	  		this.fill = [];
-	  		this.interactive = [];
-	  		this.obstacle = [];
-	  		this.scenery = [];
 	  		var x = 100;
 			var y = 450;
 			
@@ -898,21 +897,21 @@ var SPRITE_OFFSET =
 	  	};
 	}
 	
+	// Contains Construct and ConstructLoop
 	function LevelTwo() {
 		nextTrack(MUSIC[1], MUSIC[0]);
 		if (arguments.callee._singletonInstance)
 	    	return arguments.callee._singletonInstance;
 	  	arguments.callee._singletonInstance = this;
 	  	this.constructed = false;
+	  	this.checkpoint = [];
+  		this.floor = [];
+  		this.fill = [];
+  		this.interactive = [];
+  		this.obstacle = [];
+  		this.scenery = [];
 	  	
-	  	this.Construct = function() {
-	  		if(this.constructed) return;
-	  		this.checkpoint = [];
-	  		this.floor = [];
-	  		this.fill = [];
-	  		this.interactive = [];
-	  		this.obstacle = [];
-	  		this.scenery = [];
+	  	this.ConstructBase = function() {
 	  		////work after this
 	  		var x = 100;
 			var y = 450;
@@ -925,14 +924,14 @@ var SPRITE_OFFSET =
 			//1
 			x = 100;
 			y = 450;
-			makeBuilding.call(this, x, y, 40);
-			x = fillBuilding.call(this, x, y, 40);
+			makeBuilding.call(this, x, y, 20);
+			x = fillBuilding.call(this, x, y, 20);
 			//floor 1 obstacles
-			this.obstacle.push(CreateRunnerElement(x - 6000, y-SPRITE_OFFSET["ROOF_DOOR"], SPRITE_W["ROOF_DOOR"], SPRITE_H["ROOF_DOOR"], SPRITES["ROOF_DOOR"], true, false, 0));
-			this.obstacle.push(CreateRunnerElement(x - 5100, y-SPRITE_OFFSET["ROOF_DOOR"], SPRITE_W["ROOF_DOOR"], SPRITE_H["ROOF_DOOR"], SPRITES["ROOF_DOOR"], true, false, 0));
-			this.obstacle.push(CreateRunnerElement(x - 4200, y-SPRITE_OFFSET["ROOF_DOOR"], SPRITE_W["ROOF_DOOR"], SPRITE_H["ROOF_DOOR"], SPRITES["ROOF_DOOR"], true, false, 0));
-			this.obstacle.push(CreateSlideElement(x - 2000, y - SPRITE_OFFSET["ROOF_CONTAINER"], -5));
-			this.obstacle.push(CreateRunnerElement(x - 1000, y-SPRITE_OFFSET["ROOF_DOOR"], SPRITE_W["ROOF_DOOR"], SPRITE_H["ROOF_DOOR"], SPRITES["ROOF_DOOR"], true, false, 0));
+			this.obstacle.push(CreateRunnerElement(x - 3000, y-SPRITE_OFFSET["ROOF_DOOR"], SPRITE_W["ROOF_DOOR"], SPRITE_H["ROOF_DOOR"], SPRITES["ROOF_DOOR"], true, false, 0));
+			this.obstacle.push(CreateRunnerElement(x - 2300, y-SPRITE_OFFSET["ROOF_DOOR"], SPRITE_W["ROOF_DOOR"], SPRITE_H["ROOF_DOOR"], SPRITES["ROOF_DOOR"], true, false, 0));
+			this.obstacle.push(CreateRunnerElement(x - 1600, y-SPRITE_OFFSET["ROOF_DOOR"], SPRITE_W["ROOF_DOOR"], SPRITE_H["ROOF_DOOR"], SPRITES["ROOF_DOOR"], true, false, 0));
+			this.obstacle.push(CreateSlideElement(x - 1000, y - SPRITE_OFFSET["ROOF_CONTAINER"], -5));
+			this.obstacle.push(CreateRunnerElement(x - 400, y-SPRITE_OFFSET["ROOF_DOOR"], SPRITE_W["ROOF_DOOR"], SPRITE_H["ROOF_DOOR"], SPRITES["ROOF_DOOR"], true, false, 0));
 			
 			//2
 			x += 500;
@@ -977,42 +976,70 @@ var SPRITE_OFFSET =
 			makeBuilding.call(this, x, y, 5);
 			x = fillBuilding.call(this, x, y, 5);
 			//floor 5 obstacles
-			this.obstacle.push(CreateRunnerElement(x - 800, y-SPRITE_OFFSET["ROOF_DOOR"], SPRITE_W["ROOF_DOOR"], SPRITE_H["ROOF_DOOR"], SPRITES["ROOF_DOOR"], true, false, 0));
+			this.obstacle.push(CreateRunnerElement(x - 400, y-SPRITE_OFFSET["ROOF_DOOR"], SPRITE_W["ROOF_DOOR"], SPRITE_H["ROOF_DOOR"], SPRITES["ROOF_DOOR"], true, false, 0));
 			
 			//6
 			x += 500;
 			y = 550;
-			makeBuilding.call(this, x, y, 5);
-			x = fillBuilding.call(this, x, y, 5);
+			makeBuilding.call(this, x, y, 0);
+			x = fillBuilding.call(this, x, y, 0);
 			
 			//7
 			x += 500;
 			y = 600;
-			makeBuilding.call(this, x, y, 5);
-			x = fillBuilding.call(this, x, y, 5);
+			makeBuilding.call(this, x, y, 1);
+			x = fillBuilding.call(this, x, y, 1);
 			
 			//8
 			x += 500;
 			y = 450;
-			makeBuilding.call(this, x, y, 20);
-			x = fillBuilding.call(this, x, y, 20);
+			makeBuilding.call(this, x, y, 12);
+			x = fillBuilding.call(this, x, y, 12);
 			//floor 8 obstacles
-			this.obstacle.push(CreateRunnerElement(x - 3700, y-SPRITE_OFFSET["ROOF_DOOR"], SPRITE_W["ROOF_DOOR"], SPRITE_H["ROOF_DOOR"], SPRITES["ROOF_DOOR"], true, false, 0));
-			this.obstacle.push(CreateSlideElement(x - 3000, y - SPRITE_OFFSET["ROOF_CONTAINER"], -5));
-			this.obstacle.push(CreateRunnerElement(x - 2000, y-SPRITE_OFFSET["ROOF_CHIMNEY"], SPRITE_W["ROOF_CHIMNEY"], SPRITE_H["ROOF_CHIMNEY"], SPRITES["ROOF_CHIMNEY"], true, false, 0));
-			this.obstacle.push(CreateRunnerElement(x - 1000, y-SPRITE_OFFSET["ROOF_AC"], SPRITE_W["ROOF_AC"], SPRITE_H["ROOF_AC"], SPRITES["ROOF_AC"], true, false, 0));
+			this.obstacle.push(CreateRunnerElement(x - 2000, y-SPRITE_OFFSET["ROOF_DOOR"], SPRITE_W["ROOF_DOOR"], SPRITE_H["ROOF_DOOR"], SPRITES["ROOF_DOOR"], true, false, 0));
+			this.obstacle.push(CreateSlideElement(x - 1000, y - SPRITE_OFFSET["ROOF_CONTAINER"], -5));
+			this.obstacle.push(CreateRunnerElement(x - 400, y-SPRITE_OFFSET["ROOF_AC"], SPRITE_W["ROOF_AC"], SPRITE_H["ROOF_AC"], SPRITES["ROOF_AC"], true, false, 0));
+	        
+			///////work before this
+			this.width = this.floor[0].width/2 + this.floor[this.floor.length-1].x - this.floor[0].x + this.floor[this.floor.length-1].width/2;
+		};
+		
+		this.Construct = function() {
+			if(this.constructed) return;
+			this.ConstructBase();
 			
-			var sensor = CreateRunnerElement(x, 200, 10, 500,"", true, true, 400);
+			var sensor = CreateRunnerElement(this.width, 200, 10, 500,"", true, true, 400);
 	        this.interactive.push(sensor);
 	        sensor.Enter = function(){
    	    		States.current().level.Destruct();
 				States.current().level = Hallway();
 				States.current().level.ConstructStory();
        	    };
-	        
-			///////work before this
-			this.width = this.floor[0].width/2 + this.floor[this.floor.length-1].x - this.floor[0].x + this.floor[this.floor.length-1].width/2;
-	  		this.constructed = true;
+       	    
+       	    this.constructed = true;
+	  		player.checkpoint = this.checkpoint[0];
+	  		player.body.SetTransform(player.checkpoint.body.GetPosition(), 0);
+			player.ChangeState(PLAYER_STATE_RUNNER);
+		};
+		
+		this.ConstructLoop = function() {
+			if(this.constructed) return;
+			this.ConstructBase();
+			
+			var sensor = CreateRunnerElement(this.width - 400, 200, 200, 500, "sprites/boss.png", true, true, 400);
+			sensor.cycles = 0;
+	        this.interactive.push(sensor);
+	        sensor.Enter = function() {
+	        	this.cycles++;
+	        	if(this.cycles >= 2) console.log("PRESS E DUMBFUCK");
+	        };
+	        sensor.action = function(){
+   	    		States.current().level.Destruct();
+				States.current().level = LevelFour();
+				States.current().level.Construct();
+       	    };
+			
+			this.constructed = true;
 	  		player.checkpoint = this.checkpoint[0];
 	  		player.body.SetTransform(player.checkpoint.body.GetPosition(), 0);
 			player.ChangeState(PLAYER_STATE_RUNNER);
@@ -1041,20 +1068,22 @@ var SPRITE_OFFSET =
 	  	};
 	}
 	
+	// Contains Construct
 	function LevelThree() {
 		if (arguments.callee._singletonInstance)
 	    	return arguments.callee._singletonInstance;
 	  	arguments.callee._singletonInstance = this;
 	  	this.constructed = false;
+	  	this.checkpoint = [];
+  		this.floor = [];
+  		this.fill = [];
+  		this.interactive = [];
+  		this.obstacle = [];
+  		this.scenery = [];
 	  	
 	  	this.Construct = function() {
 	  		if(this.constructed) return;
-	  		this.checkpoint = [];
-	  		this.floor = [];
-	  		this.fill = [];
-	  		this.interactive = [];
-	  		this.obstacle = [];
-	  		this.scenery = [];
+	  		
 	  		////work after this
 	  		var x = 100;
 			var y = 350;
@@ -1067,8 +1096,8 @@ var SPRITE_OFFSET =
 			//1
 			x = 100;
 			y = 350;
-			makeBuilding.call(this, x, y, 15);
-			x = fillBuilding.call(this, x, y, 15);
+			makeBuilding.call(this, x, y, 7);
+			x = fillBuilding.call(this, x, y, 7);
 			
 			//2
 			x += 575;
@@ -1188,19 +1217,20 @@ var SPRITE_OFFSET =
 			//16
 			x += 500;
 			y = 350;
-			makeBuilding.call(this, x, y, 15);
-			x = fillBuilding.call(this, x, y, 15);
+			makeBuilding.call(this, x, y, 5);
+			x = fillBuilding.call(this, x, y, 5);
 			
 			var sensor = CreateRunnerElement(x, 200, 10, 500,"", true, true, 400);
 	        this.interactive.push(sensor);
 	        sensor.Enter = function(){
    	    		States.current().level.Destruct();
-				States.current().level = Hallway();
-				States.current().level.ConstructStory();
+				States.current().level = Lab();
+				States.current().level.Construct(new b2.Vec2(4, 5));
        	    };
 	        
 			///////work before this
 			this.width = this.floor[0].width/2 + this.floor[this.floor.length-1].x - this.floor[0].x + this.floor[this.floor.length-1].width/2;
+			this.width += 500;
 	  		this.constructed = true;
 	  		player.checkpoint = this.checkpoint[0];
 	  		player.body.SetTransform(player.checkpoint.body.GetPosition(), 0);
@@ -1230,20 +1260,22 @@ var SPRITE_OFFSET =
 	  	};
 	}
 	
+	// Contains Construct
 	function LevelFour() {
 		if (arguments.callee._singletonInstance)
 	    	return arguments.callee._singletonInstance;
 	  	arguments.callee._singletonInstance = this;
 	  	this.constructed = false;
+	  	this.checkpoint = [];
+  		this.floor = [];
+  		this.fill = [];
+  		this.interactive = [];
+  		this.obstacle = [];
+  		this.scenery = [];
 	  	
 	  	this.Construct = function() {
 	  		if(this.constructed) return;
-	  		this.checkpoint = [];
-	  		this.floor = [];
-	  		this.fill = [];
-	  		this.interactive = [];
-	  		this.obstacle = [];
-	  		this.scenery = [];
+	  		
 	  		////work after this
 	  		var x = 100;
 			var y = 350;
@@ -1412,13 +1444,13 @@ var SPRITE_OFFSET =
 			this.obstacle.push(CreateDashElement(x - 400, y-SPRITE_OFFSET["ROOF_CRATE"], -10));
 			this.obstacle.push(CreateDashElement(x - 400, y-SPRITE_OFFSET["ROOF_CRATE"] - SPRITE_H["ROOF_CRATE"], -10));
 			
-			/*var sensor = CreateRunnerElement(x, 200, 10, 500,"", true, true, 400);
+			var sensor = CreateRunnerElement(x, 200, 10, 500,"", true, true, 400);
 	        this.interactive.push(sensor);
 	        sensor.Enter = function(){
    	    		States.current().level.Destruct();
-				States.current().level = LevelFive();
+				States.current().level = LevelThree();
 				States.current().level.Construct();
-       	    };*/
+       	    };
 			
 			///////work before this
 			this.width = this.floor[0].width/2 + this.floor[this.floor.length-1].x - this.floor[0].x + this.floor[this.floor.length-1].width/2;
@@ -1450,21 +1482,23 @@ var SPRITE_OFFSET =
 	  		this.constructed = false;
 	  	};
 	}
-
-	function LevelFive() { //TODO needs to be redone
+	
+	// Contains Construct
+	function LevelFive() {
 		if (arguments.callee._singletonInstance)
 	    	return arguments.callee._singletonInstance;
 	  	arguments.callee._singletonInstance = this;
 	  	this.constructed = false;
+	  	this.checkpoint = [];
+  		this.floor = [];
+  		this.fill = [];
+  		this.interactive = [];
+  		this.obstacle = [];
+  		this.scenery = [];
 	  	
 	  	this.Construct = function() {
 	  		if(this.constructed) return;
-	  		this.checkpoint = [];
-	  		this.floor = [];
-	  		this.fill = [];
-	  		this.interactive = [];
-	  		this.obstacle = [];
-	  		this.scenery = [];
+	  		
 	  		////work after this
 	  		var x = 100;
 			var y = 50;
@@ -1800,14 +1834,6 @@ var SPRITE_OFFSET =
 	    	this.scenery.push(CreateWorldElement(600, 300, 1350, 600, "sprites/Blue.png", false, false, 100));
        	   	
 	  		this.width = SPRITE_W["LAB"];
-	  	};
-	  	
-	  	this.Construct = function(spawn) {
-	  		if(this.constructed) return;
-	  		this.ConstructBase();
-       		player.body.SetTransform(spawn, 0);
-	  		this.constructed = true;
-	  		player.ChangeState(PLAYER_STATE_NORMAL);
 	  	};
 	  	
 	  	this.ConstructStory = function() {
