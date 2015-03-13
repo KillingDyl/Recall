@@ -14,8 +14,6 @@ var KEY_SPACE = 32;
 var KEY_ESC = 27;
 var VIEWPORT_WIDTH = document.getElementById("recall").width;
 var VIEWPORT_HEIGHT = document.getElementById("recall").height;
-var MUSIC = [];
-
 
 // PLAYER CONSTANTS
 var PLAYER_WIDTH_STANDING = 126;
@@ -39,7 +37,12 @@ var PLAYER_DASH_SPEED = 10;
 var PLAYER_DASH_DURATION = 20;
 var PLAYER_SLIDE_DURATION = 120;
 
+var AUDIO = {
+	
+};
+
 var SPRITES = {
+	TITLE: "sprites/Recall_Title.png",
 	PLAYER_WALK: "sprites/player_walk_cycle.png",
 	PLAYER_RUN: "sprites/player_run_cycle.png",
 	PLAYER_JUMP: "sprites/player_jump_cycle.png",
@@ -62,9 +65,27 @@ var SPRITES = {
 	ROOF_CRATE: "sprites/rooftop_crate.png",
 	ROOF_CRATE_DEATH: "sprites/rooftop_crate_death.png",
 	ROOF_DOOR: "sprites/rooftop_door.png",
-	LAB: "sprites/Labratory.png",
-	OFFICE: "sprites/Office.png",
-	HALLWAY: "sprites/Hallway.png",
+	SKY: "sprites/sky.png",
+	BLACK: "sprites/black.png",
+	BLUE: "sprites/blue_gradient.png",
+	LEFT_TEXT: "sprites/left_text.png",
+	RIGHT_TEXT: "sprites/right_text.png",
+	BOSS: "sprites/boss.png",
+	MALE_TEAMMATE: "sprites/male_teammate.png",
+	FEMALE_TEAMMATE: "sprites/female_teammate.png",
+	LAB: "sprites/laboratory.png",
+	LAB_DESK: "sprites/laboratory_bottom_desk.png",
+	OFFICE: "sprites/office.png",
+	HALLWAY: "sprites/hallway.png",
+	INFORMATION: "sprites/information_screen.png",
+	STORAGE: "sprites/storage_room.png",
+	STORAGE_DESK: "sprites/storage_room_front_desk.png",
+	CAGE: "sprites/mouse_cage.png",
+	E: "sprites/ekey.png",
+	UP: "sprites/upkey.png",
+	DOWN: "sprites/downkey.png",
+	LEFT: "sprites/leftkey.png",
+	RIGHT: "sprites/rightkey.png",
 };
 
 var SPRITE_W = 
@@ -78,12 +99,20 @@ var SPRITE_W =
 	ROOF_DOOR: 190,
 	ROOF_CRATE: 213 / 2,
 	ROOF_CRATE_DEATH: 350 / 2,
+	BOSS: 675,
+	MALE_TEAMMATE: 900,
+	FEMALE_TEAMMATE: 900,
 	LAB: 5100 / 4,
+	LAB_DESK: 1768 / 4,
 	OFFICE: 3166 / 4,
 	HALLWAY: 5100 / 4,
+	STORAGE: 3166 / 4,
+	STORAGE_DESK: 3166 / 4,
+	CAGE: 100,
 	LEFT_DOOR: 72,
 	RIGHT_DOOR: 72,
 	MIDDLE_DOOR: 146,
+	KEY: 284 / 4,
 };
 
 var SPRITE_H = 
@@ -97,12 +126,20 @@ var SPRITE_H =
 	ROOF_DOOR: 157,
 	ROOF_CRATE: 177 / 2,
 	ROOF_CRATE_DEATH: 280 / 2,
+	BOSS: 436.5,
+	MALE_TEAMMATE: 582,
+	FEMALE_TEAMMATE: 582,
 	LAB: 1680 / 4,
+	LAB_DESK: 856 / 4,
 	OFFICE: 1680 / 4,
 	HALLWAY: 1680 / 4,
+	STORAGE: 1680 / 4,
+	STORAGE_DESK: 1680 / 4,
+	CAGE: 92,
 	LEFT_DOOR: 280,
 	RIGHT_DOOR: 280,
 	MIDDLE_DOOR: 210,
+	KEY: 271 / 4,
 };
 
 var SPRITE_OFFSET = 
@@ -120,18 +157,19 @@ var SPRITE_OFFSET =
 // Set up physics engine and brine engine
 //
 (function() {
+	clearColor = [0,0,0,1];
 	use2D = true;
 	showConsole = DEBUGMODE;
 	
 	// Global Variables
 	var physics;
 	var player;
+	var indicator;
 	
 	gInput.addBool(KEY_LEFT, "left");
 	gInput.addBool(KEY_UP, "up");
 	gInput.addBool(KEY_RIGHT, "right");
 	gInput.addBool(KEY_DOWN, "down");
-	gInput.addBool(KEY_SPACE, "space");
 	gInput.addBool(KEY_E, "E");
 	gInput.addBool(KEY_ESC, "esc");
 	
@@ -145,6 +183,8 @@ var SPRITE_OFFSET =
 	game.alwaysDraw = true;
 	game.alwaysUpdate = false;
 	physics = new b2.World(new b2.Vec2(0, 10), true);
+	
+	var loadingscreen = new State();
 	
 	var chat = new State();
 	chat.alwaysDraw = false;
@@ -161,13 +201,40 @@ var SPRITE_OFFSET =
 	var chat4 = new State();
 	chat4.alwaysDraw = false;
 	chat4.alwaysUpdate = false;
+	
+	loadingscreen.init = function() {
+		this.loading = CreateText(VIEWPORT_WIDTH / 2, VIEWPORT_HEIGHT / 2, 32, "");
+		this.loading.color = "cyan";
+		for(var sprite in SPRITES) Textures.load(SPRITES[sprite]);
+		for(var audio in AUDIO) Sounds.load(AUDIO[audio]);
+	};
+	
+	loadingscreen.updateState = function(d) {
+		this.loading.text = "Loading..." + Math.round((1 - Resources.percentLoaded()) * 100) + "%";
+		if(Resources.getLeftToLoad() == 0) {
+			for(var child in this.world.children) this.world.removeChild(child);
+			States.pop();
+			States.push(game);
+		}
+	};
+	
+	loadingscreen.world.draw = function(ctx) {
+		this.drawChildren(ctx);
+		
+		var x = VIEWPORT_WIDTH / 2;
+		var y = VIEWPORT_HEIGHT / 2;
+		ctx.fillStyle = "cyan";
+		ctx.fillRect(x - 200, y + 50, 400 * (1 - Resources.percentLoaded()), 25);
+		ctx.strokeStyle = "cyan";
+		ctx.strokeRect(x - 200, y + 50, 400, 25);
+	};
 
 	// Initiates all levels / level order
 	new Lab();
 	new Office();
 	new Hallway();
 	new LabScene();
-	//new Storage();
+	new Storage();
 	new LevelOne();
 	new LevelTwo();
 	new LevelThree();
@@ -199,9 +266,11 @@ var SPRITE_OFFSET =
 		println("World Initialized");
 		
 		player = CreatePlayer(0, 0);//TODO
-		this.level = LevelFive();
-		this.level.Construct();
-		//this.level.Construct(new b2.Vec2(4, 5));
+		indicator = CreateIndicator(0, -200);
+		this.level = Title();
+		this.level.ConstructStory();
+		//this.level = LabScene();
+		//this.level.Construct();
 	};
 	
 	game.world.update = function(d) {
@@ -232,7 +301,7 @@ var SPRITE_OFFSET =
 		Sprite.prototype.draw.call(this, ctx);
 	};
 	
-	States.push(game);
+	States.push(loadingscreen);
 	
 	println("Game Initialized");
 	
@@ -240,37 +309,226 @@ var SPRITE_OFFSET =
 	// Level objects
 	//
 	
-	/* LEVEL TEMPLATE
-	function LEVEL_NAME_HERE() {
-		if(arguments.callee._singletonInstance)
-			return arguments.callee._singletonInstance;
-		arguments.callee._singletonInstance = this;
-		this.constructed = false;
-		
-		this.Construct = function() {
+	// Title Screen
+	function Title() {
+		if (arguments.callee._singletonInstance)
+	    return arguments.callee._singletonInstance;
+	  	arguments.callee._singletonInstance = this;
+	  	this.constructed = false;
+	  	this.floor = [];
+  		this.interactive = [];
+  		this.scenery = [];
+	   
+	  	this.ConstructBase = function() {
+	  		this.floor.push(CreateFloorElement(0, VIEWPORT_HEIGHT / 2, 100, VIEWPORT_HEIGHT, "", 0, false));
+	  		this.floor.push(CreateFloorElement(VIEWPORT_WIDTH + 50, VIEWPORT_HEIGHT / 2, 100, VIEWPORT_HEIGHT, "", 0, false));
+	  		this.floor.push(CreateFloorElement(VIEWPORT_WIDTH / 2, 650, VIEWPORT_WIDTH, 100, "", 0, false));
+	  	
+	    	this.scenery.push(CreateWorldElement(600, 300, 1350, 600, SPRITES["BLUE"], false, false, 100));
+       	   	
+	  		this.width = VIEWPORT_WIDTH;
+	  	};
+	  	
+	  	this.ConstructStory = function() {
 	  		if(this.constructed) return;
-	  		this.fill = []; // Shouldn't need to use this after Rahil changes the wall size to reflect the image size
-	  		this.floor = [];
-	  		this.interactive = [];
-	  		this.obstacle = [];
-	  		this.scenery = [];
-	  		
-	  		this.width = this.floor[0].width/2 + this.floor[this.floor.length-1].x - this.floor[0].x + this.floor[this.floor.length-1].width/2;
+	  		this.ConstructBase();
+	    	
+	    	var background = CreateWorldElement(600, 170, 768.25, 402, SPRITES["TITLE"], true, false, 5);
+	    	this.scenery.push(background);
+	    	this.scenery.push(CreateText(325,360, 32, "Credits", "cyan"));
+	    	this.scenery.push(CreateText(1125,360, 32, "Story", "cyan"));
+	    	
+			var numeroUno = CreateDoorElement(325, 480, SPRITE_W["MIDDLE_DOOR"], SPRITE_H["MIDDLE_DOOR"], SPRITES["MIDDLE_DOOR"], 2, false);
+			var numeroDos = CreateDoorElement(725, 480, SPRITE_W["MIDDLE_DOOR"], SPRITE_H["MIDDLE_DOOR"], SPRITES["MIDDLE_DOOR"], 2, false);
+			var numeroTres = CreateDoorElement(1125, 480, SPRITE_W["MIDDLE_DOOR"], SPRITE_H["MIDDLE_DOOR"], SPRITES["MIDDLE_DOOR"], 2, false);
+			this.interactive.push(numeroUno);
+			this.interactive.push(numeroDos);
+			this.interactive.push(numeroTres);
+			
+			numeroUno.action = function()
+			{
+				States.current().level.Destruct();
+				States.current().level = Credits();
+				States.current().level.ConstructStory();
+			};
+			
+			numeroDos.action = function()
+			{
+				States.current().level.Destruct();
+				States.current().level = Lab();
+				States.current().level.ConstructStory();
+			};
+			
+			numeroTres.action = function()
+			{
+				States.current().level.Destruct();
+				States.current().level = Story();
+				States.current().level.ConstructStory();
+			};
+	    	
+	    	player.body.SetTransform(new b2.Vec2(50/PHYSICS_SCALE,450/PHYSICS_SCALE), 0);
 	  		this.constructed = true;
+	  		player.ChangeState(PLAYER_STATE_NORMAL);
 	  	};
 	  	
 	  	this.Destruct = function() {
 	  		if(!this.constructed) return;
-	  		for(var i = 0; i < this.fill.length; i++) this.fill[i].Destroy();
 	  		for(var i = 0; i < this.floor.length; i++) this.floor[i].Destroy();
 	  		for(var i = 0; i < this.interactive.length; i++) this.interactive[i].Destroy();
-	  		for(var i = 0; i < this.obstacle.length; i++) this.obstacle[i].Destroy();
 	  		for(var i = 0; i < this.scenery.length; i++) this.scenery[i].Destroy();
+	  		this.floor = [];
+	  		this.interactive = [];
+	  		this.scenery = [];
 	  		this.width = 0;
 	  		this.constructed = false;
 	  	};
 	}
-	 */
+	
+	// Credits
+	function Credits() {
+		if (arguments.callee._singletonInstance)
+	    return arguments.callee._singletonInstance;
+	  	arguments.callee._singletonInstance = this;
+	  	this.constructed = false;
+	  	this.floor = [];
+  		this.interactive = [];
+  		this.scenery = [];
+	   
+	  	this.ConstructBase = function() {
+	  		this.floor.push(CreateFloorElement(0, VIEWPORT_HEIGHT / 2, 100, VIEWPORT_HEIGHT, "", 0, false));
+	  		this.floor.push(CreateFloorElement(VIEWPORT_WIDTH + 50, VIEWPORT_HEIGHT / 2, 100, VIEWPORT_HEIGHT, "", 0, false));
+	  		this.floor.push(CreateFloorElement(VIEWPORT_WIDTH / 2, 650, VIEWPORT_WIDTH, 100, "", 0, false));
+	  		
+	    	this.scenery.push(CreateWorldElement(600, 300, 1350, 600, SPRITES["BLUE"], false, false, 100));
+       	   	
+	  		this.width = VIEWPORT_WIDTH;
+	  	};
+	  	
+	  	this.ConstructStory = function() {
+	  		if(this.constructed) return;
+	  		this.ConstructBase();
+	  		
+	  		var numeroUno = CreateDoorElement(1125, 480, SPRITE_W["MIDDLE_DOOR"], SPRITE_H["MIDDLE_DOOR"], SPRITES["MIDDLE_DOOR"], 2, false);
+	    	this.interactive.push(numeroUno);
+	    	
+	    	/*var credits = CreateText(600, 275, 40, "Credits: \n\n" +
+	    	"Ben Filstrup - Audio files and coded story \n\n" +
+	    	"Sam Filstrup - Created all game art \n\n" +
+	    	"Sterling Salvaterra - Coded parts of engine\n              and story \n\n" +
+	    	"Rahil Shah - Implemented runner levels \n          and created menu \n\n" +
+	    	"Dylan Tran - Engine maker and debugger");*/
+	    	
+	    	/*var credits = CreateText(600, 275, 24, "Credits: \n\n" +
+	    	"Lead Designers\n" + "Sterling Salvaterra\nBen Filstrup\n\n" +
+	    	"Engines Engineers\n" + "Dylan Tran\nSterling Salvaterra\n\n" +
+	    	"Lead Artist\n" + "Sam Filstrup\n\n" +
+	    	"Lead Programmers\n" + "Dylan Tran\nRahil Shah\n\n" +
+	    	"Writers\n" + "Ben Filstrup\nSterling Salvaterra\n\n" +
+	    	"Audio Engineer\n" + "Ben Filstrup");*/
+	    	this.scenery.push(CreateText(VIEWPORT_WIDTH / 2, 25, 40, "Credits", "cyan"));
+	    	this.scenery.push(CreateText(VIEWPORT_WIDTH / 3, 100, 30, "Lead Designers", "cyan"));
+	    	this.scenery.push(CreateText(VIEWPORT_WIDTH / 3, 130, 22, "Sterling Salvaterra", "cyan"));
+	    	this.scenery.push(CreateText(VIEWPORT_WIDTH / 3, 160, 22, "Ben Filstrup", "cyan"));
+	    	
+	    	this.scenery.push(CreateText(VIEWPORT_WIDTH / 3, 250, 30, "Engines Engineers", "cyan"));
+	    	this.scenery.push(CreateText(VIEWPORT_WIDTH / 3, 280, 22, "Dylan Tran", "cyan"));
+	    	this.scenery.push(CreateText(VIEWPORT_WIDTH / 3, 310, 22, "Sterling Salvaterra", "cyan"));
+	    	
+	    	this.scenery.push(CreateText(VIEWPORT_WIDTH / 3, 400, 30, "Lead Artist", "cyan"));
+	    	this.scenery.push(CreateText(VIEWPORT_WIDTH / 3, 430, 22, "Sam Filstrup", "cyan"));
+	    	
+	    	this.scenery.push(CreateText(VIEWPORT_WIDTH / 3 * 2, 100, 30, "Lead Programmers", "cyan"));
+	    	this.scenery.push(CreateText(VIEWPORT_WIDTH / 3 * 2, 130, 22, "Dylan Tran", "cyan"));
+	    	this.scenery.push(CreateText(VIEWPORT_WIDTH / 3 * 2, 160, 22, "Rahil Shah", "cyan"));
+	    	
+	    	this.scenery.push(CreateText(VIEWPORT_WIDTH / 3 * 2, 250, 30, "Writers", "cyan"));
+	    	this.scenery.push(CreateText(VIEWPORT_WIDTH / 3 * 2, 280, 22, "Ben Filstrup", "cyan"));
+	    	this.scenery.push(CreateText(VIEWPORT_WIDTH / 3 * 2, 310, 22, "Sterling Salvaterra", "cyan"));
+	    	
+	    	this.scenery.push(CreateText(VIEWPORT_WIDTH / 3 * 2, 400, 30, "Audio Engineer", "cyan"));
+	    	this.scenery.push(CreateText(VIEWPORT_WIDTH / 3 * 2, 430, 22, "Ben Filstrup", "cyan"));
+	    	
+	    	numeroUno.action = function()
+			{
+				States.current().level.Destruct();
+				States.current().level = Title();
+				States.current().level.ConstructStory();
+			};
+	    	
+	    	player.body.SetTransform(new b2.Vec2(50/PHYSICS_SCALE,450/PHYSICS_SCALE), 0);
+
+	  		this.constructed = true;
+	  		player.ChangeState(PLAYER_STATE_NORMAL);
+	  	};
+	  	
+	  	this.Destruct = function() {
+	  		if(!this.constructed) return;
+	  		for(var i = 0; i < this.floor.length; i++) this.floor[i].Destroy();
+	  		for(var i = 0; i < this.interactive.length; i++) this.interactive[i].Destroy();
+	  		for(var i = 0; i < this.scenery.length; i++) this.scenery[i].Destroy();
+	  		this.floor = [];
+	  		this.interactive = [];
+	  		this.scenery = [];
+	  		this.width = 0;
+	  		this.constructed = false;
+	  	};
+	}
+	
+	// Story Explanation
+	function Story() { 
+		if (arguments.callee._singletonInstance)
+	    return arguments.callee._singletonInstance;
+	  	arguments.callee._singletonInstance = this;
+	  	this.constructed = false;
+	  	this.floor = [];
+  		this.interactive = [];
+  		this.scenery = [];
+	   
+	  	this.ConstructBase = function() {
+	  		this.floor.push(CreateFloorElement(0, VIEWPORT_HEIGHT / 2, 100, VIEWPORT_HEIGHT, "", 0, false));
+	  		this.floor.push(CreateFloorElement(VIEWPORT_WIDTH + 50, VIEWPORT_HEIGHT / 2, 100, VIEWPORT_HEIGHT, "", 0, false));
+	  		this.floor.push(CreateFloorElement(VIEWPORT_WIDTH / 2, 650, VIEWPORT_WIDTH, 100, "", 0, false));
+	  		
+	    	this.scenery.push(CreateWorldElement(600, 300, 1350, 600, SPRITES["BLUE"], false, false, 100));
+       	   	
+	  		this.width = VIEWPORT_WIDTH;
+	  	};
+	  	
+	  	this.ConstructStory = function() {
+	  		if(this.constructed) return;
+	  		this.ConstructBase();
+	  		
+	  		var numeroUno = CreateDoorElement(1125, 480, SPRITE_W["MIDDLE_DOOR"], SPRITE_H["MIDDLE_DOOR"], SPRITES["MIDDLE_DOOR"], 2, false);
+	    	this.interactive.push(numeroUno);
+	    	
+	    	var story = CreateText(600, 225, 40, "Story:\n\n You play as Remy, a scientist that works on memory \nalteration. Successful tests on mice have yielded positive \nresults, but not enough to impress your superiors. As a result, \nyour funding gets cut, leaving your research and efforts wasted. \nIn a final desperate attempt, you experiment on yourself, \ncausing your reality and perception to collapse. Now, it's \nyour job to figure out who you are, where you \nare, and if the things you see are real.", "cyan");
+	    	this.scenery.push(story);
+	    	
+	    	numeroUno.action = function()
+			{
+				States.current().level.Destruct();
+				States.current().level = Title();
+				States.current().level.ConstructStory();
+			};
+	    	
+	    	player.body.SetTransform(new b2.Vec2(50/PHYSICS_SCALE,450/PHYSICS_SCALE), 0);
+
+	  		this.constructed = true;
+	  		player.ChangeState(PLAYER_STATE_NORMAL);
+	  	};
+	  	
+	  	this.Destruct = function() { 
+	  		if(!this.constructed) return;
+	  		for(var i = 0; i < this.floor.length; i++) this.floor[i].Destroy();
+	  		for(var i = 0; i < this.interactive.length; i++) this.interactive[i].Destroy();
+	  		for(var i = 0; i < this.scenery.length; i++) this.scenery[i].Destroy();
+	  		this.floor = [];
+	  		this.interactive = [];
+	  		this.scenery = [];
+	  		this.width = 0;
+	  		this.constructed = false;
+	  	};
+	}
 	
 	// Story One - Contains Construct and ConstructStory
 	function Lab() {
@@ -287,9 +545,9 @@ var SPRITE_OFFSET =
 	  		this.floor.push(CreateFloorElement(1300, VIEWPORT_HEIGHT / 2, 100, VIEWPORT_HEIGHT, "", 0, false));
 	  		this.floor.push(CreateFloorElement(SPRITE_W["LAB"] / 2, 550, SPRITE_W["LAB"], 100, "", 0, false));
 	  	
-	    	this.scenery.push(CreateWorldElement(1500, 1500, 3000, 3000, "sprites/black.png", false, false, 100));
+	    	this.scenery.push(CreateWorldElement(1500, 1500, 3000, 3000, SPRITES["BLACK"], false, false, 100));
 			this.scenery.push(CreateWorldElement(SPRITE_W["LAB"] / 2, 400, SPRITE_W["LAB"], SPRITE_H["LAB"], SPRITES["LAB"], false, false, 3));
-			this.scenery.push(CreateWorldElement(700,500,442,214,"sprites/Labratory_bottom_desk.png", false, false,-1));
+			this.scenery.push(CreateWorldElement(700,500,SPRITE_W["LAB_DESK"],SPRITE_H["LAB_DESK"],SPRITES["LAB_DESK"], false, false,-1));
        	   	
 	  		this.width = SPRITE_W["LAB"];
 	  	};
@@ -311,12 +569,12 @@ var SPRITE_OFFSET =
 				States.current().level.Construct();
 			};
 			this.interactive.push(middle_door);
-			var right_door = CreateDoorElement(1214, 369, SPRITE_W["RIGHT_DOOR"], SPRITE_H["RIGHT_DOOR"], SPRITES["RIGHT_DOOR"], 2, true);
-			/*right_door.action = function() {
+			var right_door = CreateDoorElement(1214, 369, SPRITE_W["RIGHT_DOOR"], SPRITE_H["RIGHT_DOOR"], SPRITES["RIGHT_DOOR"], 2, false);
+			right_door.action = function() {
 				States.current().level.Destruct();
 				States.current().level = Storage(); 
 				States.current().level.Construct();
-			};*/
+			};
        		this.interactive.push(right_door);
        		player.body.SetTransform(spawn, 0);
 	  		this.constructed = true;
@@ -330,13 +588,16 @@ var SPRITE_OFFSET =
 	        sensor.Enter = function(){
    	    		States.push(chat);
    	    		this.dialogue = [];
-				var text_image = CreateWorldElement(795,275, 216.25,281.25,"sprites/Right_text.png", false, false, 1);
+				var text_image = CreateWorldElement(795,275, 216.25,281.25,SPRITES["RIGHT_TEXT"], false, false, 1);
 				var text = CreateText(795,250, 16, "Remy, over here.");
 				var text2 = CreateText(795,285,14, "E to intEract.");
 				this.dialogue.push(text);
 				this.dialogue.push(text2);
 				chat.world.update = function(d) {
-					if(gInput.E) States.pop();
+					if(gInput.E) {
+						for(var child in this.children) this.removeChild(child);
+						States.pop();
+					}
 				};
        	    };
        	    this.interactive.push(sensor);
@@ -386,7 +647,7 @@ var SPRITE_OFFSET =
 	  		this.floor.push(CreateFloorElement(VIEWPORT_WIDTH / 2, 580, SPRITE_W["OFFICE"], 100, "", 0, false));
 	  		
 			// Background
-	    	this.scenery.push(CreateWorldElement(1500, 1500, 3000, 3000, "sprites/black.png", false, false, 100));
+	    	this.scenery.push(CreateWorldElement(1500, 1500, 3000, 3000, SPRITES["BLACK"], false, false, 100));
 			this.scenery.push(CreateWorldElement(VIEWPORT_WIDTH / 2, 400, SPRITE_W["OFFICE"], SPRITE_H["OFFICE"], SPRITES["OFFICE"], false, false, 3));
 		    
 		    this.width = VIEWPORT_WIDTH;
@@ -426,7 +687,7 @@ var SPRITE_OFFSET =
    	   			world.dialogue[5] = "But all the time we spent \non it! What will I tell \nthe team?!";
    	   		 	world.dialogue[6] = "I'm sorry Remy, it was \na corporate decision.\nIt's out of my hands.";
    	    	
-				var text_image = CreateWorldElement(350,275, 240, 300,"sprites/Left_text.png", false, false, 1);
+				var text_image = CreateWorldElement(350,275, 240, 300,SPRITES["LEFT_TEXT"], false, false, 1);
 
 				var text = CreateText(350,268, 16, world.dialogue[0]);
 					text.center = true;
@@ -449,13 +710,13 @@ var SPRITE_OFFSET =
 					    States.current().level.Construct();
 					}
 					if(count == 1 || count == 3 || count == 6){
-						text_image.image = Textures.load("sprites/Right_text.png");
+						text_image.image = Textures.load(SPRITES["RIGHT_TEXT"]);
 						text_image.x = 445;
 						text.x = 445;
 						
 					}
 					if(count == 2 || count == 5){
-						text_image.image = Textures.load("sprites/Left_text.png");
+						text_image.image = Textures.load(SPRITES["LEFT_TEXT"]);
 						text_image.x = 350;
 						text.x = 350;
 			
@@ -463,7 +724,7 @@ var SPRITE_OFFSET =
 				};
        	    };
        	    this.interactive.push(sensor);
-       	    this.scenery.push(CreateWorldElement(550,440,675,436.5,"sprites/boss.png",false, false, -1));
+       	    this.scenery.push(CreateWorldElement(550,440,SPRITE_W["BOSS"],SPRITE_H["BOSS"],SPRITES["BOSS"],false, false, -1));
        	    
        	    player.body.SetTransform(new b2.Vec2(400/PHYSICS_SCALE,505/PHYSICS_SCALE), 0);
 	  	    this.constructed = true;
@@ -495,16 +756,23 @@ var SPRITE_OFFSET =
 	  		this.floor = [];
 	  		this.interactive = [];
 	  		this.scenery = [];
-	  		
-	  		var x = -400;
-	  		for(var i=0; i<15; i++)
-			{
-				this.floor[i] = CreateFloorElement(x, 550, 100, 100, "", 0, false);
-				x += 100;
-			}
 			
-			var sensor = CreateWorldElement(500, 370, 10, 500,"", true, true, 400);
-			var sensor1 = CreateWorldElement(300, 370, 10, 500,"", true, true, 400);
+	  		this.floor.push(CreateFloorElement(SPRITE_W["LAB"] / 2, 550, SPRITE_W["LAB"], 100, "", 0, false));
+	  	
+	    	this.scenery.push(CreateWorldElement(1500, 1500, 3000, 3000, SPRITES["BLACK"], false, false, 100));
+			this.scenery.push(CreateWorldElement(VIEWPORT_WIDTH / 2, 400, SPRITE_W["LAB"], SPRITE_H["LAB"], SPRITES["LAB"], false, false, 3));
+			this.scenery.push(CreateWorldElement(VIEWPORT_WIDTH / 2 + 50,500,SPRITE_W["LAB_DESK"],SPRITE_H["LAB_DESK"],SPRITES["LAB_DESK"], false, false,-1));
+			
+			this.interactive.push(CreateDoorElement(VIEWPORT_WIDTH / 2 + 1.5 , 360, SPRITE_W["MIDDLE_DOOR"], SPRITE_H["MIDDLE_DOOR"],SPRITES["MIDDLE_DOOR"], 2, true));
+			this.interactive.push(CreateDoorElement(13, 369, SPRITE_W["LEFT_DOOR"], SPRITE_H["LEFT_DOOR"],SPRITES["LEFT_DOOR"], 2, true));
+			this.interactive.push(CreateDoorElement(VIEWPORT_WIDTH - 22 , 369, SPRITE_W["RIGHT_DOOR"], SPRITE_H["RIGHT_DOOR"],SPRITES["RIGHT_DOOR"], 2, true));
+			var female = CreateWorldElement(VIEWPORT_WIDTH / 2 - 100,450,SPRITE_W["FEMALE_TEAMMATE"],SPRITE_H["FEMALE_TEAMMATE"],SPRITES["FEMALE_TEAMMATE"],false, false, 0);
+			this.scenery.push(female);
+			var male = CreateWorldElement(VIEWPORT_WIDTH / 2 + 150,475,SPRITE_W["MALE_TEAMMATE"],SPRITE_H["MALE_TEAMMATE"],SPRITES["MALE_TEAMMATE"],false, false, 0);
+			this.scenery.push(male);
+			
+			var sensor = CreateWorldElement(VIEWPORT_WIDTH / 2 + 75, 370, 10, 500,"", true, true, 400);
+			var sensor1 = CreateWorldElement(VIEWPORT_WIDTH / 2 - 75, 370, 10, 500,"", true, true, 400);
 	        this.interactive.push(sensor);
 	        this.interactive.push(sensor1);
 	       
@@ -520,7 +788,7 @@ var SPRITE_OFFSET =
    	    		world.dialogue[5] = "#o !h@t, ^t'$ \n*&l g(@b)%e r#s)\n(rc# @8w? \nU0&les7$?"; // female
    	    		world.dialogue[6] = "What's \ngoing on...?"; //Remy
    	    		
-				var text_image = CreateWorldElement(415,250, 220,265,"sprites/Left_text.png", false, false, 1);
+				var text_image = CreateWorldElement(415,250, 220,265,SPRITES["LEFT_TEXT"], false, false, 1);
 				
 				
 				var text = CreateText(415,250, 16, world.dialogue[0]);
@@ -546,7 +814,7 @@ var SPRITE_OFFSET =
 				}
 				
 				if(count == 1 || count == 2 || count == 5){ // girl
-						text_image.image = Textures.load("sprites/Right_text.png");
+						text_image.image = Textures.load(SPRITES["RIGHT_TEXT"]);
 						text_image.x = 150;
 						text.x = 150;
 						text_image.y = 280;
@@ -554,7 +822,7 @@ var SPRITE_OFFSET =
 						
 					}
 				else if(count == 3){ // guy
-						text_image.image = Textures.load("sprites/Left_text.png");
+						text_image.image = Textures.load(SPRITES["LEFT_TEXT"]);
 						text_image.x = 550;
 						text.x = 550;
 						text_image.y = 300;
@@ -562,7 +830,7 @@ var SPRITE_OFFSET =
 					}
 				else
 					{
-						text_image.image = Textures.load("sprites/Left_text.png");
+						text_image.image = Textures.load(SPRITES["LEFT_TEXT"]);
 						text_image.x = 415;
 						text.x = 415;
 						text_image.y = 250;
@@ -572,20 +840,9 @@ var SPRITE_OFFSET =
        	    };
        	    sensor1.Enter = sensor.Enter;
        	    
-	    	this.scenery.push(CreateWorldElement(1500, 1500, 3000, 3000, "sprites/black.png", false, false, 100));
-		    var background = CreateWorldElement(375,400,1275,420,"sprites/Labratory.png", false, false, 3);
-			this.scenery.push(background);
-			var fore_desk = CreateWorldElement(425,500,442,214,"sprites/Labratory_bottom_desk.png", false, false,-1);
-			this.scenery.push(fore_desk);
-			var middle_door = CreateDoorElement(377 , 360, 146, 210,SPRITES["MIDDLE_DOOR"], 2, true);
-			this.interactive.push(middle_door);
-			var female = CreateWorldElement(225,450,900,582,"sprites/female_teammate.png",false, false, 0);
-			this.interactive.push(female);
-			var male = CreateWorldElement(525,475,900,582,"sprites/male_teammate.png",false, false, 0);
-			this.interactive.push(male);
-		    this.width = this.floor[0].width/2 + this.floor[this.floor.length-1].x - this.floor[0].x + this.floor[this.floor.length-1].width/2;
+		    this.width = VIEWPORT_WIDTH;
 	  	    this.constructed = true;
-	  	    player.body.SetTransform(new b2.Vec2(400/PHYSICS_SCALE,475/PHYSICS_SCALE), 0);
+	  	    player.body.SetTransform(new b2.Vec2(VIEWPORT_WIDTH / 2 /PHYSICS_SCALE,475/PHYSICS_SCALE), 0);
 	  	};	
 	
 		this.Destruct = function() {
@@ -619,10 +876,10 @@ var SPRITE_OFFSET =
 	  		var right_wall = CreateFloorElement(1300, VIEWPORT_HEIGHT / 2, 100, VIEWPORT_HEIGHT, "", 0, false);
 	  		this.floor.push(right_wall);
 	  		this.floor.push(CreateFloorElement(SPRITE_W["HALLWAY"] / 2, 550, SPRITE_W["HALLWAY"], 100, "", 0, false));
-	    	this.scenery.push(CreateWorldElement(1500, 1500, 3000, 3000, "sprites/black.png", false, false, 100));
+	    	this.scenery.push(CreateWorldElement(1500, 1500, 3000, 3000, SPRITES["BLACK"], false, false, 100));
 	  		var background = CreateWorldElement(SPRITE_W["HALLWAY"] / 2, 400, SPRITE_W["HALLWAY"], SPRITE_H["HALLWAY"], SPRITES["HALLWAY"], false, false, 3);
 			this.scenery.push(background);
-			var info_screen = CreateWorldElement(475,338,442,214,"sprites/information_screen.png", false, false, 2);
+			var info_screen = CreateWorldElement(475,338,442,214,SPRITES["INFORMATION"], false, false, 2);
 			this.scenery.push(info_screen);
 			
 	  		this.width = SPRITE_W["HALLWAY"];
@@ -662,7 +919,7 @@ var SPRITE_OFFSET =
    	    		world.dialogue[3] = "You just...\nbut I'm not..."; // Remy 
    	    		world.dialogue[4] = "No. Nothings \nwrong. Sorry."; //Remy
    	    		
-				var text_image = CreateWorldElement(565,240, 220,265,"sprites/Right_text.png", false, false, 1);
+				var text_image = CreateWorldElement(565,240, 220,265,SPRITES["RIGHT_TEXT"], false, false, 1);
 				
 				
 				var text = CreateText(565,240, 16, world.dialogue[0]);
@@ -689,7 +946,7 @@ var SPRITE_OFFSET =
 					}
 				
 				if(count == 1 || count == 3 || count == 4){ // Remy
-						text_image.image = Textures.load("sprites/Right_text.png");
+						text_image.image = Textures.load(SPRITES["RIGHT_TEXT"]);
 						text_image.x = 340;
 						text.x = 340;
 						text_image.y = 260;
@@ -698,7 +955,7 @@ var SPRITE_OFFSET =
 					}
 				else
 					{
-						text_image.image = Textures.load("sprites/Left_text.png");
+						text_image.image = Textures.load(SPRITES["LEFT_TEXT"]);
 						text_image.x = 565;
 						text.x = 565;
 						text_image.y = 240;
@@ -735,11 +992,67 @@ var SPRITE_OFFSET =
 	  	};
 	}
 	
+	// Storage Room - Contains Construct
+	function Storage() {
+		if (arguments.callee._singletonInstance)
+	    	return arguments.callee._singletonInstance;
+	  	arguments.callee._singletonInstance = this;
+	  	this.constructed = false;
+	  	this.floor = [];
+  		this.interactive = [];
+  		this.scenery = [];
+  		
+  		this.ConstructBase = function() {
+	  		this.floor.push(CreateFloorElement(VIEWPORT_WIDTH / 2 - SPRITE_W["STORAGE"] / 2 - 50, VIEWPORT_HEIGHT / 2, 100, VIEWPORT_HEIGHT, "", 0, false));
+	  		this.floor.push(CreateFloorElement(VIEWPORT_WIDTH / 2 + SPRITE_W["STORAGE"] / 2 + 50, VIEWPORT_HEIGHT / 2, 100, VIEWPORT_HEIGHT, "", 0, false));
+	  		this.floor.push(CreateFloorElement(VIEWPORT_WIDTH / 2, 550, SPRITE_W["STORAGE"], 100, "", 0, false));
+			// Background
+	    	this.scenery.push(CreateWorldElement(1500, 1500, 3000, 3000, SPRITES["BLACK"], false, false, 100));
+			this.scenery.push(CreateWorldElement(VIEWPORT_WIDTH / 2, 400, SPRITE_W["STORAGE"], SPRITE_H["STORAGE"], SPRITES["STORAGE"], false, false, 3));
+			this.scenery.push(CreateWorldElement(VIEWPORT_WIDTH / 2, 400, SPRITE_W["STORAGE_DESK"], SPRITE_H["STORAGE_DESK"], SPRITES["STORAGE_DESK"], false, false, -3));
+		    
+		    this.width = VIEWPORT_WIDTH;
+	  	};
+	  	
+	  	this.Construct = function() {
+	  		if(this.constructed) return;
+	  		this.ConstructBase();
+	  		
+	  		var cage = CreateWorldElement(525, 425, SPRITE_W["CAGE"], SPRITE_H["CAGE"], SPRITES["CAGE"], true, true, -4);
+	  		cage.action = function() {
+	  			States.current().level.Destruct();
+	  			States.current().level = LevelFive();
+	  			States.current().level.Construct();
+	  		};
+	  		this.interactive.push(cage);
+	  		
+	  		var left_door = CreateDoorElement(257, 369, SPRITE_W["LEFT_DOOR"], SPRITE_H["LEFT_DOOR"], SPRITES["LEFT_DOOR"], 2, false);
+			left_door.action = function() {
+				States.current().level.Destruct();
+				States.current().level = Lab(); 
+				States.current().level.Construct(new b2.Vec2(1214 / PHYSICS_SCALE, 500 / PHYSICS_SCALE));
+			};
+			this.interactive.push(left_door);
+			player.body.SetTransform(new b2.Vec2(257/PHYSICS_SCALE,500/PHYSICS_SCALE), 0);
+	  	    this.constructed = true;
+	  	    player.ChangeState(PLAYER_STATE_NORMAL);
+	  	};
+  		
+  		this.Destruct = function() { 
+	  		if(!this.constructed) return;
+	  		for(var i = 0; i < this.floor.length; i++) this.floor[i].Destroy();
+	  		for(var i = 0; i < this.interactive.length; i++) this.interactive[i].Destroy();
+	  		for(var i = 0; i < this.scenery.length; i++) this.scenery[i].Destroy();
+	  		this.floor = [];
+	  		this.interactive = [];
+	  		this.scenery = [];
+	  		this.width = 0;
+	  		this.constructed = false;
+	  	};
+	};
+	
 	// Tutorial - Contains Construct
 	function LevelOne() {
-		
-		nextTrack(MUSIC[0], MUSIC[1]);
-		
 		if (arguments.callee._singletonInstance)
 	    	return arguments.callee._singletonInstance;
 	  	arguments.callee._singletonInstance = this;
@@ -758,7 +1071,7 @@ var SPRITE_OFFSET =
 			
 			this.checkpoint[0] = CreateCheckpoint(x, y - 200, true);
 			
-			this.scenery.push(CreateBackground("sprites/Sky.png"));
+			this.scenery.push(CreateBackground(SPRITES["SKY"]));
 			
 			//Floors
 			//1
@@ -897,7 +1210,6 @@ var SPRITE_OFFSET =
 	
 	// Contains Construct and ConstructLoop
 	function LevelTwo() {
-		nextTrack(MUSIC[1], MUSIC[0]);
 		if (arguments.callee._singletonInstance)
 	    	return arguments.callee._singletonInstance;
 	  	arguments.callee._singletonInstance = this;
@@ -916,7 +1228,7 @@ var SPRITE_OFFSET =
 			
 			this.checkpoint[0] = CreateCheckpoint(x, y - 200, true);
 			
-			this.scenery.push(CreateBackground("sprites/Sky.png"));
+			this.scenery.push(CreateBackground(SPRITES["SKY"]));
 	  		
 			//Floors
 			//1
@@ -1024,7 +1336,7 @@ var SPRITE_OFFSET =
 			if(this.constructed) return;
 			this.ConstructBase();
 			
-			var sensor = CreateRunnerElement(this.width - 400, 200, 200, 500, "sprites/boss.png", true, true, 400);
+			var sensor = CreateRunnerElement(this.width - 400, 200, 200, 500, SPRITES["BOSS"], true, true, 400);
 			sensor.cycles = 0;
 	        this.interactive.push(sensor);
 	        sensor.Enter = function() {
@@ -1088,7 +1400,7 @@ var SPRITE_OFFSET =
 			
 			this.checkpoint[0] = CreateCheckpoint(x, y - 200, true);
 			
-			this.scenery.push(CreateBackground("sprites/Sky.png"));
+			this.scenery.push(CreateBackground(SPRITES["SKY"]));
 	  		
 			//Floors
 			//1
@@ -1280,7 +1592,7 @@ var SPRITE_OFFSET =
 			
 			this.checkpoint[0] = CreateCheckpoint(x, y - 200, true);
 			
-			this.scenery.push(CreateBackground("sprites/Sky.png"));
+			this.scenery.push(CreateBackground(SPRITES["SKY"]));
 			
 			//Floors
 			//1
@@ -1503,7 +1815,7 @@ var SPRITE_OFFSET =
 			
 			this.checkpoint[0] = CreateCheckpoint(x, y - 200, true);
 			
-			this.scenery.push(CreateBackground("sprites/Sky.png"));
+			this.scenery.push(CreateBackground(SPRITES["SKY"]));
 			
 			//Floors
 			//1
@@ -1742,7 +2054,7 @@ var SPRITE_OFFSET =
 	  		var x = 100;
 			var y = 350;
 			this.checkpoint[0] = CreateCheckpoint(x, 120, true);
-			this.scenery.push(CreateBackground("sprites/Sky.png"));
+			this.scenery.push(CreateBackground(SPRITES["SKY"]));
 			
 			var length = Math.floor(Math.random() * 41) + 10;
 			for(var i = 0; i < length; i++) {
@@ -1812,214 +2124,7 @@ var SPRITE_OFFSET =
 	  		this.constructed = false;
 	  	};
 	}
-	
-	function Title() {
-		nextTrack(MUSIC[1], MUSIC[0]);
 
-		if (arguments.callee._singletonInstance)
-	    return arguments.callee._singletonInstance;
-	  	arguments.callee._singletonInstance = this;
-	  	this.constructed = false;
-	  	this.floor = [];
-  		this.interactive = [];
-  		this.scenery = [];
-	   
-	  	this.ConstructBase = function() {
-	  		this.floor.push(CreateFloorElement(0, VIEWPORT_HEIGHT / 2, 100, VIEWPORT_HEIGHT, "", 0, false));
-	  		this.floor.push(CreateFloorElement(1300, VIEWPORT_HEIGHT / 2, 100, VIEWPORT_HEIGHT, "", 0, false));
-	  		this.floor.push(CreateFloorElement(SPRITE_W["LAB"] / 2, 650, SPRITE_W["LAB"], 100, "", 0, false));
-	  	
-	    	this.scenery.push(CreateWorldElement(600, 300, 1350, 600, "sprites/Blue.png", false, false, 100));
-       	   	
-	  		this.width = SPRITE_W["LAB"];
-	  	};
-	  	
-	  	this.ConstructStory = function() {
-	  		if(this.constructed) return;
-	  		this.ConstructBase();
-	    	
-	    	var background = CreateWorldElement(600, 170, 768.25, 402, "sprites/Recall_Title.png", true, false, 0);
-	    	this.scenery.push(background);
-	    	this.scenery.push(CreateText(325,360, 32, "Credits"));
-	    	this.scenery[2].color = "cyan";
-	    	this.scenery.push(CreateText(1125,360, 32, "Story"));
-	    	this.scenery[3].color = "cyan";
-	    	
-			var numeroUno = CreateDoorElement(325, 480, SPRITE_W["MIDDLE_DOOR"], SPRITE_H["MIDDLE_DOOR"], SPRITES["MIDDLE_DOOR"], 2, false);
-			var numeroDos = CreateDoorElement(725, 480, SPRITE_W["MIDDLE_DOOR"], SPRITE_H["MIDDLE_DOOR"], SPRITES["MIDDLE_DOOR"], 2, false);
-			var numeroTres = CreateDoorElement(1125, 480, SPRITE_W["MIDDLE_DOOR"], SPRITE_H["MIDDLE_DOOR"], SPRITES["MIDDLE_DOOR"], 2, false);
-			this.interactive.push(numeroUno);
-			this.interactive.push(numeroDos);
-			this.interactive.push(numeroTres);
-			
-			numeroUno.action = function()
-			{
-				States.current().level.Destruct();
-				States.current().level = Credits(); ///change back to one after test
-				States.current().level.ConstructStory();
-			};
-			
-			numeroDos.action = function()
-			{
-				States.current().level.Destruct();
-				States.current().level = Lab(); ///change back to one after test
-				States.current().level.ConstructStory();
-			};
-			
-			numeroTres.action = function()
-			{
-				States.current().level.Destruct();
-				States.current().level = Story(); ///change back to one after test
-				States.current().level.ConstructStory();
-			};
-	    	
-	    	player.body.SetTransform(new b2.Vec2(50/PHYSICS_SCALE,450/PHYSICS_SCALE), 0);
-	  		this.constructed = true;
-	  		player.ChangeState(PLAYER_STATE_NORMAL);
-	  	};
-	  	
-	  	this.Destruct = function() { //TODO
-	  		if(!this.constructed) return;
-	  		for(var i = 0; i < this.floor.length; i++) this.floor[i].Destroy();
-	  		for(var i = 0; i < this.interactive.length; i++) this.interactive[i].Destroy();
-	  		for(var i = 0; i < this.scenery.length; i++) this.scenery[i].Destroy();
-	  		this.floor = [];
-	  		this.interactive = [];
-	  		this.scenery = [];
-	  		this.width = 0;
-	  		this.constructed = false;
-	  	};
-	}
-	
-	function Credits() { //TODO
-		if (arguments.callee._singletonInstance)
-	    return arguments.callee._singletonInstance;
-	  	arguments.callee._singletonInstance = this;
-	  	this.constructed = false;
-	  	this.floor = [];
-  		this.interactive = [];
-  		this.scenery = [];
-	   
-	  	this.ConstructBase = function() {
-	  		this.floor.push(CreateFloorElement(0, VIEWPORT_HEIGHT / 2, 100, VIEWPORT_HEIGHT, "", 0, false));
-	  		this.floor.push(CreateFloorElement(1300, VIEWPORT_HEIGHT / 2, 100, VIEWPORT_HEIGHT, "", 0, false));
-	  		this.floor.push(CreateFloorElement(SPRITE_W["LAB"] / 2, 650, SPRITE_W["LAB"], 100, "", 0, false));
-	  		
-	    	this.scenery.push(CreateWorldElement(600, 300, 1350, 600, "sprites/Blue.png", false, false, 100));
-       	   	
-	  		this.width = SPRITE_W["LAB"];
-	  	};
-	  	
-	  	this.Construct = function(spawn) {
-	  		if(this.constructed) return;
-	  		this.ConstructBase();
-       		player.body.SetTransform(spawn, 0);
-	  		this.constructed = true;
-	  		player.ChangeState(PLAYER_STATE_NORMAL);
-	  	};
-	  	
-	  	this.ConstructStory = function() {
-	  		if(this.constructed) return;
-	  		this.ConstructBase();
-	  		
-	  		var numeroUno = CreateDoorElement(1125, 480, SPRITE_W["MIDDLE_DOOR"], SPRITE_H["MIDDLE_DOOR"], SPRITES["MIDDLE_DOOR"], 2, false);
-	    	this.interactive.push(numeroUno);
-	    	
-	    	var Box1 = CreateText(600, 275, 40, "Credits: \n\n Ben Filstrup - Audio files and coded story \n\n Sam Filstrup - Created all game art \n\n Sterling Salvaterra - Coded parts of engine\n              and story \n\n Rahil Shah - Implemented runner levels \n          and created menu \n\n Dylan Tran - Engine maker and debugger");
-	    	this.scenery.push(Box1);
-	    	this.scenery[1].color = "cyan";
-	    	
-	    	numeroUno.action = function()
-			{
-				States.current().level.Destruct();
-				States.current().level = Title(); ///change back to one after test
-				States.current().level.ConstructStory();
-			};
-	    	
-	    	player.body.SetTransform(new b2.Vec2(50/PHYSICS_SCALE,450/PHYSICS_SCALE), 0);
-
-	  		this.constructed = true;
-	  		player.ChangeState(PLAYER_STATE_NORMAL);
-	  	};
-	  	
-	  	this.Destruct = function() { //TODO
-	  		if(!this.constructed) return;
-	  		for(var i = 0; i < this.floor.length; i++) this.floor[i].Destroy();
-	  		for(var i = 0; i < this.interactive.length; i++) this.interactive[i].Destroy();
-	  		for(var i = 0; i < this.scenery.length; i++) this.scenery[i].Destroy();
-	  		this.floor = [];
-	  		this.interactive = [];
-	  		this.scenery = [];
-	  		this.width = 0;
-	  		this.constructed = false;
-	  	};
-	}
-	
-	
-	function Story() { //TODO
-		if (arguments.callee._singletonInstance)
-	    return arguments.callee._singletonInstance;
-	  	arguments.callee._singletonInstance = this;
-	  	this.constructed = false;
-	  	this.floor = [];
-  		this.interactive = [];
-  		this.scenery = [];
-	   
-	  	this.ConstructBase = function() {
-	  		this.floor.push(CreateFloorElement(0, VIEWPORT_HEIGHT / 2, 100, VIEWPORT_HEIGHT, "", 0, false));
-	  		this.floor.push(CreateFloorElement(1300, VIEWPORT_HEIGHT / 2, 100, VIEWPORT_HEIGHT, "", 0, false));
-	  		this.floor.push(CreateFloorElement(SPRITE_W["LAB"] / 2, 650, SPRITE_W["LAB"], 100, "", 0, false));
-	  		
-	    	this.scenery.push(CreateWorldElement(600, 300, 1350, 600, "sprites/Blue.png", false, false, 100));
-       	   	
-	  		this.width = SPRITE_W["LAB"];
-	  	};
-	  	
-	  	this.Construct = function(spawn) {
-	  		if(this.constructed) return;
-	  		this.ConstructBase();
-       		player.body.SetTransform(spawn, 0);
-	  		this.constructed = true;
-	  		player.ChangeState(PLAYER_STATE_NORMAL);
-	  	};
-	  	
-	  	this.ConstructStory = function() {
-	  		if(this.constructed) return;
-	  		this.ConstructBase();
-	  		
-	  		var numeroUno = CreateDoorElement(1125, 480, SPRITE_W["MIDDLE_DOOR"], SPRITE_H["MIDDLE_DOOR"], SPRITES["MIDDLE_DOOR"], 2, false);
-	    	this.interactive.push(numeroUno);
-	    	
-	    	var Box1 = CreateText(600, 225, 40, "Story:\n\n You play as Remy, a scientist that works on memory \nalteration. Successful tests on mice have yielded positive \nresults, but not enough to impress your superiors. As a result, \nyour funding gets cut, leaving your research and efforts wasted. \nIn a final desperate attempt, you experiment on yourself, \ncausing your reality and perception to collapse. Now, it's \nyour job to figure out who you are, where you \nare, and if the things you see are real.");
-	    	this.scenery.push(Box1);
-	    	this.scenery[1].color = "cyan";
-	    	
-	    	numeroUno.action = function()
-			{
-				States.current().level.Destruct();
-				States.current().level = Title(); ///change back to one after test
-				States.current().level.ConstructStory();
-			};
-	    	
-	    	player.body.SetTransform(new b2.Vec2(50/PHYSICS_SCALE,450/PHYSICS_SCALE), 0);
-
-	  		this.constructed = true;
-	  		player.ChangeState(PLAYER_STATE_NORMAL);
-	  	};
-	  	
-	  	this.Destruct = function() { //TODO
-	  		if(!this.constructed) return;
-	  		for(var i = 0; i < this.floor.length; i++) this.floor[i].Destroy();
-	  		for(var i = 0; i < this.interactive.length; i++) this.interactive[i].Destroy();
-	  		for(var i = 0; i < this.scenery.length; i++) this.scenery[i].Destroy();
-	  		this.floor = [];
-	  		this.interactive = [];
-	  		this.scenery = [];
-	  		this.width = 0;
-	  		this.constructed = false;
-	  	};
-	}
-	
 	
 	//////////////////////////////////////
 	// Function definitions
@@ -2129,13 +2234,14 @@ var SPRITE_OFFSET =
 	//
 	// CreateText - function to create a basic text to be displayed
 	//
-	function CreateText(x, y, fontSize, text) {
+	function CreateText(x, y, fontSize, text, color) {
 		var Text = new TextBox();
 		Text.x = x;
 		Text.y = y;
 		Text.fontSize = fontSize;
 		Text.text = text;
 		Text.center = true;
+		if(typeof(color) !== "undefined") Text.color = color;
 		States.current().world.addChild(Text);
 		Text.Destroy = function() {
 			States.current().world.removeChild(this);
@@ -2147,7 +2253,7 @@ var SPRITE_OFFSET =
 	// CreatePlayer - creates the player sprite, physics body, and update functions
 	//
 	function CreatePlayer(x, y) {
-		var player = CreateSprite(x, y, PLAYER_WIDTH_STANDING, PLAYER_HEIGHT_STANDING, "sprites/player_walk_cycle.png", 0);
+		var player = CreateSprite(x, y, PLAYER_WIDTH_STANDING, PLAYER_HEIGHT_STANDING, SPRITES["PLAYER_WALK"], 0);
 		CreateNormalAnimation(player);
 		player.offsetY = -player.height;
 		player.onGround = true;
@@ -2192,6 +2298,8 @@ var SPRITE_OFFSET =
 		
 		player.ChangeState = function(newstate) {
 			this.scaleX = 1;
+			this.dashing = false;
+			this.sliding = false;
 			switch(newstate) {
 				case PLAYER_STATE_NORMAL:
 					this.state = PLAYER_STATE_NORMAL;
@@ -2261,16 +2369,11 @@ var SPRITE_OFFSET =
 							this.cooldown = PLAYER_DASH_DURATION;
 							this.frameRate = this.maxSpeed / PLAYER_RUN_SPEED * 7.5;
 						}
-						if(this.dashing && this.cooldown < PLAYER_DASH_DURATION / 4) {
-							var deltaMax = PLAYER_RUN_SPEED - this.maxSpeed;
-							this.maxSpeed += deltaMax / PLAYER_DASH_DURATION;
-							this.frameRate = this.maxSpeed / PLAYER_RUN_SPEED * 7.5;
-							if(Math.abs(deltaMax) < .25) {
-								this.maxSpeed = PLAYER_RUN_SPEED;
-								this.dashing = false;
-								this.cooldown = 5;
-								this.frameRate = 7.5;
-							}
+						if(this.dashing && this.cooldown < 0) {
+							this.maxSpeed = PLAYER_RUN_SPEED;
+							this.dashing = false;
+							this.cooldown = 5;
+							this.frameRate = 7.5;
 						}
 						if(gInput.up && !this.sliding && this.latency < 0) {
 							this.onGround = false;
@@ -2326,7 +2429,7 @@ var SPRITE_OFFSET =
 					}
 					break;
 				case PLAYER_STATE_SLIDING:
-					if(this.climbMiddle.numContacts > 0 && !this.dashing) this.Respawn();
+					if(this.killSensor.numContacts > 0 && !this.dashing) this.Respawn();
 					var deltaVelocity = this.maxSpeed - velocity.x;
 					var impulse = new b2.Vec2(this.body.GetMass() * deltaVelocity, 0);
 					this.body.ApplyLinearImpulse(impulse, this.body.GetWorldCenter(), true);
@@ -2354,6 +2457,29 @@ var SPRITE_OFFSET =
 			States.current().level.Reset();
 		};
 		return player;
+	}
+	
+	function CreateIndicator(xoffset, yoffset) {
+		var indicator = CreateSprite(0, 0, SPRITE_W["KEY"], SPRITE_H["KEY"], "", 0);
+		indicator.offsetX += xoffset;
+		indicator.offsetY += yoffset;
+		indicator.frameWidth = 284;
+		indicator.frameHeight = 271;
+		indicator.frameRate = 2.5;
+		indicator.frameCount = 2;
+		indicator.alpha = 0;
+		return indicator;
+	}
+	
+	function ShowIndicator(sprite, indicator, image) {
+		indicator.image = Textures.load(image);
+		indicator.x = sprite.x;
+		indicator.y = sprite.y;
+		indicator.alpha = 1;
+	}
+		
+	function HideIndicator(indicator) {
+		indicator.alpha = 0;
 	}
 	
 	// Brine quirk: framecount has to be +1
@@ -2644,8 +2770,8 @@ var SPRITE_OFFSET =
 		var vertices = [];
 		//vertices.push(new b2.Vec2(0, -scaled_height / 2));
 		vertices.push(new b2.Vec2(scaled_width / 2, -scaled_height / 3)); //TR
-		vertices.push(new b2.Vec2(scaled_width / 2, scaled_height / 5)); //BR
-		vertices.push(new b2.Vec2(-scaled_width / 2, scaled_height / 5)); //BL
+		vertices.push(new b2.Vec2(scaled_width / 2, scaled_height / 4.5)); //BR
+		vertices.push(new b2.Vec2(-scaled_width / 2, scaled_height / 4.5)); //BL
 		vertices.push(new b2.Vec2(-scaled_width / 2, -scaled_height / 3)); //TL
 		fixDef.shape.Set(vertices, 4);
 		ApplyBBox(element, b2.Body.b2_staticBody, fixDef);
@@ -2750,9 +2876,11 @@ var SPRITE_OFFSET =
 			};
 			door.Enter = function() {
 				this.frameRate = 30;
+				ShowIndicator(this, indicator, SPRITES["E"]);
 			};
 			door.Exit = function() {
 				this.frameRate = -30;
+	  			HideIndicator(indicator);
 			};
 		}
 		return door;
@@ -2909,8 +3037,8 @@ var SPRITE_OFFSET =
 	
 	function nextTrack(audio1, audio2)
 	{
-		audio1.pause();
-		audio2.play();
+		/*audio1.pause();
+		audio2.play();*/
 		
 	}
 	
