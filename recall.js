@@ -180,7 +180,7 @@ var SPRITE_OFFSET =
 	pause.alwaysUpdate = false;
 	
 	var game = new State();
-	game.alwaysDraw = true;
+	game.alwaysDraw = false;
 	game.alwaysUpdate = false;
 	physics = new b2.World(new b2.Vec2(0, 10), true);
 	
@@ -243,7 +243,6 @@ var SPRITE_OFFSET =
 	new Title();
 	new Credits();
 	new Story();
-	new Pause();
 	
 	/* new Lab(); // actual level order
 	new LevelOne();
@@ -303,7 +302,13 @@ var SPRITE_OFFSET =
 			this.x += deltaX / accel;
 			this.y += deltaY / accel;
 		}
-				
+		
+		if(gInput.esc) //TODO
+		{
+			States.push(pause);
+			return;
+		}
+		
 		this.updateChildren(d);
 	};
 	
@@ -313,6 +318,39 @@ var SPRITE_OFFSET =
 			this.alpha = 0.5;
 		}
 		Sprite.prototype.draw.call(this, ctx);
+	};
+	
+	pause.init = function() 
+	{
+		var Stop = new TextBox();
+		Stop.x = 450;
+		Stop.y =50;
+		Stop.fontSize = 60;
+		Stop.text = "PAUSED";
+		Stop.color = "cyan";
+		this.world.addChild(Stop);
+		
+		
+		pop = function() {States.pop();};
+		var Resume = new TextButton("Resume", pop);
+		Resume.x = 525;
+		Resume.y = 150;
+		
+		restart = function() {States.push(this.current.level());};
+		var Restart = new TextButton("Restart", restart);
+		Restart.x = 525;
+		Restart.y = 250;
+		
+		quit = function() {States.pop();};
+		var Quit = new TextButton("Quit", quit);
+		Quit.x = 525;
+		Quit.y = 350;
+		this.gui.addChild(Resume);
+		this.gui.addChild(Restart);
+		this.gui.addChild(Quit);
+	};
+	
+	pause.updateState = function(d) {	
 	};
 	
 	States.push(loadingscreen);
@@ -543,73 +581,6 @@ var SPRITE_OFFSET =
 	  		this.constructed = false;
 	  	};
 	}
-	
-	
-	function Pause() {
-		if (arguments.callee._singletonInstance)
-	    return arguments.callee._singletonInstance;
-	  	arguments.callee._singletonInstance = this;
-	  	this.constructed = false;
-	  	this.floor = [];
-  		this.interactive = [];
-  		this.scenery = [];
-	   
-	  	this.ConstructBase = function() {
-	  		this.floor.push(CreateFloorElement(0, VIEWPORT_HEIGHT / 2, 100, VIEWPORT_HEIGHT, "", 0, false));
-	  		this.floor.push(CreateFloorElement(VIEWPORT_WIDTH + 50, VIEWPORT_HEIGHT / 2, 100, VIEWPORT_HEIGHT, "", 0, false));
-	  		this.floor.push(CreateFloorElement(VIEWPORT_WIDTH / 2, 650, VIEWPORT_WIDTH, 100, "", 0, false));
-	  	
-	    	this.scenery.push(CreateWorldElement(600, 300, 1350, 600, SPRITES["BLUE"], false, false, 100));
-       	   	
-	  		this.width = VIEWPORT_WIDTH;
-	  	};
-	  	
-	  	this.ConstructStory = function() {
-	  		if(this.constructed) return;
-	  		this.ConstructBase();
-	    	
-	    	var background = CreateText(600,50, 40, "PAUSED", "cyan");
-	    	this.scenery.push(background);
-	    	this.scenery.push(CreateText(475,360, 32, "Resume", "cyan"));
-	    	this.scenery.push(CreateText(875,360, 32, "Quit", "cyan"));
-	    	
-			var numeroDos = CreateDoorElement(475, 480, SPRITE_W["MIDDLE_DOOR"], SPRITE_H["MIDDLE_DOOR"], SPRITES["MIDDLE_DOOR"], 2, false);
-			var numeroTres = CreateDoorElement(875, 480, SPRITE_W["MIDDLE_DOOR"], SPRITE_H["MIDDLE_DOOR"], SPRITES["MIDDLE_DOOR"], 2, false);
-			this.interactive.push(numeroDos);
-			this.interactive.push(numeroTres);
-			
-			numeroDos.action = function()
-			{
-				States.current().level.Destruct();
-				States.current().level = Title();
-				States.current().level.ConstructStory();
-			};
-			
-			numeroTres.action = function()
-			{
-				States.current().level.Destruct();
-				States.current().level = Title();
-				States.current().level.ConstructStory();
-			};
-	    	
-	    	player.body.SetTransform(new b2.Vec2(50/PHYSICS_SCALE,450/PHYSICS_SCALE), 0);
-	  		this.constructed = true;
-	  		player.ChangeState(PLAYER_STATE_NORMAL);
-	  	};
-	  	
-	  	this.Destruct = function() {
-	  		if(!this.constructed) return;
-	  		for(var i = 0; i < this.floor.length; i++) this.floor[i].Destroy();
-	  		for(var i = 0; i < this.interactive.length; i++) this.interactive[i].Destroy();
-	  		for(var i = 0; i < this.scenery.length; i++) this.scenery[i].Destroy();
-	  		this.floor = [];
-	  		this.interactive = [];
-	  		this.scenery = [];
-	  		this.width = 0;
-	  		this.constructed = false;
-	  	};
-	}
-	
 	
 	// Story One - Contains Construct and ConstructStory
 	function Lab() {
@@ -2474,13 +2445,6 @@ var SPRITE_OFFSET =
 							this.sliding = true;
 							this.cooldown = PLAYER_SLIDE_DURATION;
 							this.state = PLAYER_STATE_SLIDING;
-						}
-						if(gInput.esc) //TODO
-						{
-							console.log("hi");
-							States.current().level.Destruct();
-							States.current().level = Pause();
-							States.current().level.ConstructStory();
 						}
 					} else {
 						CreateJumpAnimation(this);
