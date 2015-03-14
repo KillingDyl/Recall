@@ -76,6 +76,8 @@ var SPRITES = {
 	LAB: "sprites/laboratory.png",
 	LAB_DESK: "sprites/laboratory_bottom_desk.png",
 	OFFICE: "sprites/office.png",
+	MACHINE_ON: "sprites/machine_on.png",
+	MACHINE_OFF: "sprites/machine_off.png",
 	HALLWAY: "sprites/hallway.png",
 	INFORMATION: "sprites/information_screen.png",
 	STORAGE: "sprites/storage_room.png",
@@ -105,6 +107,8 @@ var SPRITE_W =
 	LAB: 5100 / 4,
 	LAB_DESK: 1768 / 4,
 	OFFICE: 3166 / 4,
+	MACHINE_ON: 1233 / 5,
+	MACHINE_OFF: 743 / 5,
 	HALLWAY: 5100 / 4,
 	STORAGE: 3166 / 4,
 	STORAGE_DESK: 3166 / 4,
@@ -132,6 +136,8 @@ var SPRITE_H =
 	LAB: 1680 / 4,
 	LAB_DESK: 856 / 4,
 	OFFICE: 1680 / 4,
+	MACHINE_ON: 1383 / 5,
+	MACHINE_OFF: 1275 / 5,
 	HALLWAY: 1680 / 4,
 	STORAGE: 1680 / 4,
 	STORAGE_DESK: 1680 / 4,
@@ -190,18 +196,6 @@ var SPRITE_OFFSET =
 	chat.alwaysDraw = false;
 	chat.alwaysUpdate = false;
 	
-	var chat2 = new State();
-	chat2.alwaysDraw = false;
-	chat2.alwaysUpdate = false;
-	
-	var chat3 = new State();
-	chat3.alwaysDraw = false;
-	chat3.alwaysUpdate = false;
-	
-	var chat4 = new State();
-	chat4.alwaysDraw = false;
-	chat4.alwaysUpdate = false;
-	
 	loadingscreen.init = function() {
 		this.loading = CreateText(VIEWPORT_WIDTH / 2, VIEWPORT_HEIGHT / 2, 32, "");
 		this.loading.color = "cyan";
@@ -250,7 +244,7 @@ var SPRITE_OFFSET =
 	new LevelTwo();
 	new LabScene();
 	new LevelTwo();
-		new LevelFour();
+	new LevelFour();
 	new Hallway();
 	new LevelThree();
 	new Storage();
@@ -284,9 +278,9 @@ var SPRITE_OFFSET =
 			this.x = player.x;
 			this.y = player.y;
 		};
-		//this.level = Title();
-		//this.level.ConstructStory();
-		this.level = LabScene();
+		/*this.level = Title();
+		this.level.ConstructStory();*/
+		this.level = LevelFive();
 		this.level.Construct();
 	};
 	
@@ -590,18 +584,19 @@ var SPRITE_OFFSET =
 	  		var sensor = CreateWorldElement(850, 370, 10, 500,"", true, true, 400);
 	        sensor.Enter = function(){
    	    		States.push(chat);
-   	    		this.dialogue = [];
-				var text_image = CreateWorldElement(1045,275, 182,92,SPRITES["RIGHT_TEXT"], false, false, 1);
+				var text_image = CreateWorldElement(1045,300, 182,150,SPRITES["RIGHT_TEXT"], false, false, 1);
 				var text = CreateText(1045,250, 16, "Remy, over here.");
-				var text2 = CreateText(1045,285,14, "E to intEract.");
-				this.dialogue.push(text);
-				this.dialogue.push(text2);
+				var ekey = CreateIndicator(0, 60);
+	    		ShowIndicator(text, ekey, SPRITES["E"]);
 				chat.world.update = function(d) {
 					if(gInput.E) {
 						this.removeChild(text);
-						this.removeChild(text2);
+						this.removeChild(text_image);
+						this.removeChild(ekey);
 						States.pop();
+						return;
 					}
+					this.updateChildren(d);
 				};
        	    };
        	    this.interactive.push(sensor);
@@ -668,15 +663,34 @@ var SPRITE_OFFSET =
 	  		if(this.constructed) return;
 	  		this.ConstructBase();
 	  		
-	  		this.scenery.push(CreateText(VIEWPORT_WIDTH / 2, 240, 32, "E in the Center to return"));
-	  		var middle_door = CreateDoorElement(VIEWPORT_WIDTH / 2 , 400, SPRITE_W["MIDDLE_DOOR"], SPRITE_H["MIDDLE_DOOR"], "", 2, false);
+	  		var machine = CreateWorldElement(VIEWPORT_WIDTH / 2 - 250, 400, SPRITE_W["MACHINE_OFF"], SPRITE_H["MACHINE_OFF"], SPRITES["MACHINE_OFF"], true, true, 2);
+	  		machine.action = function() {
+	  			States.push(chat);
+	  			var text_image = CreateWorldElement(player.x + 100,275, 200, 100,SPRITES["LEFT_TEXT"], false, false, 1);
+
+				var text = CreateText(player.x + 100,268, 16, "It doesn't appear\nto be working...");
+				var pressed = true;
+				chat.world.update = function(d) {
+					if(!gInput.E && pressed) pressed = false;
+					if(gInput.E && !pressed){
+						this.removeChild(text_image);
+						this.removeChild(text);
+						States.pop();
+					    return;
+					}
+					this.updateChildren(d);
+				};
+	  		};
+	  		this.interactive.push(machine);
+	  		
+	  		var middle_door = CreateDoorElement(VIEWPORT_WIDTH / 2 + 100 , 400, SPRITE_W["MIDDLE_DOOR"] / 2, SPRITE_H["MIDDLE_DOOR"], "", 2, false);
 			middle_door.action = function() {
 				States.current().level.Destruct();
-				States.current().level = LevelTwo(); 
-				States.current().level.Construct();
+				States.current().level = Lab(); 
+				States.current().level.Construct(new b2.Vec2(639/PHYSICS_SCALE, 500/PHYSICS_SCALE));
 			};
 			this.interactive.push(middle_door);
-			player.body.SetTransform(new b2.Vec2(400/PHYSICS_SCALE,505/PHYSICS_SCALE), 0);
+			player.body.SetTransform(new b2.Vec2(600/PHYSICS_SCALE,505/PHYSICS_SCALE), 0);
 	  	    this.constructed = true;
 	  	    player.ChangeState(PLAYER_STATE_NORMAL);
 	  	};
@@ -687,7 +701,7 @@ var SPRITE_OFFSET =
 	  		
 	  		var sensor = CreateWorldElement(337.5, 277.5, 10, 500,"", true, true, 400);
 	        sensor.Enter = function(){
-   	    		States.push(chat2);
+   	    		States.push(chat);
    	    		//var i = 0;
    	    		world.dialogue = [];
    	    		world.dialogue[0] = "Sir, what do you want \nto speak to me about?";
@@ -698,14 +712,13 @@ var SPRITE_OFFSET =
    	   			world.dialogue[5] = "But all the time we spent \non it! What will I tell \nthe team?!";
    	   		 	world.dialogue[6] = "I'm sorry Remy, it was \na corporate decision.\nIt's out of my hands.";
    	    	
-				var text_image = CreateWorldElement(400,275, 240, 300,SPRITES["LEFT_TEXT"], false, false, 1);
+				var text_image = CreateWorldElement(475,275, 200, 150,SPRITES["LEFT_TEXT"], false, false, 1);
 
-				var text = CreateText(400,268, 16, world.dialogue[0]);
-					text.center = true;
+				var text = CreateText(475,268, 16, world.dialogue[0]);
 					
 				var count= 0;
 				var pressed = false;
-				chat2.world.update = function(d) {
+				chat.world.update = function(d) {
 					text.text = world.dialogue[count];
 					if(gInput.E && !pressed){
 						pressed = true;
@@ -715,21 +728,24 @@ var SPRITE_OFFSET =
 						pressed = false;
 					}	
 					if(count == world.dialogue.length){
+						this.removeChild(text_image);
+						this.removeChild(text);
 						States.pop();
 						States.current().level.Destruct();
-					    States.current().level = LabScene();
+					    States.current().level = LevelTwo();
 					    States.current().level.Construct();
+					    return;
 					}
 					if(count == 1 || count == 3 || count == 6){
 						text_image.image = Textures.load(SPRITES["RIGHT_TEXT"]);
-						text_image.x = 495;
-						text.x = 495;
+						text_image.x = 475;
+						text.x = 475;
 						
 					}
 					if(count == 2 || count == 5){
 						text_image.image = Textures.load(SPRITES["LEFT_TEXT"]);
-						text_image.x = 400;
-						text.x = 400;
+						text_image.x = 475;
+						text.x = 475;
 			
 					}
 				};
@@ -788,7 +804,7 @@ var SPRITE_OFFSET =
 	        this.interactive.push(sensor1);
 	       
 	        sensor.Enter = function(){
-   	    		States.push(chat3);
+   	    		States.push(chat);
    	    		//var i = 0;
    	    		world.dialogue = [];
    	    		world.dialogue[0] = "...so I guess it's \nbest we start \nlooking for other work."; // Remy
@@ -799,15 +815,15 @@ var SPRITE_OFFSET =
    	    		world.dialogue[5] = "#o !h@t, ^t'$ \n*&l g(@b)%e r#s)\n(rc# @8w? \nU0&les7$?"; // female
    	    		world.dialogue[6] = "What's \ngoing on...?"; //Remy
    	    		
-				var text_image = CreateWorldElement(665,250, 220,265,SPRITES["LEFT_TEXT"], false, false, 1);
+				var text_image = CreateWorldElement(665,250, 200,125,SPRITES["LEFT_TEXT"], false, false, 1);
 				
 				
-				var text = CreateText(665,250, 16, world.dialogue[0]);
+				var text = CreateText(665,240, 16, world.dialogue[0]);
 					text.center = true;
 					
 				var count= 0;
 				var pressed = false;
-				chat3.world.update = function(d) {
+				chat.world.update = function(d) {
 					
 				text.text = world.dialogue[count];
 				if(gInput.E && !pressed){
@@ -818,10 +834,13 @@ var SPRITE_OFFSET =
 					pressed = false;
 				}	
 				if(count == world.dialogue.length){
+					this.removeChild(text_image);
+					this.removeChild(text);
 					States.pop();
 					States.current().level.Destruct();
-				    States.current().level = LevelTwo(); ///change back to one after test
-				    States.current().level.Construct();
+				    States.current().level = LevelTwo();
+				    States.current().level.ConstructLoop();
+				    return;
 				}
 				
 				if(count == 1 || count == 2 || count == 5){ // girl
@@ -829,7 +848,7 @@ var SPRITE_OFFSET =
 						text_image.x = 400;
 						text.x = 400;
 						text_image.y = 280;
-						text.y = 280;
+						text.y = 270;
 						
 					}
 				else if(count == 3){ // guy
@@ -837,7 +856,7 @@ var SPRITE_OFFSET =
 						text_image.x = 800;
 						text.x = 800;
 						text_image.y = 300;
-						text.y = 300;
+						text.y = 285;
 					}
 				else
 					{
@@ -845,7 +864,7 @@ var SPRITE_OFFSET =
 						text_image.x = 665;
 						text.x = 665;
 						text_image.y = 250;
-						text.y = 250;
+						text.y = 240;
 					}
 				};
        	    };
@@ -854,6 +873,7 @@ var SPRITE_OFFSET =
 		    this.width = VIEWPORT_WIDTH;
 	  	    this.constructed = true;
 	  	    player.body.SetTransform(new b2.Vec2(VIEWPORT_WIDTH / 2 /PHYSICS_SCALE,475/PHYSICS_SCALE), 0);
+	  	    player.ChangeState(PLAYER_STATE_NORMAL);
 	  	};	
 	
 		this.Destruct = function() {
@@ -904,8 +924,8 @@ var SPRITE_OFFSET =
 			var right_door = CreateDoorElement(1214, 369, SPRITE_W["RIGHT_DOOR"], SPRITE_H["RIGHT_DOOR"], SPRITES["RIGHT_DOOR"], 2, false);
 			right_door.action = function() {
 				States.current().level.Destruct();
-				States.current().level = LevelThree();
-				States.current().level.Construct();
+				States.current().level = Lab();
+				States.current().level.Construct(new b2.Vec2(52 / PHYSICS_SCALE, 500 / PHYSICS_SCALE));
 			};
        		this.interactive.push(right_door);
        		
@@ -921,7 +941,7 @@ var SPRITE_OFFSET =
 			var sensor = CreateWorldElement(900, 370, 10, 500,"", true, true, 400);
 	        this.interactive.push(sensor);
 				sensor.Enter = function(){
-   	    		States.push(chat4);
+   	    		States.push(chat);
    	    		//var i = 0;
    	    		world.dialogue = [];
    	    		world.dialogue[0] = "Morning Rob!"; // counter
@@ -930,15 +950,15 @@ var SPRITE_OFFSET =
    	    		world.dialogue[3] = "You just...\nbut I'm not..."; // Remy 
    	    		world.dialogue[4] = "No. Nothings \nwrong. Sorry."; //Remy
    	    		
-				var text_image = CreateWorldElement(900,240, 220,265,SPRITES["RIGHT_TEXT"], false, false, 1);
+				var text_image = CreateWorldElement(900,240, 200,125,SPRITES["RIGHT_TEXT"], false, false, 1);
 				
 				
-				var text = CreateText(900,240, 16, world.dialogue[0]);
+				var text = CreateText(900,225, 16, world.dialogue[0]);
 					text.center = true;
 					
 				var count= 0;
 				var pressed = false;
-				chat4.world.update = function(d) {
+				chat.world.update = function(d) {
 					
 				text.text = world.dialogue[count];
 				if(gInput.E && !pressed){
@@ -949,19 +969,19 @@ var SPRITE_OFFSET =
 					pressed = false;
 				}	
 				
-				if(count == world.dialogue.length){ //TODO Need to make it allow me to break from chat loop so I can interact with door
-						States.pop();
-						States.current().level.Destruct();
-					    States.current().level = LevelTwo();
-					    States.current().level.ConstructLoop();
-					}
+				if(count == world.dialogue.length){
+					this.removeChild(text_image);
+					this.removeChild(text);
+					States.pop();
+					return;
+				}
 				
 				if(count == 1 || count == 3 || count == 4){ // Remy
 						text_image.image = Textures.load(SPRITES["RIGHT_TEXT"]);
 						text_image.x = 675;
 						text.x = 675;
 						text_image.y = 260;
-						text.y = 260;
+						text.y = 245;
 						
 					}
 				else
@@ -970,7 +990,7 @@ var SPRITE_OFFSET =
 						text_image.x = 900;
 						text.x = 900;
 						text_image.y = 240;
-						text.y = 240;
+						text.y = 225;
 					}
 				};
        	    };
@@ -980,8 +1000,8 @@ var SPRITE_OFFSET =
 			var right_door = CreateDoorElement(1214, 369, SPRITE_W["RIGHT_DOOR"], SPRITE_H["RIGHT_DOOR"], SPRITES["RIGHT_DOOR"], 2, false);
 			right_door.action = function() {
 				States.current().level.Destruct();
-				States.current().level = Lab();
-				States.current().level.Construct();
+			    States.current().level = LevelThree();
+			    States.current().level.Construct();
 			};
        		this.interactive.push(right_door);
        	   	
@@ -1335,6 +1355,7 @@ var SPRITE_OFFSET =
 	        
 			///////work before this
 			this.width = this.floor[0].width/2 + this.floor[this.floor.length-1].x - this.floor[0].x + this.floor[this.floor.length-1].width/2;
+			this.width += 500;
 		};
 		
 		this.Construct = function() {
@@ -1346,7 +1367,7 @@ var SPRITE_OFFSET =
 	        sensor.Enter = function(){
    	    		States.current().level.Destruct();
 				States.current().level = LabScene();
-				States.current().level.ConstructStory(new b2.Vec2(639 / PHYSICS_SCALE, 500 / PHYSICS_SCALE));
+				States.current().level.Construct();
        	    };
        	    
        	    this.constructed = true;
@@ -1359,12 +1380,12 @@ var SPRITE_OFFSET =
 			if(this.constructed) return;
 			this.ConstructBase();
 			
-			var sensor = CreateRunnerElement(this.width - 400, 200, 200, 500, SPRITES["BOSS"], true, true, 400);
+			var sensor = CreateRunnerElement(16100, 250, SPRITE_W["CAGE"], SPRITE_H["CAGE"], SPRITES["CAGE"], true, true, 400);
 			sensor.cycles = 0;
 	        this.interactive.push(sensor);
 	        sensor.Enter = function() {
 	        	this.cycles++;
-	        	if(this.cycles >= 2) console.log("PRESS E DUMBFUCK");
+	        	if(this.cycles > 2) ShowIndicator(player, indicator, SPRITES["E"]);
 	        };
 	        sensor.action = function(){
    	    		States.current().level.Destruct();
@@ -1553,12 +1574,14 @@ var SPRITE_OFFSET =
 			makeBuilding.call(this, x, y, 5);
 			x = fillBuilding.call(this, x, y, 5);
 			
-			var sensor = CreateRunnerElement(x, 200, 10, 500,"", true, true, 400);
+			this.scenery.push(CreateRunnerElement(x - 400, y - SPRITE_H["WALL"] - 25, 500, 500, SPRITES["CAGE"], false, false, -10));
+			
+			var sensor = CreateRunnerElement(x - 300, 200, 10, 500,"", true, true, 400);
 	        this.interactive.push(sensor);
 	        sensor.Enter = function(){
    	    		States.current().level.Destruct();
-				States.current().level = Lab();
-				States.current().level.Construct(new b2.Vec2(4, 5));
+				States.current().level = Hallway();
+				States.current().level.Construct(new b2.Vec2(52/PHYSICS_SCALE , 500/PHYSICS_SCALE));
        	    };
 	        
 			///////work before this
@@ -1782,7 +1805,7 @@ var SPRITE_OFFSET =
 	        sensor.Enter = function(){
    	    		States.current().level.Destruct();
 				States.current().level = Hallway();
-				States.current().level.ConstructStory(new b2.Vec2(639 / PHYSICS_SCALE, 500 / PHYSICS_SCALE));
+				States.current().level.ConstructStory();
        	    };
 			
 			///////work before this
@@ -1897,6 +1920,7 @@ var SPRITE_OFFSET =
 			//8
 			x += 700;
 			y = 500;
+			this.checkpoint[1] = CreateCheckpoint(x, y - 200, true);
 			makeBuilding.call(this, x, y, 10);
 			x = fillBuilding.call(this, x, y, 10);
 			this.obstacle.push(CreateDashElement(x - 2000, y-SPRITE_OFFSET["ROOF_CRATE"], -10));
@@ -2027,6 +2051,15 @@ var SPRITE_OFFSET =
 			y = 550;
 			makeBuilding.call(this, x, y, 10);
 			x = fillBuilding.call(this, x, y, 10);
+			
+			var sensor = CreateRunnerElement(x, 240, SPRITE_W["MACHINE_ON"], SPRITE_H["MACHINE_ON"], SPRITES["MACHINE_ON"], true, true, 400);
+			sensor.scaleX = -1;
+	        this.interactive.push(sensor);
+	        sensor.Enter = function(){
+   	    		States.current().level.Destruct();
+				States.current().level = Title();
+				States.current().level.ConstructStory();
+       	    };
 			
 			///////work before this
 			this.width = this.floor[0].width/2 + this.floor[this.floor.length-1].x - this.floor[0].x + this.floor[this.floor.length-1].width/2;
@@ -2184,7 +2217,7 @@ var SPRITE_OFFSET =
 			if(objectB == player) other = objectA;
 			var interactives = States.current().level.interactive;
 			if(interactives.indexOf(other) != -1) {
-				player.near = true;
+				player.near++;
 				player.interact = other;
 				println("near");
 				if(other.Enter) other.entered = true;
@@ -2229,7 +2262,7 @@ var SPRITE_OFFSET =
 			if(objectB == player) other = objectA;
 			var interactives = States.current().level.interactive;
 			if(interactives.indexOf(other) != -1) {
-				player.near = false;
+				player.near--;
 				player.interact = undefined;
 				println("away");
 				if(other.Exit) other.exited = true;
@@ -2280,7 +2313,7 @@ var SPRITE_OFFSET =
 		CreateNormalAnimation(player);
 		player.offsetY = -player.height;
 		player.onGround = true;
-		player.near = false;//check for whether or not the player is near an interactable obj
+		player.near = 0;//check for whether or not the player is near an interactable obj
 		
 		var bodyDef = new b2.BodyDef();
 		bodyDef.type = b2.Body.b2_dynamicBody;
@@ -2316,8 +2349,9 @@ var SPRITE_OFFSET =
 		player.maxSpeed = PLAYER_WALK_SPEED;
 		player.dashing = false;
 		player.sliding = false;
-		player.cooldown = 0;
-		player.latency = 0;
+		player.dashCooldown = 0;
+		player.jumpCooldown = 0;
+		player.slideCooldown = 0;
 		
 		player.ChangeState = function(newstate) {
 			this.scaleX = 1;
@@ -2344,18 +2378,25 @@ var SPRITE_OFFSET =
 		var pressed = false;
 		
 		player.update = function(d) { 
-			if(this.near && gInput.E && !pressed){
+			if(this.near > 0 && gInput.E && !pressed){
 				pressed = true;
-				if(this.interact.action) this.interact.action();
+				if(this.interact) if(this.interact.action) this.interact.action();
 			}
-			if(!this.near) HideIndicator(indicator);
+			if(this.near <= 0) HideIndicator(indicator);
 			if(!gInput.E && pressed) pressed = false;
 			// Movement code
 			var velocity = this.body.GetLinearVelocity();
-			this.latency -= d;
-			this.cooldown -= d;
+			this.jumpCooldown -= d;
+			this.dashCooldown -= d;
+			this.slideCooldown -= d;
 			this.onGround = this.foot.numContacts > 0;
 			this.climbing = !this.climbing && this.climbMiddle.numContacts > 0 && this.climbUpper.numContacts == 0;
+			if(this.dashing && this.dashCooldown < 0) {
+				this.maxSpeed = PLAYER_RUN_SPEED;
+				this.dashing = false;
+				this.dashCooldown = 15;
+				this.frameRate = 7.5;
+			}
 			switch(this.state) {
 				case PLAYER_STATE_NORMAL:
 					if(this.onGround) {
@@ -2387,21 +2428,15 @@ var SPRITE_OFFSET =
 						var deltaVelocity = this.maxSpeed - velocity.x;
 						var impulse = new b2.Vec2(this.body.GetMass() * deltaVelocity, 0);
 						this.body.ApplyLinearImpulse(impulse, this.body.GetWorldCenter(), true);
-						if(gInput.right && !this.dashing && this.cooldown < 0) {
+						if(gInput.right && !this.dashing && this.dashCooldown < 0) {
 							this.dashing = true;
 							this.maxSpeed = PLAYER_DASH_SPEED;
-							this.cooldown = PLAYER_DASH_DURATION;
+							this.dashCooldown = PLAYER_DASH_DURATION;
 							this.frameRate = this.maxSpeed / PLAYER_RUN_SPEED * 7.5;
 						}
-						if(this.dashing && this.cooldown < 0) {
-							this.maxSpeed = PLAYER_RUN_SPEED;
-							this.dashing = false;
-							this.cooldown = 5;
-							this.frameRate = 7.5;
-						}
-						if(gInput.up && !this.sliding && this.latency < 0) {
+						if(gInput.up && !this.sliding && this.jumpCooldown < 0) {
 							this.onGround = false;
-							this.latency = 5;
+							this.jumpCooldown = 5;
 							var deltaVelocity = velocity.y - 6.25;
 							var impulse = new b2.Vec2(0, this.body.GetMass() * deltaVelocity);
 							this.body.ApplyLinearImpulse(impulse, this.body.GetWorldCenter(), true);
@@ -2410,12 +2445,12 @@ var SPRITE_OFFSET =
 							CreateJumpingFixture(this);
 							this.state = PLAYER_STATE_JUMPING;
 						}
-						if(gInput.down && !this.sliding && this.cooldown < 0) {
+						if(gInput.down && !this.sliding && this.slideCooldown < 0) {
 							CreateSlideAnimation(this);
 							DestroyCurrentFixtures(this);
 							CreateSlidingFixture(this);
 							this.sliding = true;
-							this.cooldown = PLAYER_SLIDE_DURATION;
+							this.slideCooldown = PLAYER_SLIDE_DURATION;
 							this.state = PLAYER_STATE_SLIDING;
 						}
 					} else {
@@ -2428,7 +2463,7 @@ var SPRITE_OFFSET =
 				case PLAYER_STATE_JUMPING:
 					this.animation = "inair";
 					this.frameRate = 10;
-					if(this.onGround && this.latency < 0) {
+					if(this.onGround && this.jumpCooldown < 0) {
 						CreateRunnerAnimation(this);
 						DestroyCurrentFixtures(this);
 						CreateRunningFixture(this);
@@ -2457,12 +2492,12 @@ var SPRITE_OFFSET =
 					var deltaVelocity = this.maxSpeed - velocity.x;
 					var impulse = new b2.Vec2(this.body.GetMass() * deltaVelocity, 0);
 					this.body.ApplyLinearImpulse(impulse, this.body.GetWorldCenter(), true);
-					if(this.sliding && (!gInput.down || this.cooldown < 0)) {
+					if(this.sliding && (!gInput.down || this.slideCooldown < 0)) {
 						CreateRunnerAnimation(this);
 						DestroyCurrentFixtures(this);
 						CreateRunningFixture(this);
 						this.sliding = false;
-						this.cooldown = 15;
+						this.slideCooldown = 15;
 						this.state = PLAYER_STATE_RUNNER;
 					}
 					break;
@@ -2649,7 +2684,7 @@ var SPRITE_OFFSET =
 	function CreateFootFixture(sprite) {
 		var fixDef = CreateFixtureDef(0, 0, 0);
 		fixDef.shape = new b2.PolygonShape();
-		fixDef.shape.SetAsBox(sprite.width / 2.1 / PHYSICS_SCALE, 15 / PHYSICS_SCALE, new b2.Vec2(0, sprite.height / 2 / PHYSICS_SCALE), 0);
+		fixDef.shape.SetAsBox(sprite.width / 2.05 / PHYSICS_SCALE, 15 / PHYSICS_SCALE, new b2.Vec2(0, sprite.height / 2 / PHYSICS_SCALE), 0);
 		sprite.foot = sprite.body.CreateFixture(fixDef);
 		sprite.foot.SetSensor(true);
 		sprite.foot.numContacts = 0;
