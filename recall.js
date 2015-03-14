@@ -243,6 +243,7 @@ var SPRITE_OFFSET =
 	new Title();
 	new Credits();
 	new Story();
+	new Pause();
 	
 	game.init = function() {
 		
@@ -529,6 +530,73 @@ var SPRITE_OFFSET =
 	  		this.constructed = false;
 	  	};
 	}
+	
+	
+	function Pause() {
+		if (arguments.callee._singletonInstance)
+	    return arguments.callee._singletonInstance;
+	  	arguments.callee._singletonInstance = this;
+	  	this.constructed = false;
+	  	this.floor = [];
+  		this.interactive = [];
+  		this.scenery = [];
+	   
+	  	this.ConstructBase = function() {
+	  		this.floor.push(CreateFloorElement(0, VIEWPORT_HEIGHT / 2, 100, VIEWPORT_HEIGHT, "", 0, false));
+	  		this.floor.push(CreateFloorElement(VIEWPORT_WIDTH + 50, VIEWPORT_HEIGHT / 2, 100, VIEWPORT_HEIGHT, "", 0, false));
+	  		this.floor.push(CreateFloorElement(VIEWPORT_WIDTH / 2, 650, VIEWPORT_WIDTH, 100, "", 0, false));
+	  	
+	    	this.scenery.push(CreateWorldElement(600, 300, 1350, 600, SPRITES["BLUE"], false, false, 100));
+       	   	
+	  		this.width = VIEWPORT_WIDTH;
+	  	};
+	  	
+	  	this.ConstructStory = function() {
+	  		if(this.constructed) return;
+	  		this.ConstructBase();
+	    	
+	    	var background = CreateText(600,50, 40, "PAUSED", "cyan");
+	    	this.scenery.push(background);
+	    	this.scenery.push(CreateText(475,360, 32, "Resume", "cyan"));
+	    	this.scenery.push(CreateText(875,360, 32, "Quit", "cyan"));
+	    	
+			var numeroDos = CreateDoorElement(475, 480, SPRITE_W["MIDDLE_DOOR"], SPRITE_H["MIDDLE_DOOR"], SPRITES["MIDDLE_DOOR"], 2, false);
+			var numeroTres = CreateDoorElement(875, 480, SPRITE_W["MIDDLE_DOOR"], SPRITE_H["MIDDLE_DOOR"], SPRITES["MIDDLE_DOOR"], 2, false);
+			this.interactive.push(numeroDos);
+			this.interactive.push(numeroTres);
+			
+			numeroDos.action = function()
+			{
+				States.current().level.Destruct();
+				States.current().level = Title();
+				States.current().level.ConstructStory();
+			};
+			
+			numeroTres.action = function()
+			{
+				States.current().level.Destruct();
+				States.current().level = Title();
+				States.current().level.ConstructStory();
+			};
+	    	
+	    	player.body.SetTransform(new b2.Vec2(50/PHYSICS_SCALE,450/PHYSICS_SCALE), 0);
+	  		this.constructed = true;
+	  		player.ChangeState(PLAYER_STATE_NORMAL);
+	  	};
+	  	
+	  	this.Destruct = function() {
+	  		if(!this.constructed) return;
+	  		for(var i = 0; i < this.floor.length; i++) this.floor[i].Destroy();
+	  		for(var i = 0; i < this.interactive.length; i++) this.interactive[i].Destroy();
+	  		for(var i = 0; i < this.scenery.length; i++) this.scenery[i].Destroy();
+	  		this.floor = [];
+	  		this.interactive = [];
+	  		this.scenery = [];
+	  		this.width = 0;
+	  		this.constructed = false;
+	  	};
+	}
+	
 	
 	// Story One - Contains Construct and ConstructStory
 	function Lab() {
@@ -2393,6 +2461,13 @@ var SPRITE_OFFSET =
 							this.sliding = true;
 							this.cooldown = PLAYER_SLIDE_DURATION;
 							this.state = PLAYER_STATE_SLIDING;
+						}
+						if(gInput.esc) //TODO
+						{
+							console.log("hi");
+							States.current().level.Destruct();
+							States.current().level = Pause();
+							States.current().level.ConstructStory();
 						}
 					} else {
 						CreateJumpAnimation(this);
