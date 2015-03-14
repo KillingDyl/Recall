@@ -245,6 +245,19 @@ var SPRITE_OFFSET =
 	new Story();
 	new Pause();
 	
+	/* new Lab(); // actual level order
+	new LevelOne();
+	new Office();
+	new LevelTwo();
+	new LabScene();
+	new LevelTwo();
+		new LevelFour();
+	new Hallway();
+	new LevelThree();
+	new Storage();
+	new LevelFive();
+	*/
+	
 	game.init = function() {
 		
 		var listener = new b2.ContactListener();
@@ -656,9 +669,9 @@ var SPRITE_OFFSET =
 	        sensor.Enter = function(){
    	    		States.push(chat);
    	    		this.dialogue = [];
-				var text_image = CreateWorldElement(795,275, 216.25,281.25,SPRITES["RIGHT_TEXT"], false, false, 1);
-				var text = CreateText(795,250, 16, "Remy, over here.");
-				var text2 = CreateText(795,285,14, "E to intEract.");
+				var text_image = CreateWorldElement(1045,275, 182,92,SPRITES["RIGHT_TEXT"], false, false, 1);
+				var text = CreateText(1045,250, 16, "Remy, over here.");
+				var text2 = CreateText(1045,285,14, "E to intEract.");
 				this.dialogue.push(text);
 				this.dialogue.push(text2);
 				chat.world.update = function(d) {
@@ -729,8 +742,8 @@ var SPRITE_OFFSET =
 	  		var middle_door = CreateDoorElement(VIEWPORT_WIDTH / 2 , 400, SPRITE_W["MIDDLE_DOOR"], SPRITE_H["MIDDLE_DOOR"], "", 2, false);
 			middle_door.action = function() {
 				States.current().level.Destruct();
-				States.current().level = Lab(); 
-				States.current().level.Construct(new b2.Vec2(639 / PHYSICS_SCALE, 500 / PHYSICS_SCALE));
+				States.current().level = LevelTwo(); 
+				States.current().level.Construct();
 			};
 			this.interactive.push(middle_door);
 			player.body.SetTransform(new b2.Vec2(400/PHYSICS_SCALE,505/PHYSICS_SCALE), 0);
@@ -755,9 +768,9 @@ var SPRITE_OFFSET =
    	   			world.dialogue[5] = "But all the time we spent \non it! What will I tell \nthe team?!";
    	   		 	world.dialogue[6] = "I'm sorry Remy, it was \na corporate decision.\nIt's out of my hands.";
    	    	
-				var text_image = CreateWorldElement(350,275, 240, 300,SPRITES["LEFT_TEXT"], false, false, 1);
+				var text_image = CreateWorldElement(400,275, 240, 300,SPRITES["LEFT_TEXT"], false, false, 1);
 
-				var text = CreateText(350,268, 16, world.dialogue[0]);
+				var text = CreateText(400,268, 16, world.dialogue[0]);
 					text.center = true;
 					
 				var count= 0;
@@ -779,14 +792,14 @@ var SPRITE_OFFSET =
 					}
 					if(count == 1 || count == 3 || count == 6){
 						text_image.image = Textures.load(SPRITES["RIGHT_TEXT"]);
-						text_image.x = 445;
-						text.x = 445;
+						text_image.x = 495;
+						text.x = 495;
 						
 					}
 					if(count == 2 || count == 5){
 						text_image.image = Textures.load(SPRITES["LEFT_TEXT"]);
-						text_image.x = 350;
-						text.x = 350;
+						text_image.x = 400;
+						text.x = 400;
 			
 					}
 				};
@@ -856,10 +869,10 @@ var SPRITE_OFFSET =
    	    		world.dialogue[5] = "#o !h@t, ^t'$ \n*&l g(@b)%e r#s)\n(rc# @8w? \nU0&les7$?"; // female
    	    		world.dialogue[6] = "What's \ngoing on...?"; //Remy
    	    		
-				var text_image = CreateWorldElement(415,250, 220,265,SPRITES["LEFT_TEXT"], false, false, 1);
+				var text_image = CreateWorldElement(665,250, 220,265,SPRITES["LEFT_TEXT"], false, false, 1);
 				
 				
-				var text = CreateText(415,250, 16, world.dialogue[0]);
+				var text = CreateText(665,250, 16, world.dialogue[0]);
 					text.center = true;
 					
 				var count= 0;
@@ -883,24 +896,24 @@ var SPRITE_OFFSET =
 				
 				if(count == 1 || count == 2 || count == 5){ // girl
 						text_image.image = Textures.load(SPRITES["RIGHT_TEXT"]);
-						text_image.x = 150;
-						text.x = 150;
+						text_image.x = 400;
+						text.x = 400;
 						text_image.y = 280;
 						text.y = 280;
 						
 					}
 				else if(count == 3){ // guy
 						text_image.image = Textures.load(SPRITES["LEFT_TEXT"]);
-						text_image.x = 550;
-						text.x = 550;
+						text_image.x = 800;
+						text.x = 800;
 						text_image.y = 300;
 						text.y = 300;
 					}
 				else
 					{
 						text_image.image = Textures.load(SPRITES["LEFT_TEXT"]);
-						text_image.x = 415;
-						text.x = 415;
+						text_image.x = 665;
+						text.x = 665;
 						text_image.y = 250;
 						text.y = 250;
 					}
@@ -961,8 +974,8 @@ var SPRITE_OFFSET =
 			var right_door = CreateDoorElement(1214, 369, SPRITE_W["RIGHT_DOOR"], SPRITE_H["RIGHT_DOOR"], SPRITES["RIGHT_DOOR"], 2, false);
 			right_door.action = function() {
 				States.current().level.Destruct();
-				States.current().level = Lab();
-				States.current().level.Construct(new b2.Vec2(100 / PHYSICS_SCALE, 500 / PHYSICS_SCALE));
+				States.current().level = LevelThree();
+				States.current().level.Construct();
 			};
        		this.interactive.push(right_door);
        		
@@ -987,10 +1000,10 @@ var SPRITE_OFFSET =
    	    		world.dialogue[3] = "You just...\nbut I'm not..."; // Remy 
    	    		world.dialogue[4] = "No. Nothings \nwrong. Sorry."; //Remy
    	    		
-				var text_image = CreateWorldElement(565,240, 220,265,SPRITES["RIGHT_TEXT"], false, false, 1);
+				var text_image = CreateWorldElement(900,240, 220,265,SPRITES["RIGHT_TEXT"], false, false, 1);
 				
 				
-				var text = CreateText(565,240, 16, world.dialogue[0]);
+				var text = CreateText(900,240, 16, world.dialogue[0]);
 					text.center = true;
 					
 				var count= 0;
@@ -1015,8 +1028,8 @@ var SPRITE_OFFSET =
 				
 				if(count == 1 || count == 3 || count == 4){ // Remy
 						text_image.image = Textures.load(SPRITES["RIGHT_TEXT"]);
-						text_image.x = 340;
-						text.x = 340;
+						text_image.x = 675;
+						text.x = 675;
 						text_image.y = 260;
 						text.y = 260;
 						
@@ -1024,8 +1037,8 @@ var SPRITE_OFFSET =
 				else
 					{
 						text_image.image = Textures.load(SPRITES["LEFT_TEXT"]);
-						text_image.x = 565;
-						text.x = 565;
+						text_image.x = 900;
+						text.x = 900;
 						text_image.y = 240;
 						text.y = 240;
 					}
@@ -1390,8 +1403,8 @@ var SPRITE_OFFSET =
 	        this.interactive.push(sensor);
 	        sensor.Enter = function(){
    	    		States.current().level.Destruct();
-				States.current().level = Hallway();
-				States.current().level.ConstructStory();
+				States.current().level = LabScene();
+				States.current().level.ConstructStory(new b2.Vec2(639 / PHYSICS_SCALE, 500 / PHYSICS_SCALE));
        	    };
        	    
        	    this.constructed = true;
@@ -1826,8 +1839,8 @@ var SPRITE_OFFSET =
 	        this.interactive.push(sensor);
 	        sensor.Enter = function(){
    	    		States.current().level.Destruct();
-				States.current().level = LevelThree();
-				States.current().level.Construct();
+				States.current().level = Hallway();
+				States.current().level.ConstructStory(new b2.Vec2(639 / PHYSICS_SCALE, 500 / PHYSICS_SCALE));
        	    };
 			
 			///////work before this
