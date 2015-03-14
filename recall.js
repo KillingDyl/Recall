@@ -285,13 +285,13 @@ var SPRITE_OFFSET =
 		};
 		music = Sounds.load(AUDIO["RUNNER1"]);
 		//Comment these out to CHEAT.... Cheater
-		this.level = Title();
-		this.level.ConstructStory();
+		//this.level = Title();
+		//this.level.ConstructStory();
 		
 		//CHEAT SHEET
 		//SKIP EACH RUNNER LEVEL
 		//this.level = Office(); this.level.ConstructStory(); // Skips first runner
-		//this.level = LabScene(); this.level.Construct(); // Skips the second runner
+		this.level = LabScene(); this.level.Construct(); // Skips the second runner
 		//this.level = Hallway(); this.level.ConstructStory(); // Skips the third runner and fourth runner
 		//this.level = Hallway(); this.level.Construct(new b2.Vec2(1, 5)); // Skips the fifth runner
 	};
@@ -1463,7 +1463,7 @@ var SPRITE_OFFSET =
 			if(this.constructed) return;
 			this.ConstructBase();
 			
-			var sensor = CreateRunnerElement(16100, 250, SPRITE_W["CAGE"], SPRITE_H["CAGE"], SPRITES["CAGE"], true, true, 400);
+			var sensor = CreateRunnerElement(this.obstacle[19].x, this.obstacle[19].y - SPRITE_W["ROOF_DOOR"], SPRITE_W["CAGE"], SPRITE_H["CAGE"], SPRITES["CAGE"], true, true, 400);
 			sensor.cycles = 0;
 	        this.interactive.push(sensor);
 	        sensor.Enter = function() {
