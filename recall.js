@@ -266,11 +266,15 @@ var SPRITE_OFFSET =
 		println("World Initialized");
 		
 		player = CreatePlayer(0, 0);//TODO
-		indicator = CreateIndicator(0, -200);
-		this.level = Title();
-		this.level.ConstructStory();
-		//this.level = LabScene();
-		//this.level.Construct();
+		indicator = CreateIndicator(0, -250);
+		indicator.update = function(d) {
+			this.x = player.x;
+			this.y = player.y;
+		};
+		//this.level = Title();
+		//this.level.ConstructStory();
+		this.level = LabScene();
+		this.level.Construct();
 	};
 	
 	game.world.update = function(d) {
@@ -411,20 +415,6 @@ var SPRITE_OFFSET =
 	  		var numeroUno = CreateDoorElement(1125, 480, SPRITE_W["MIDDLE_DOOR"], SPRITE_H["MIDDLE_DOOR"], SPRITES["MIDDLE_DOOR"], 2, false);
 	    	this.interactive.push(numeroUno);
 	    	
-	    	/*var credits = CreateText(600, 275, 40, "Credits: \n\n" +
-	    	"Ben Filstrup - Audio files and coded story \n\n" +
-	    	"Sam Filstrup - Created all game art \n\n" +
-	    	"Sterling Salvaterra - Coded parts of engine\n              and story \n\n" +
-	    	"Rahil Shah - Implemented runner levels \n          and created menu \n\n" +
-	    	"Dylan Tran - Engine maker and debugger");*/
-	    	
-	    	/*var credits = CreateText(600, 275, 24, "Credits: \n\n" +
-	    	"Lead Designers\n" + "Sterling Salvaterra\nBen Filstrup\n\n" +
-	    	"Engines Engineers\n" + "Dylan Tran\nSterling Salvaterra\n\n" +
-	    	"Lead Artist\n" + "Sam Filstrup\n\n" +
-	    	"Lead Programmers\n" + "Dylan Tran\nRahil Shah\n\n" +
-	    	"Writers\n" + "Ben Filstrup\nSterling Salvaterra\n\n" +
-	    	"Audio Engineer\n" + "Ben Filstrup");*/
 	    	this.scenery.push(CreateText(VIEWPORT_WIDTH / 2, 25, 40, "Credits", "cyan"));
 	    	this.scenery.push(CreateText(VIEWPORT_WIDTH / 3, 100, 30, "Lead Designers", "cyan"));
 	    	this.scenery.push(CreateText(VIEWPORT_WIDTH / 3, 130, 22, "Sterling Salvaterra", "cyan"));
@@ -587,22 +577,27 @@ var SPRITE_OFFSET =
 	  		var sensor = CreateWorldElement(850, 370, 10, 500,"", true, true, 400);
 	        sensor.Enter = function(){
    	    		States.push(chat);
-   	    		this.dialogue = [];
-				var text_image = CreateWorldElement(795,275, 216.25,281.25,SPRITES["RIGHT_TEXT"], false, false, 1);
-				var text = CreateText(795,250, 16, "Remy, over here.");
-				var text2 = CreateText(795,285,14, "E to intEract.");
-				this.dialogue.push(text);
-				this.dialogue.push(text2);
+				var text_image = CreateWorldElement(995,275, 200,125,SPRITES["RIGHT_TEXT"], false, false, 1);
+				var text = CreateText(995,250, 16, "Remy, over here.");
+				var text2 = CreateText(995,285,14, "E to intEract.");
 				chat.world.update = function(d) {
 					if(gInput.E) {
-						for(var child in this.children) this.removeChild(child);
+						this.removeChild(text);
+						this.removeChild(text2);
 						States.pop();
 					}
 				};
        	    };
        	    this.interactive.push(sensor);
 	    	
-	    	this.scenery.push(CreateText(400, 240, 32, "Use arrow keys to move"));
+	    	var tutorial = CreateText(400, 240, 32, "to move");
+	    	var leftkey = CreateIndicator(-SPRITE_W["KEY"] * 2 - 50, 0);
+	    	var rightkey = CreateIndicator(-SPRITE_W["KEY"] - 50, 0);
+	    	ShowIndicator(tutorial, leftkey, SPRITES["LEFT"]);
+	    	ShowIndicator(tutorial, rightkey, SPRITES["RIGHT"]);
+	    	this.scenery.push(tutorial);
+	    	this.scenery.push(leftkey);
+	    	this.scenery.push(rightkey);
 	    	this.scenery.push(CreateDoorElement(52, 369, SPRITE_W["LEFT_DOOR"], SPRITE_H["LEFT_DOOR"], SPRITES["LEFT_DOOR"], 2, true));
 			this.interactive.push(CreateDoorElement(639 , 360, SPRITE_W["MIDDLE_DOOR"], SPRITE_H["MIDDLE_DOOR"], SPRITES["MIDDLE_DOOR"], 2, true));
 			var right_door = CreateDoorElement(1214, 369, SPRITE_W["RIGHT_DOOR"], SPRITE_H["RIGHT_DOOR"], SPRITES["RIGHT_DOOR"], 2, false);
@@ -687,9 +682,9 @@ var SPRITE_OFFSET =
    	   			world.dialogue[5] = "But all the time we spent \non it! What will I tell \nthe team?!";
    	   		 	world.dialogue[6] = "I'm sorry Remy, it was \na corporate decision.\nIt's out of my hands.";
    	    	
-				var text_image = CreateWorldElement(350,275, 240, 300,SPRITES["LEFT_TEXT"], false, false, 1);
+				var text_image = CreateWorldElement(500,275, 200, 125,SPRITES["LEFT_TEXT"], false, false, 1);
 
-				var text = CreateText(350,268, 16, world.dialogue[0]);
+				var text = CreateText(500,268, 16, world.dialogue[0]);
 					text.center = true;
 					
 				var count= 0;
@@ -717,8 +712,8 @@ var SPRITE_OFFSET =
 					}
 					if(count == 2 || count == 5){
 						text_image.image = Textures.load(SPRITES["LEFT_TEXT"]);
-						text_image.x = 350;
-						text.x = 350;
+						text_image.x = 500;
+						text.x = 500;
 			
 					}
 				};
@@ -1079,7 +1074,11 @@ var SPRITE_OFFSET =
 			y = 450;
 			makeBuilding.call(this, x, y, 10);
 			x = fillBuilding.call(this, x, y, 10);
-			this.scenery.push(CreateText(x - 600, 100, 32, "Press up to jump"));
+			var jumptutorial = CreateRunnerElement(x - 600, 200, 1000, 400, "", true, true, 100);
+			jumptutorial.Enter = function() {
+	    		ShowIndicator(player, indicator, SPRITES["UP"]);
+			};
+			this.interactive.push(jumptutorial);
 			
 			//2
 			x += 500;
@@ -1098,7 +1097,11 @@ var SPRITE_OFFSET =
 			x = fillBuilding.call(this, x, y, 15);
 			//floor 4 obstacles
 			this.obstacle.push(CreateSlideElement(x - 1000, y - SPRITE_OFFSET["ROOF_CONTAINER"], -5));
-			this.scenery.push(CreateText(x - 2000, 100, 32, "Press down to slide"));
+			var slidetutorial = CreateRunnerElement(x - 2000, 200, 1000, 400, "", true, true, 100);
+			slidetutorial.Enter = function() {
+	    		ShowIndicator(player, indicator, SPRITES["DOWN"]);
+			};
+			this.interactive.push(slidetutorial);
 			
 			//5
 			x += 500;
@@ -1114,7 +1117,11 @@ var SPRITE_OFFSET =
 			//floor 6 obstacles
 			this.obstacle.push(CreateDashElement(x - 600, y-SPRITE_OFFSET["ROOF_CRATE"], -10));
 			this.obstacle.push(CreateDashElement(x - 600, y-SPRITE_OFFSET["ROOF_CRATE"] - SPRITE_H["ROOF_CRATE"], -10));
-			this.scenery.push(CreateText(x - 1400, 100, 32, "Press right to dash"));
+			var dashtutorial = CreateRunnerElement(x - 900, 200, 600, 400, "", true, true, 100);
+			dashtutorial.Enter = function() {
+	    		ShowIndicator(player, indicator, SPRITES["RIGHT"]);
+			};
+			this.interactive.push(dashtutorial);
 			
 			//7
 			x += 500;
@@ -1134,7 +1141,7 @@ var SPRITE_OFFSET =
 			this.obstacle.push(CreateRunnerElement(x - 600, y-SPRITE_OFFSET["ROOF_CHIMNEY"], SPRITE_W["ROOF_CHIMNEY"], SPRITE_H["ROOF_CHIMNEY"], SPRITES["ROOF_CHIMNEY"], true, false, 0));
 			
 			//9
-			x += 700;
+			x += 600;
 			y = 450;
 			makeBuilding.call(this, x, y, 10);
 			x = fillBuilding.call(this, x, y, 10);
@@ -2325,6 +2332,7 @@ var SPRITE_OFFSET =
 				pressed = true;
 				if(this.interact.action) this.interact.action();
 			}
+			if(!this.near) HideIndicator(indicator);
 			if(!gInput.E && pressed) pressed = false;
 			// Movement code
 			var velocity = this.body.GetLinearVelocity();
@@ -2468,6 +2476,9 @@ var SPRITE_OFFSET =
 		indicator.frameRate = 2.5;
 		indicator.frameCount = 2;
 		indicator.alpha = 0;
+		indicator.Destroy = function() {
+			States.current().world.removeChild(this);
+		};
 		return indicator;
 	}
 	
@@ -2876,7 +2887,7 @@ var SPRITE_OFFSET =
 			};
 			door.Enter = function() {
 				this.frameRate = 30;
-				ShowIndicator(this, indicator, SPRITES["E"]);
+				ShowIndicator(player, indicator, SPRITES["E"]);
 			};
 			door.Exit = function() {
 				this.frameRate = -30;
@@ -3034,13 +3045,4 @@ var SPRITE_OFFSET =
 		this.fill.push(CreateFloorElement(x - SPRITE_OFFSET["WALL_FILL_W"], y + SPRITE_OFFSET["WALL_FILL_H"], SPRITE_W["WALL_SIDE_FILL"], SPRITE_H["WALL_SIDE_FILL"], SPRITES["RIGHT_WALL_FILL"], 0, true));
 		return x;
 	}
-	
-	function nextTrack(audio1, audio2)
-	{
-		/*audio1.pause();
-		audio2.play();*/
-		
-	}
-	
-	
 }());
