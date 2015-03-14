@@ -300,7 +300,13 @@ var SPRITE_OFFSET =
 			this.x += deltaX / accel;
 			this.y += deltaY / accel;
 		}
-				
+		
+		if(gInput.esc) //TODO
+		{
+			States.push(pause);
+			return;
+		}
+		
 		this.updateChildren(d);
 	};
 	
@@ -310,6 +316,39 @@ var SPRITE_OFFSET =
 			this.alpha = 0.5;
 		}
 		Sprite.prototype.draw.call(this, ctx);
+	};
+	
+	pause.init = function() 
+	{
+		var Stop = new TextBox();
+		Stop.x = 450;
+		Stop.y =50;
+		Stop.fontSize = 60;
+		Stop.text = "PAUSED";
+		Stop.color = "cyan";
+		this.world.addChild(Stop);
+		
+		
+		pop = function() {States.pop();};
+		var Resume = new TextButton("Resume", pop);
+		Resume.x = 525;
+		Resume.y = 150;
+		
+		restart = function() {States.push(this.current.level());};
+		var Restart = new TextButton("Restart", restart);
+		Restart.x = 525;
+		Restart.y = 250;
+		
+		quit = function() {States.pop();};
+		var Quit = new TextButton("Quit", quit);
+		Quit.x = 525;
+		Quit.y = 350;
+		this.gui.addChild(Resume);
+		this.gui.addChild(Restart);
+		this.gui.addChild(Quit);
+	};
+	
+	pause.updateState = function(d) {	
 	};
 	
 	States.push(loadingscreen);
