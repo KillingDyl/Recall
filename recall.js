@@ -38,7 +38,11 @@ var PLAYER_DASH_DURATION = 20;
 var PLAYER_SLIDE_DURATION = 120;
 
 var AUDIO = {
-	
+	TITLE: "songs/title_loop.mp3",
+	RUNNER1: "songs/runner1.mp3",
+	RUNNER2: "songs/runner2.mp3",
+	RUNNER3: "songs/runner3.mp3",
+	STORY: "songs/story_loop.mp3",
 };
 
 var SPRITES = {
@@ -108,7 +112,7 @@ var SPRITE_W =
 	LAB_DESK: 1768 / 4,
 	OFFICE: 3166 / 4,
 	MACHINE_ON: 1233 / 5,
-	MACHINE_OFF: 743 / 5,
+	MACHINE_OFF: 743 / 12,
 	HALLWAY: 5100 / 4,
 	STORAGE: 3166 / 4,
 	STORAGE_DESK: 3166 / 4,
@@ -137,7 +141,7 @@ var SPRITE_H =
 	LAB_DESK: 856 / 4,
 	OFFICE: 1680 / 4,
 	MACHINE_ON: 1383 / 5,
-	MACHINE_OFF: 1275 / 5,
+	MACHINE_OFF: 1275 / 12,
 	HALLWAY: 1680 / 4,
 	STORAGE: 1680 / 4,
 	STORAGE_DESK: 1680 / 4,
@@ -171,6 +175,7 @@ var SPRITE_OFFSET =
 	var physics;
 	var player;
 	var indicator;
+	var music;
 	
 	gInput.addBool(KEY_LEFT, "left");
 	gInput.addBool(KEY_UP, "up");
@@ -181,9 +186,9 @@ var SPRITE_OFFSET =
 	
 	initGame("recall");
 	
-	var pause = new State();
+	/*var pause = new State();
 	pause.alwaysDraw = false;
-	pause.alwaysUpdate = false;
+	pause.alwaysUpdate = false;*/
 	
 	var game = new State();
 	game.alwaysDraw = true;
@@ -278,10 +283,17 @@ var SPRITE_OFFSET =
 			this.x = player.x;
 			this.y = player.y;
 		};
-		/*this.level = Title();
-		this.level.ConstructStory();*/
-		this.level = LevelFive();
-		this.level.Construct();
+		music = Sounds.load(AUDIO["RUNNER1"]);
+		//Comment these out to CHEAT.... Cheater
+		this.level = Title();
+		this.level.ConstructStory();
+		
+		//CHEAT SHEET
+		//SKIP EACH RUNNER LEVEL
+		//this.level = Office(); this.level.ConstructStory(); // Skips first runner
+		//this.level = LabScene(); this.level.Construct(); // Skips the second runner
+		//this.level = Hallway(); this.level.ConstructStory(); // Skips the third runner and fourth runner
+		//this.level = Hallway(); this.level.Construct(new b2.Vec2(1, 5)); // Skips the fifth runner
 	};
 	
 	game.world.update = function(d) {
@@ -300,13 +312,6 @@ var SPRITE_OFFSET =
 			this.x += deltaX / accel;
 			this.y += deltaY / accel;
 		}
-		
-		if(gInput.esc) //TODO
-		{
-			States.push(pause);
-			return;
-		}
-		
 		this.updateChildren(d);
 	};
 	
@@ -318,7 +323,7 @@ var SPRITE_OFFSET =
 		Sprite.prototype.draw.call(this, ctx);
 	};
 	
-	pause.init = function() 
+	/*pause.init = function() 
 	{
 		var Stop = new TextBox();
 		Stop.x = 450;
@@ -346,10 +351,7 @@ var SPRITE_OFFSET =
 		this.gui.addChild(Resume);
 		this.gui.addChild(Restart);
 		this.gui.addChild(Quit);
-	};
-	
-	pause.updateState = function(d) {	
-	};
+	};*/
 	
 	States.push(loadingscreen);
 	
@@ -419,6 +421,7 @@ var SPRITE_OFFSET =
 	    	player.body.SetTransform(new b2.Vec2(50/PHYSICS_SCALE,450/PHYSICS_SCALE), 0);
 	  		this.constructed = true;
 	  		player.ChangeState(PLAYER_STATE_NORMAL);
+	  		ChangeTrack(AUDIO["TITLE"]);
 	  	};
 	  	
 	  	this.Destruct = function() {
@@ -495,6 +498,7 @@ var SPRITE_OFFSET =
 
 	  		this.constructed = true;
 	  		player.ChangeState(PLAYER_STATE_NORMAL);
+	  		ChangeTrack(AUDIO["TITLE"]);
 	  	};
 	  	
 	  	this.Destruct = function() {
@@ -551,6 +555,7 @@ var SPRITE_OFFSET =
 
 	  		this.constructed = true;
 	  		player.ChangeState(PLAYER_STATE_NORMAL);
+	  		ChangeTrack(AUDIO["TITLE"]);
 	  	};
 	  	
 	  	this.Destruct = function() { 
@@ -615,6 +620,7 @@ var SPRITE_OFFSET =
        		player.body.SetTransform(spawn, 0);
 	  		this.constructed = true;
 	  		player.ChangeState(PLAYER_STATE_NORMAL);
+	  		ChangeTrack(AUDIO["STORY"]);
 	  	};
 	  	
 	  	this.ConstructStory = function() {
@@ -661,6 +667,7 @@ var SPRITE_OFFSET =
 	    	player.body.SetTransform(new b2.Vec2(450/PHYSICS_SCALE,405/PHYSICS_SCALE), 0);
 	  		this.constructed = true;
 	  		player.ChangeState(PLAYER_STATE_NORMAL);
+	  		ChangeTrack(AUDIO["STORY"]);
 	  	};
 	  	
 	  	this.Destruct = function() {
@@ -702,16 +709,27 @@ var SPRITE_OFFSET =
 	  		if(this.constructed) return;
 	  		this.ConstructBase();
 	  		
-	  		var machine = CreateWorldElement(VIEWPORT_WIDTH / 2 - 250, 400, SPRITE_W["MACHINE_OFF"], SPRITE_H["MACHINE_OFF"], SPRITES["MACHINE_OFF"], true, true, 2);
+	  		var machine = CreateWorldElement(VIEWPORT_WIDTH / 2 - 250, 500, SPRITE_W["MACHINE_OFF"], SPRITE_H["MACHINE_OFF"], SPRITES["MACHINE_OFF"], true, true, -10);
+	  		machine.Enter = function() {
+	  			ShowIndicator(player, indicator, SPRITES["E"]);
+	  		};
 	  		machine.action = function() {
 	  			States.push(chat);
 	  			var text_image = CreateWorldElement(player.x + 100,275, 200, 100,SPRITES["LEFT_TEXT"], false, false, 1);
-
-				var text = CreateText(player.x + 100,268, 16, "It doesn't appear\nto be working...");
+				world.dialogue = [];
+				world.dialogue[0] = "It doesn't appear\nto be working...";
+				world.dialogue[1] = "This thing tempers\nthe memories of mice.";
+				var text = CreateText(player.x + 100,268, 16, world.dialogue[0]);
 				var pressed = true;
+				var count = 0;
 				chat.world.update = function(d) {
+					text.text = world.dialogue[count];
 					if(!gInput.E && pressed) pressed = false;
 					if(gInput.E && !pressed){
+						pressed = true;
+						count++;
+					}
+					if(count == world.dialogue.length) {
 						this.removeChild(text_image);
 						this.removeChild(text);
 						States.pop();
@@ -732,6 +750,7 @@ var SPRITE_OFFSET =
 			player.body.SetTransform(new b2.Vec2(600/PHYSICS_SCALE,505/PHYSICS_SCALE), 0);
 	  	    this.constructed = true;
 	  	    player.ChangeState(PLAYER_STATE_NORMAL);
+	  		ChangeTrack(AUDIO["STORY"]);
 	  	};
 	  	
 	  	this.ConstructStory = function() {
@@ -795,6 +814,7 @@ var SPRITE_OFFSET =
        	    player.body.SetTransform(new b2.Vec2(400/PHYSICS_SCALE,505/PHYSICS_SCALE), 0);
 	  	    this.constructed = true;
 	  	    player.ChangeState(PLAYER_STATE_NORMAL);
+	  		ChangeTrack(AUDIO["STORY"]);
 	  	};
 	  	
 	  	this.Destruct = function() {
@@ -913,6 +933,7 @@ var SPRITE_OFFSET =
 	  	    this.constructed = true;
 	  	    player.body.SetTransform(new b2.Vec2(VIEWPORT_WIDTH / 2 /PHYSICS_SCALE,475/PHYSICS_SCALE), 0);
 	  	    player.ChangeState(PLAYER_STATE_NORMAL);
+	  		ChangeTrack(AUDIO["STORY"]);
 	  	};	
 	
 		this.Destruct = function() {
@@ -971,6 +992,7 @@ var SPRITE_OFFSET =
 	  		player.body.SetTransform(spawn, 0);
 	  	    this.constructed = true;
 	  	    player.ChangeState(PLAYER_STATE_NORMAL);
+	  		ChangeTrack(AUDIO["STORY"]);
   		};
 	   
 	  	this.ConstructStory = function() {
@@ -1047,6 +1069,7 @@ var SPRITE_OFFSET =
 			player.body.SetTransform(new b2.Vec2(200/PHYSICS_SCALE,400/PHYSICS_SCALE), 0);
 	  	    this.constructed = true;
 	  	    player.ChangeState(PLAYER_STATE_NORMAL);
+	  		ChangeTrack(AUDIO["STORY"]);
 	  	};
 	  	
 	  	this.Destruct = function() {
@@ -1089,10 +1112,28 @@ var SPRITE_OFFSET =
 	  		this.ConstructBase();
 	  		
 	  		var cage = CreateWorldElement(525, 425, SPRITE_W["CAGE"], SPRITE_H["CAGE"], SPRITES["CAGE"], true, true, -4);
+	  		cage.Enter = function() {
+	  			ShowIndicator(player, indicator, SPRITES["E"]);
+	  		};
 	  		cage.action = function() {
-	  			States.current().level.Destruct();
-	  			States.current().level = LevelFive();
-	  			States.current().level.Construct();
+	  			States.push(chat);
+	  			var text_image = CreateWorldElement(player.x + 100,275, 200, 100,SPRITES["LEFT_TEXT"], false, false, 1);
+
+				var text = CreateText(player.x + 100,268, 16, "This is where we\nkept the mice.");
+				var pressed = true;
+				chat.world.update = function(d) {
+					if(!gInput.E && pressed) pressed = false;
+					if(gInput.E && !pressed){
+						this.removeChild(text_image);
+						this.removeChild(text);
+						States.pop();
+						States.current().level.Destruct();
+	  					States.current().level = LevelFive();
+	  					States.current().level.Construct();
+					    return;
+				   }
+					this.updateChildren(d);
+				};
 	  		};
 	  		this.interactive.push(cage);
 	  		
@@ -1106,6 +1147,7 @@ var SPRITE_OFFSET =
 			player.body.SetTransform(new b2.Vec2(257/PHYSICS_SCALE,500/PHYSICS_SCALE), 0);
 	  	    this.constructed = true;
 	  	    player.ChangeState(PLAYER_STATE_NORMAL);
+	  		ChangeTrack(AUDIO["STORY"]);
 	  	};
   		
   		this.Destruct = function() { 
@@ -1265,6 +1307,7 @@ var SPRITE_OFFSET =
 	  		player.checkpoint = this.checkpoint[0];
 	  		player.body.SetTransform(player.checkpoint.body.GetPosition(), 0);
 	  		player.ChangeState(PLAYER_STATE_RUNNER);
+	  		ChangeTrack(AUDIO["RUNNER1"]);
 		};
 		
 		this.Reset = function() {
@@ -1413,6 +1456,7 @@ var SPRITE_OFFSET =
 	  		player.checkpoint = this.checkpoint[0];
 	  		player.body.SetTransform(player.checkpoint.body.GetPosition(), 0);
 			player.ChangeState(PLAYER_STATE_RUNNER);
+	  		ChangeTrack(AUDIO["RUNNER2"]);
 		};
 		
 		this.ConstructLoop = function() {
@@ -1436,6 +1480,7 @@ var SPRITE_OFFSET =
 	  		player.checkpoint = this.checkpoint[0];
 	  		player.body.SetTransform(player.checkpoint.body.GetPosition(), 0);
 			player.ChangeState(PLAYER_STATE_RUNNER);
+	  		ChangeTrack(AUDIO["RUNNER2"]);
 		};
 		
 		this.Reset = function() {
@@ -1630,6 +1675,7 @@ var SPRITE_OFFSET =
 	  		player.checkpoint = this.checkpoint[0];
 	  		player.body.SetTransform(player.checkpoint.body.GetPosition(), 0);
 	  		player.ChangeState(PLAYER_STATE_RUNNER);
+	  		ChangeTrack(AUDIO["RUNNER1"]);
 		};
 		
 		this.Reset = function() {
@@ -1849,10 +1895,12 @@ var SPRITE_OFFSET =
 			
 			///////work before this
 			this.width = this.floor[0].width/2 + this.floor[this.floor.length-1].x - this.floor[0].x + this.floor[this.floor.length-1].width/2;
+			this.width += 500;
 	  		this.constructed = true;
 	  		player.checkpoint = this.checkpoint[0];
 	  		player.body.SetTransform(player.checkpoint.body.GetPosition(), 0);
 			player.ChangeState(PLAYER_STATE_RUNNER);
+	  		ChangeTrack(AUDIO["RUNNER3"]);
 		};
 		
 		this.Reset = function() {
@@ -1906,6 +1954,7 @@ var SPRITE_OFFSET =
 			//1
 			makeBuilding.call(this, x, y, 7);
 			x = fillBuilding.call(this, x, y, 7);
+			this.scenery.push(CreateRunnerElement(x - 1400, y - SPRITE_H["WALL"] - 25, 500, 500, SPRITES["CAGE"], false, false, -10));
 			
 			//2
 			x += 700;
@@ -1962,41 +2011,46 @@ var SPRITE_OFFSET =
 			this.checkpoint[1] = CreateCheckpoint(x, y - 200, true);
 			makeBuilding.call(this, x, y, 10);
 			x = fillBuilding.call(this, x, y, 10);
-			this.obstacle.push(CreateDashElement(x - 2000, y-SPRITE_OFFSET["ROOF_CRATE"], -10));
+			this.obstacle.push(CreateDashElement(x - 1000, y-SPRITE_OFFSET["ROOF_CRATE"], -10));
 			
 			//9
 			x += 700;
 			y = 400;
 			makeBuilding.call(this, x, y, 1);
 			x = fillBuilding.call(this, x, y, 1);
-			this.obstacle.push(CreateRunnerElement(x, y-SPRITE_OFFSET["ROOF_CHIMNEY"]-100, SPRITE_W["ROOF_CHIMNEY"], SPRITE_H["ROOF_CHIMNEY"], SPRITES["ROOF_CHIMNEY"], true, false, 0));
-			this.obstacle.push(CreateRunnerElement(x + 300, y-SPRITE_OFFSET["ROOF_CHIMNEY"]-350, SPRITE_W["ROOF_CHIMNEY"], SPRITE_H["ROOF_CHIMNEY"], SPRITES["ROOF_CHIMNEY"], true, false, 0));
-			this.obstacle.push(CreateRunnerElement(x + 600, y-SPRITE_OFFSET["ROOF_CHIMNEY"]-300, SPRITE_W["ROOF_CHIMNEY"], SPRITE_H["ROOF_CHIMNEY"], SPRITES["ROOF_CHIMNEY"], true, false, 0));
-			this.obstacle.push(CreateRunnerElement(x + 900, y-SPRITE_OFFSET["ROOF_CHIMNEY"]-500, SPRITE_W["ROOF_CHIMNEY"], SPRITE_H["ROOF_CHIMNEY"], SPRITES["ROOF_CHIMNEY"], true, false, 0));
+			this.obstacle.push(CreateRunnerElement(x, y-SPRITE_OFFSET["ROOF_DOOR"]-100, SPRITE_W["ROOF_DOOR"], SPRITE_H["ROOF_DOOR"], SPRITES["ROOF_DOOR"], true, false, 0));
+			this.obstacle.push(CreateRunnerElement(x + 300, y-SPRITE_OFFSET["ROOF_DOOR"]-350, SPRITE_W["ROOF_DOOR"], SPRITE_H["ROOF_DOOR"], SPRITES["ROOF_DOOR"], true, false, 0));
+			this.obstacle.push(CreateRunnerElement(x + 600, y-SPRITE_OFFSET["ROOF_DOOR"]-300, SPRITE_W["ROOF_DOOR"], SPRITE_H["ROOF_DOOR"], SPRITES["ROOF_DOOR"], true, false, 0));
+			this.obstacle.push(CreateRunnerElement(x + 900, y-SPRITE_OFFSET["ROOF_DOOR"]-500, SPRITE_W["ROOF_DOOR"], SPRITE_H["ROOF_DOOR"], SPRITES["ROOF_DOOR"], true, false, 0));
 			
 			//10
 			x += 700;
 			y = 600;
-			makeBuilding.call(this, x, y, 1);
-			x = fillBuilding.call(this, x, y, 1);
+			//makeBuilding.call(this, x, y, 1);
+			//x = fillBuilding.call(this, x, y, 1);
+			x += 600;
 			
 			//11
 			x += 700;
 			y = 500;
 			makeBuilding.call(this, x, y, 1);
 			x = fillBuilding.call(this, x, y, 1);
+			this.obstacle.push(CreateRunnerElement(x - 600, y-SPRITE_OFFSET["ROOF_DOOR"]-300, SPRITE_W["ROOF_DOOR"], SPRITE_H["ROOF_DOOR"], SPRITES["ROOF_DOOR"], true, false, 0));
 			
 			//12
 			x += 200;
 			y = 600;
 			makeBuilding.call(this, x, y, 2);
 			x = fillBuilding.call(this, x, y, 2);
+			this.obstacle.push(CreateRunnerElement(x - 1000, y-SPRITE_OFFSET["ROOF_DOOR"]-150, SPRITE_W["ROOF_DOOR"], SPRITE_H["ROOF_DOOR"], SPRITES["ROOF_DOOR"], true, false, 0));
+			this.obstacle.push(CreateRunnerElement(x - 400, y-SPRITE_OFFSET["ROOF_DOOR"]-350, SPRITE_W["ROOF_DOOR"], SPRITE_H["ROOF_DOOR"], SPRITES["ROOF_DOOR"], true, false, 0));
 			
 			//13
 			x += 700;
 			y = 550;
 			makeBuilding.call(this, x, y, 3);
 			x = fillBuilding.call(this, x, y, 3);
+			this.obstacle.push(CreateRunnerElement(x - 300, y-SPRITE_OFFSET["ROOF_DOOR"]-450, SPRITE_W["ROOF_DOOR"], SPRITE_H["ROOF_DOOR"], SPRITES["ROOF_DOOR"], true, false, 0));
 			
 			
 			//14
@@ -2004,7 +2058,7 @@ var SPRITE_OFFSET =
 			y = 600;
 			makeBuilding.call(this, x, y, 3);
 			x = fillBuilding.call(this, x, y, 3);
-			this.obstacle.push(CreateRunnerElement(x - 200, y-SPRITE_OFFSET["ROOF_CHIMNEY"], SPRITE_W["ROOF_CHIMNEY"], SPRITE_H["ROOF_CHIMNEY"], SPRITES["ROOF_CHIMNEY"], true, false, 0));
+			this.obstacle.push(CreateRunnerElement(x - 300, y-SPRITE_OFFSET["ROOF_DOOR"]-300, SPRITE_W["ROOF_DOOR"], SPRITE_H["ROOF_DOOR"], SPRITES["ROOF_DOOR"], true, false, 0));
 			
 			//15
 			x += 700;
@@ -2015,8 +2069,9 @@ var SPRITE_OFFSET =
 			//16
 			x += 700;
 			y = 550;
-			makeBuilding.call(this, x, y, 0);
-			x = fillBuilding.call(this, x, y, 0);
+			this.checkpoint[2] = CreateCheckpoint(x, y - 200, true);
+			makeBuilding.call(this, x, y, 3);
+			x = fillBuilding.call(this, x, y, 3);
 			
 			//17
 			x += 700;
@@ -2029,6 +2084,13 @@ var SPRITE_OFFSET =
 			y = 550;
 			makeBuilding.call(this, x, y, 10);
 			x = fillBuilding.call(this, x, y, 10);
+			this.obstacle.push(CreateSlideElement(x - 2000, y - SPRITE_OFFSET["ROOF_CONTAINER"] - 300, -5));
+			this.obstacle.push(CreateSlideElement(x - 1500, y - SPRITE_OFFSET["ROOF_CONTAINER"], -5));
+			this.obstacle.push(CreateSlideElement(x - 1200, y - SPRITE_OFFSET["ROOF_CONTAINER"] + 100, -5));
+			this.obstacle.push(CreateSlideElement(x - 1200, y - SPRITE_OFFSET["ROOF_CONTAINER"] - 200, -5));
+			this.obstacle.push(CreateSlideElement(x - 800, y - SPRITE_OFFSET["ROOF_CONTAINER"] - 150, -5));
+			this.obstacle.push(CreateSlideElement(x - 400, y - SPRITE_OFFSET["ROOF_CONTAINER"] - 350, -5));
+			this.obstacle.push(CreateSlideElement(x - 200, y - SPRITE_OFFSET["ROOF_CONTAINER"], -5));
 			
 			//19
 			x += 345;
@@ -2049,7 +2111,7 @@ var SPRITE_OFFSET =
 			makeBuilding.call(this, x, y, 5);
 			x = fillBuilding.call(this, x, y, 5);
 			this.obstacle.push(CreateDashElement(x - 800, y-SPRITE_OFFSET["ROOF_CRATE"], -10));
-			this.obstacle.push(CreateDashElement(x - 400, y-SPRITE_OFFSET["ROOF_CRATE"], -10));
+			this.obstacle.push(CreateDashElement(x - 500, y-SPRITE_OFFSET["ROOF_CRATE"], -10));
 			
 			//22
 			x += 700;
@@ -2091,12 +2153,14 @@ var SPRITE_OFFSET =
 			makeBuilding.call(this, x, y, 10);
 			x = fillBuilding.call(this, x, y, 10);
 			
-			var sensor = CreateRunnerElement(x, 240, SPRITE_W["MACHINE_ON"], SPRITE_H["MACHINE_ON"], SPRITES["MACHINE_ON"], true, true, 400);
-			sensor.scaleX = -1;
+			var machine = CreateRunnerElement(x, 240, SPRITE_W["MACHINE_ON"], SPRITE_H["MACHINE_ON"], SPRITES["MACHINE_ON"], false, false, 400);
+			machine.scaleX = -1;
+			this.scenery.push(machine);
+			var sensor = CreateRunnerElement(x, 240, SPRITE_W["MACHINE_ON"] / 2, SPRITE_H["MACHINE_ON"], "", true, true, 400);
 	        this.interactive.push(sensor);
 	        sensor.Enter = function(){
    	    		States.current().level.Destruct();
-				States.current().level = Title();
+				States.current().level = Credits();
 				States.current().level.ConstructStory();
        	    };
 			
@@ -2107,6 +2171,7 @@ var SPRITE_OFFSET =
 	  		player.checkpoint = this.checkpoint[0];
 	  		player.body.SetTransform(player.checkpoint.body.GetPosition(), 0);
 	  		player.ChangeState(PLAYER_STATE_RUNNER);
+	  		ChangeTrack(AUDIO["RUNNER3"]);
 		};
 		
 		this.Reset = function() {
@@ -3134,5 +3199,12 @@ var SPRITE_OFFSET =
 		// Right
 		this.fill.push(CreateFloorElement(x - SPRITE_OFFSET["WALL_FILL_W"], y + SPRITE_OFFSET["WALL_FILL_H"], SPRITE_W["WALL_SIDE_FILL"], SPRITE_H["WALL_SIDE_FILL"], SPRITES["RIGHT_WALL_FILL"], 0, true));
 		return x;
+	}
+	
+	function ChangeTrack(newtrack) {
+		if(music.src.indexOf(newtrack) == -1) {
+  			music.pause();
+  			music = Sounds.loop(newtrack);
+  		}
 	}
 }());
